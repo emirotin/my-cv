@@ -1,10 +1,13 @@
-$ = require 'jquery'
 templates = require 'templates'
+Ractive = require 'ractive'
 
 class ExampleView
 
   render: (element) ->
-    $(element).append templates.example({name:'Handlebars', css:'sass'})
-    $(element).append templates['another-example']({name:'Handlebars'})
+    @app = new Ractive
+      el: element
+      template: templates.example
+      data:
+        name: 'Handlebars', css: 'sass'
 
 module.exports = ExampleView

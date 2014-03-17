@@ -11,11 +11,12 @@ exports.config =
     "bower"
     "coffeescript"
     "sass"
-    "handlebars"
+    "ractive"
   ]
   template:
     wrapType: 'common'
-    commonLibPath: 'handlebars'
+    #commonLibPath: 'ractive'
+    writeLibrary: true
   browserify:
     bundles:
       [
@@ -26,9 +27,9 @@ exports.config =
       jquery:
         path: 'javascripts/vendor/jquery/jquery'
         exports: '$'
-      handlebars:
-        path: 'javascripts/vendor/handlebars/handlebars'
-        exports: 'Handlebars'
+      ractive:
+        path: 'javascripts/vendor/Ractive'
+        exports: 'Ractive'
     aliases:
       templates: 'javascripts/templates'
-    noParse: ['javascripts/vendor/jquery/jquery']
+    noParse: ['jquery', 'ractive']

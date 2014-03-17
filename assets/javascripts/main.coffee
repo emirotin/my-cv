@@ -3,5 +3,5 @@ ExampleView = require './app/example-view'
 
 $ ->
   view = new ExampleView()
-  view.render 'body'
+  view.render '#root'
   #console.log require('./lcd-font').characterMap['@']
