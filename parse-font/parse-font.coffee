@@ -47,32 +47,61 @@ separateChars = (matrix, cb) ->
       chars.push (matrix[i][start...end] for i in heightInterval)
   cb null, chars
 
-parseFile = (fileName, cb) ->
-  async.waterfall [
-    (cb) ->
-      cb null, path.normalize path.join __dirname, '..', 'alphabet-src', fileName + '.png'
-    readPng
-    pngToMatrix
-    separateChars
-  ], cb
-
-
-print = (matrix, interval) ->
-  for i in [0...matrix.height]
-    s = []
-    for j in [interval.start..interval.end]
-      s.push if matrix[i][j] then '#' else ' '
-    console.log s.join('')
-
-
 codeOfUcA = 'A'.charCodeAt(0)
 codeOfLcA = 'a'.charCodeAt(0)
 codeOfZero = '0'.charCodeAt(0)
 charsMap =
-  uc: (String.fromCharCode(codeOfUcA + i) for i in [0...26])
-  lc: (String.fromCharCode(codeOfLcA + i) for i in [0...26])
-  digits: (String.fromCharCode(codeOfZero + i) for i in [0..9])
-  special: ''
+  uc:
+    chars: (String.fromCharCode(codeOfUcA + i) for i in [0...26])
+    vOffset: -3
+  lc:
+    chars: (String.fromCharCode(codeOfLcA + i) for i in [0...26])
+    vOffset: -2
+  digits:
+    chars: (String.fromCharCode(codeOfZero + i) for i in [0..9])
+    vOffset: 0
+  special:
+    chars: ".,?!-–—+()[]{}#@$%^&*_=:;'/\\|"
+    vOffset: -4
 
-parseFile 'uc', (err, chars) ->
-  print matrix, chars[25]
+parseFile = (fileName, cb) ->
+  filePath = path.normalize path.join __dirname, '..', 'alphabet-src', fileName + '.png'
+  async.auto
+    png: (cb) ->
+      readPng filePath, cb
+    matrix: ['png', (cb, results) ->
+      pngToMatrix results.png, cb
+    ]
+    chars: ['matrix', (cb, results) ->
+      separateChars results.matrix, cb
+    ]
+    mapChars: ['chars', (cb, results) ->
+      map = charsMap[fileName]
+      chars = results.chars
+      if not map
+        return cb new Error 'Unknown file name: ' + fileName
+      if map.chars.length != chars.length
+        return cb new Error 'Length mismatch for file ' + fileName
+      res = {}
+      for char, i in map.chars
+        res[char] = char: chars[i], vOffset: map.vOffset
+      cb null, res
+    ]
+  , (err, results) ->
+    cb err, results.mapChars
+
+createExport = (charDefs) ->
+  exports =
+    lineHeight: 13
+    characterMap: charDefs
+
+  fs.writeFileSync 'font.js', 'module.exports = ' + JSON.stringify exports
+
+async.map _.keys(charsMap), parseFile, (err, maps) ->
+  if err
+    console.error err
+    process.exit 1
+  merged = _.reduce maps,
+    (a, b) -> _.extend a, b
+  , {}
+  createExport merged
