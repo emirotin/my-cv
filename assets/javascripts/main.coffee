@@ -1,8 +1,7 @@
-require
-  urlArgs: "b=#{(new Date()).getTime()}"
-  paths:
-    jquery: 'vendor/jquery/jquery'
-  , ['app/example-view']
-  , (ExampleView) ->
-    view = new ExampleView()
-    view.render('body')
+jquery = require 'jquery'
+ExampleView = require './app/example-view'
+
+$ ->
+  view = new ExampleView()
+  view.render 'body'
+  #console.log require('./lcd-font').characterMap['@']

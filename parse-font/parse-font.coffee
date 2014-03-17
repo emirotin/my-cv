@@ -100,7 +100,7 @@ createExport = (charDefs) ->
       '"': "'"
 
   filePath = path.normalize path.join __dirname, '..', 'assets', 'javascripts', 'lcd-font.js'
-  fs.writeFileSync filePath, 'module.exports = ' + JSON.stringify exports
+  fs.writeFileSync filePath, 'module.exports = ' + JSON.stringify(exports) + ';'
 
 async.map _.keys(charsMap), parseFile, (err, maps) ->
   if err

@@ -1,9 +1,10 @@
-define ['jquery', 'templates'], ($, templates) ->
+$ = require 'jquery'
+templates = require 'templates'
 
-  class ExampleView
+class ExampleView
 
-    render: (element) ->
-      $(element).append templates.example({name:'Handlebars', css:'sass'})
-      $(element).append templates['another-example']({name:'Handlebars'})
+  render: (element) ->
+    $(element).append templates.example({name:'Handlebars', css:'sass'})
+    $(element).append templates['another-example']({name:'Handlebars'})
 
-  ExampleView
+module.exports = ExampleView
