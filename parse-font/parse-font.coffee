@@ -31,21 +31,21 @@ pngToMatrix = (png, cb) ->
 separateChars = (matrix, cb) ->
   w = matrix.width
   h = matrix.height
+  heightInterval = [0...h]
 
   state = 0 # 0 = whitespace, 1 = in character
   start = 0
   end = 0
   chars = []
-  while end <= w
-    allWhite = end == w or not _.any (matrix[i][end] for i in [0...h])
+  for end in [0..w]
+    allWhite = end == w or not _.any (matrix[i][end] for i in heightInterval)
     if state == 0 and not allWhite
       state = 1
       start = end
     else if state == 1 and allWhite
       state = 0
-      chars.push { start, end: end - 1 }
-    end += 1
-  cb null, matrix, chars
+      chars.push (matrix[i][start...end] for i in heightInterval)
+  cb null, chars
 
 parseFile = (fileName, cb) ->
   async.waterfall [
@@ -64,5 +64,15 @@ print = (matrix, interval) ->
       s.push if matrix[i][j] then '#' else ' '
     console.log s.join('')
 
-parseFile 'uc', (err, matrix, chars) ->
+
+codeOfUcA = 'A'.charCodeAt(0)
+codeOfLcA = 'a'.charCodeAt(0)
+codeOfZero = '0'.charCodeAt(0)
+charsMap =
+  uc: (String.fromCharCode(codeOfUcA + i) for i in [0...26])
+  lc: (String.fromCharCode(codeOfLcA + i) for i in [0...26])
+  digits: (String.fromCharCode(codeOfZero + i) for i in [0..9])
+  special: ''
+
+parseFile 'uc', (err, chars) ->
   print matrix, chars[25]
