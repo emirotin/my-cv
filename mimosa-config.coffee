@@ -15,7 +15,6 @@ exports.config =
   ]
   template:
     wrapType: 'common'
-    #commonLibPath: 'ractive'
     writeLibrary: true
   browserify:
     bundles:
@@ -28,7 +27,7 @@ exports.config =
         path: 'javascripts/vendor/jquery/jquery'
         exports: '$'
       ractive:
-        path: 'javascripts/vendor/Ractive'
+        path: 'javascripts/vendor/ractive'
         exports: 'Ractive'
     aliases:
       templates: 'javascripts/templates'
