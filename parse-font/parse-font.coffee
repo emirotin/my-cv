@@ -56,13 +56,13 @@ charsMap =
     vOffset: 3
   lc:
     chars: (String.fromCharCode(codeOfLcA + i) for i in [0...26])
-    vOffset: 2
+    vOffset: 4
   digits:
     chars: (String.fromCharCode(codeOfZero + i) for i in [0..9])
     vOffset: 0
   special:
     chars: ".,?!-–—+()[]{}#@$%^&*_=:;'/\\|"
-    vOffset: 4
+    vOffset: -1
 
 parseFile = (fileName, cb) ->
   filePath = path.normalize path.join __dirname, '..', 'alphabet-src', fileName + '.png'
@@ -95,6 +95,7 @@ createExport = (charDefs) ->
     lineHeight: 13
     spaceWidth: 3
     lineSpacing: 5
+    letterSpacing: 1
     characterMap: charDefs
     replace:
       '"': "'"
