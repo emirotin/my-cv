@@ -53,16 +53,16 @@ codeOfZero = '0'.charCodeAt(0)
 charsMap =
   uc:
     chars: (String.fromCharCode(codeOfUcA + i) for i in [0...26])
-    vOffset: -3
+    vOffset: 3
   lc:
     chars: (String.fromCharCode(codeOfLcA + i) for i in [0...26])
-    vOffset: -2
+    vOffset: 2
   digits:
     chars: (String.fromCharCode(codeOfZero + i) for i in [0..9])
     vOffset: 0
   special:
     chars: ".,?!-–—+()[]{}#@$%^&*_=:;'/\\|"
-    vOffset: -4
+    vOffset: 4
 
 parseFile = (fileName, cb) ->
   filePath = path.normalize path.join __dirname, '..', 'alphabet-src', fileName + '.png'
