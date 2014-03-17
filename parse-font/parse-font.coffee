@@ -92,6 +92,8 @@ parseFile = (fileName, cb) ->
 
 createExport = (charDefs) ->
   exports =
+    replace:
+      '"': "'"
     lineHeight: 13
     characterMap: charDefs
 
