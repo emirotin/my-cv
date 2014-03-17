@@ -18,5 +18,8 @@
   "homepage": "https://github.com/emirotin/lcd-cv",
   "devDependencies": {
     "pngjs": "^0.4.0"
+  },
+  "dependencies": {
+    "async": "^0.2.10"
   }
 }
