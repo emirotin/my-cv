@@ -92,12 +92,14 @@ parseFile = (fileName, cb) ->
 
 createExport = (charDefs) ->
   exports =
+    lineHeight: 13
+    spaceWidth: 3
+    lineSpacing: 5
+    characterMap: charDefs
     replace:
       '"': "'"
-    lineHeight: 13
-    characterMap: charDefs
 
-  fs.writeFileSync 'font.js', 'module.exports = ' + JSON.stringify exports
+  fs.writeFileSync 'lcd-font.js', 'module.exports = ' + JSON.stringify exports
 
 async.map _.keys(charsMap), parseFile, (err, maps) ->
   if err
