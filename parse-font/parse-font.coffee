@@ -125,7 +125,7 @@ charsMap = [
 
 printChar = (char) ->
   for row in char
-    console.log (if bit then '*' else '' for bit in row).join ''
+    console.log (if bit then '*' else ' ' for bit in row).join ''
 
 
 mapChars = (chars, cb) ->
