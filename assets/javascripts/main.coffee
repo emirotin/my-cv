@@ -21,6 +21,7 @@ $ ->
     'jQuery, jQuery UI, Underscore /\nLodash, Bootstrap'
     'Grunt, Mocha, Mimosa'
     ''
+    '---'
     'Contact: emirotin@gmail.com'
     'Skype: guardante'
   ]

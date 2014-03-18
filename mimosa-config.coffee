@@ -13,6 +13,7 @@ exports.config =
     "sass"
     "ractive"
     "web-package"
+    "mimosa-minify-img"
   ]
   template:
     wrapType: 'common'
