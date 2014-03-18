@@ -1,2 +1,9 @@
-<div class="template">This is coming from a {{name}} template</div>
-<div class="styled">And it has all been styled (poorly) using {{css}}</div>
+<div class="grid">
+  {{#intervalHeight:i}}
+  <div class="row">
+    {{#intervalWidth:j}}
+    <span class="cell{{grid[i][j] ? ' on' : ''}}"></span>
+    {{/intervalWidth}}
+  </div>
+  {{/intervalHeight}}
+</div>

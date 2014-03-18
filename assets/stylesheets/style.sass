@@ -1,0 +1,15 @@
+@import compass
+
+.grid
+  +inline-block
+  padding: 10px
+  background: rgba(128, 255, 128, 0.5)
+  .row
+    +clearfix
+    .cell
+      +inline-block
+      float: left
+      width: 2px
+      height: 2px
+      &.on
+        background: rgba(black, 0.8)
