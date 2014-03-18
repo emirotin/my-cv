@@ -107,7 +107,7 @@ charsMap = [
   { chars: ",", vOffset: 2 }
   "?!"
   { chars: "-–—", vOffset: -4 }
-  { chars: "+", vOffset: 0 }
+  { chars: "+", vOffset: -1 }
   { chars: "()[]{}", vOffset: 1 }
   "#"
   { chars: "@$", vOffset: 2 }

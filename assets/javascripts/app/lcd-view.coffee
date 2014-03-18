@@ -31,8 +31,6 @@ class LcdView
       data:
         gridWidth: gridWidth
         gridHeight: gridHeight
-        intervalWidth: [0...gridWidth]
-        intervalHeight: [0...gridHeight]
         grid: null
     @reset()
 

@@ -1,9 +1,9 @@
 <div class="grid">
-  {{#intervalHeight:i}}
+  {{#grid}}
   <div class="row">
-    {{#intervalWidth:j}}
-    <span class="cell{{grid[i][j] ? ' on' : ''}}"></span>
-    {{/intervalWidth}}
+    {{#.}}
+    <span class="cell{{. ? ' on' : ''}}"></span>
+    {{/.}}
   </div>
-  {{/intervalHeight}}
+  {{/grid}}
 </div>
