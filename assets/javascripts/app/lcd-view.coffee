@@ -58,9 +58,14 @@ class LcdView
     if @_currCol + char[0].length >= gridWidth
       @_currCol = 0
       @_currRow += fullRowHeight
+
+    while @_currRow >= gridHeight
+      @_shiftRows()
+      @_currRow -= fullRowHeight
+
     for row, i in char
       i += @_currRow + charDef.vOffset
-      if i < 0
+      if i < 0 or i >= gridHeight
         continue
       for bit, j in row
         @grid[i][@_currCol + j] = bit
@@ -70,13 +75,20 @@ class LcdView
   _renderGrid: ->
     @app.set 'grid', @grid
 
+  _shiftRows: ->
+    @grid.splice 0, fullRowHeight
+    for i in [0...fullRowHeight]
+      @_addRow()
+
+  _addRow: ->
+    row = []
+    row.length = gridWidth
+    @grid.push row
+
   _setupGrid: ->
     @grid = []
-    @grid.length = gridHeight
     for i in [0...gridHeight]
-      row = []
-      row.length = gridWidth
-      @grid[i] = row
+      @_addRow()
 
   reset: ->
     @_setupGrid()
