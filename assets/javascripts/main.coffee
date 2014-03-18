@@ -3,20 +3,31 @@ LcdView = require './app/lcd-view'
 
 $ ->
   view = new LcdView()
-  view.render '#root'
+  view.render '#lcd-root'
 
   i = 0
   lines = [
-    'Aa0Bb1Cc2Dd3Ee4Ff5Gg6Hh7'
-    'Ii8Jj9Kk(L)l[M]m{N}n#O@o?P!'
-    'p.Q,q-R+r–S—s$'
-    'T%t^U&u*V_v=Ww:X;x\'Y/y\\Z|z'
     'Hello, World!'
+    'Name: Eugene Mirotin'
+    'Age: 28'
+    'Location: Minsk, Belarus'
+    'Occupation: Web Developer'
+    'Tech: JS, CoffeeScript, Node.js'
+    'HTML5, CSS3, Sass, Compass'
+    'MongoDB, PostgreSQL, Redis'
+    'Express, Passport, Mongoose'
+    'Backbone, Ractive, Ember'
+    'Mustache, Handlebars'
+    'jQuery, jQuery UI, Underscore /\nLodash, Bootstrap'
+    'Grunt, Mocha, Mimosa'
+    ''
+    'Contact: emirotin@gmail.com'
+    'Skype: guardante'
   ]
   typeLine = ->
     if i >= lines.length
       return
-    setTimeout typeLine, 500
+    setTimeout typeLine, 1000
     view.type lines[i] + '\n'
     i += 1
-  setTimeout typeLine, 400
+  setTimeout typeLine, 10
