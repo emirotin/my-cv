@@ -29,40 +29,90 @@ pngToMatrix = (png, cb) ->
   cb null, m
 
 separateChars = (matrix, cb) ->
+  chars = []
+
   w = matrix.width
   h = matrix.height
   heightInterval = [0...h]
+  widthInterval = [0...w]
 
+  # vertical trim
+  imin = 0
+  while not _.any (matrix[imin][j] for j in widthInterval)
+    imin += 1
+  imax = h - 1
+  while not _.any (matrix[imax][j] for j in widthInterval)
+    imax -= 1
+  imax += 1
+
+  # vertical slice
+  slices = []
   state = 0 # 0 = whitespace, 1 = in character
-  start = 0
-  end = 0
-  chars = []
-  for end in [0..w]
-    allWhite = end == w or not _.any (matrix[i][end] for i in heightInterval)
+  sliceStart = imin
+  for i in [imin..imax]
+    allWhite = i == imax or not _.any (matrix[i][j] for j in widthInterval)
     if state == 0 and not allWhite
       state = 1
-      start = end
+      sliceStart = i
     else if state == 1 and allWhite
       state = 0
-      chars.push (matrix[i][start...end] for i in heightInterval)
+      slices.push { sliceStart, sliceEnd: i - 1}
+
+  # horizontal slice
+  for { sliceStart, sliceEnd } in slices
+    sliceHeightInterval = [sliceStart..sliceEnd]
+    # horizontal trim
+    jmin = 0
+    while not _.any (matrix[i][jmin] for i in sliceHeightInterval)
+      jmin += 1
+    jmax = w - 1
+    while not _.any (matrix[i][jmax] for i in sliceHeightInterval)
+      jmax -= 1
+    jmax += 1
+
+    state = 0 # 0 = whitespace, 1 = in character
+
+    charStart = jmin
+    for j in [jmin..jmax]
+      allWhite = j == jmax or not _.any (matrix[i][j] for i in sliceHeightInterval)
+      if state == 0 and not allWhite
+        state = 1
+        charStart = j
+      else if state == 1 and allWhite
+        state = 0
+        chars.push (matrix[i][charStart...j] for i in [sliceStart..sliceEnd])
   cb null, chars
 
-codeOfUcA = 'A'.charCodeAt(0)
-codeOfLcA = 'a'.charCodeAt(0)
-codeOfZero = '0'.charCodeAt(0)
-charsMap =
-  uc:
-    chars: (String.fromCharCode(codeOfUcA + i) for i in [0...26])
-    vOffset: 3
-  lc:
-    chars: (String.fromCharCode(codeOfLcA + i) for i in [0...26])
-    vOffset: 7
-  digits:
-    chars: (String.fromCharCode(codeOfZero + i) for i in [0..9])
-    vOffset: 3
-  special:
-    chars: ".,?!-–—+()[]{}#@$%^&*_=:;'/\\|"
-    vOffset: 2
+charsMap = [
+    {
+      chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      vOffset: 0
+    }
+    {
+      chars: "abcdefghijklmnopqrstuvwxyz"
+      vOffset: 0
+    }
+    {
+      chars: "0123456789"
+      vOffset: 0
+    }
+    {
+      chars: ".,?!-–—+()[]{}#@$%^&*_=:;'/\\|"
+      vOffset: 0
+    }
+]
+
+mapChars = (chars, cb) ->
+  res = {}
+  parsedMap = []
+  for def in charsMap
+    for c in def.chars.split('')
+      parsedMap.push char: c, vOffset: def.vOffset
+  if parsedMap.length != chars.length
+    return cb new Error 'Length mismatch between configured chars and detected'
+  for def, i in parsedMap
+    res[def.char] = char: chars[i], vOffset: def.vOffset
+  cb null, res
 
 parseFile = (fileName, cb) ->
   filePath = path.normalize path.join __dirname, '..', 'alphabet-src', fileName + '.png'
@@ -76,16 +126,7 @@ parseFile = (fileName, cb) ->
       separateChars results.matrix, cb
     ]
     mapChars: ['chars', (cb, results) ->
-      map = charsMap[fileName]
-      chars = results.chars
-      if not map
-        return cb new Error 'Unknown file name: ' + fileName
-      if map.chars.length != chars.length
-        return cb new Error 'Length mismatch for file ' + fileName
-      res = {}
-      for char, i in map.chars
-        res[char] = char: chars[i], vOffset: map.vOffset
-      cb null, res
+      mapChars results.chars, cb
     ]
   , (err, results) ->
     cb err, results.mapChars
@@ -93,7 +134,7 @@ parseFile = (fileName, cb) ->
 createExport = (charDefs) ->
   exports =
     lineHeight: 13
-    charWidth: _.max (charDefs[c].char[0].length for c of charDefs)
+    charWidth: 15
     spaceWidth: 3
     lineSpacing: 5
     letterSpacing: 1
@@ -104,11 +145,9 @@ createExport = (charDefs) ->
   filePath = path.normalize path.join __dirname, '..', 'assets', 'javascripts', 'lcd-font.js'
   fs.writeFileSync filePath, 'module.exports = ' + JSON.stringify(exports) + ';'
 
-async.map _.keys(charsMap), parseFile, (err, maps) ->
+parseFile 'alphabet', (err, map) ->
   if err
     console.error err
     process.exit 1
-  merged = _.reduce maps,
-    (a, b) -> _.extend a, b
-  , {}
-  createExport merged
+  createExport map
+  console.log 'Done, OK'
