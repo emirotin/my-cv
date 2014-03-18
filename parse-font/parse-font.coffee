@@ -80,26 +80,77 @@ separateChars = (matrix, cb) ->
         charStart = j
       else if state == 1 and allWhite
         state = 0
-        chars.push (matrix[i][charStart...j] for i in [sliceStart..sliceEnd])
+        # extra vertical trim
+        charVertStart = sliceStart
+        while not _.any matrix[charVertStart][charStart...j]
+          charVertStart += 1
+        charVertEnd = sliceEnd
+        while not _.any matrix[charVertEnd][charStart...j]
+          charVertEnd -= 1
+        chars.push (matrix[i][charStart...j] for i in [charVertStart..charVertEnd])
   cb null, chars
 
 charsMap = [
-    {
-      chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      vOffset: 0
-    }
-    {
-      chars: "abcdefghijklmnopqrstuvwxyz"
-      vOffset: 0
-    }
-    {
-      chars: "0123456789"
-      vOffset: 0
-    }
-    {
-      chars: ".,?!-–—+()[]{}#@$%^&*_=:;'/\\|"
-      vOffset: 0
-    }
+  {
+    chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    vOffset: 0
+  }
+  {
+    chars: "abcdefghijklmnopqrstuvwxyz"
+    vOffset: 4
+  }
+  {
+    chars: "0123456789"
+    vOffset: 0
+  }
+  {
+    chars: ".,"
+    vOffset: 10
+  }
+  {
+    chars: "?!"
+    vOffset: 0
+  }
+  {
+    chars: "-–—"
+    vOffset: 6
+  }
+  {
+    chars: "+"
+    vOffset: 1
+  }
+  {
+    chars: "()[]{}"
+    vOffset: -2
+  }
+  {
+    chars: "#@$%^&"
+    vOffset: 0
+  }
+  {
+    chars: "*"
+    vOffset: 4
+  }
+  {
+    chars: "_"
+    vOffset: 12
+  }
+  {
+    chars: "="
+    vOffset: 5
+  }
+  {
+    chars: ":;"
+    vOffset: 3
+  }
+  {
+    chars: "'"
+    vOffset: 0
+  }
+  {
+    chars: "/\\|"
+    vOffset: -2
+  }
 ]
 
 mapChars = (chars, cb) ->
@@ -111,6 +162,7 @@ mapChars = (chars, cb) ->
   if parsedMap.length != chars.length
     return cb new Error 'Length mismatch between configured chars and detected'
   for def, i in parsedMap
+    char = chars[i]
     res[def.char] = char: chars[i], vOffset: def.vOffset
   cb null, res
 

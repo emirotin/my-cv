@@ -7,13 +7,10 @@ $ ->
 
   i = 0
   lines = [
-    'Hello, World!'
     'Aa0Bb1Cc2Dd3Ee4Ff5Gg6Hh7'
     'Ii8Jj9Kk(L)l[M]m{N}n#O@o?P!'
-    'p.Q,q-R+rSsTtUuVvWwXxYyZz'
-    'Name: Eugene Mirotin'
-    'Age: 28'
-    'Location: Minsk, Belarus'
+    'p.Q,q-R+r–S—s$'
+    'T%t^U&u*V_v=Ww:X;x\'Y/y\\Z|z'
   ]
   typeLine = ->
     if i >= lines.length
