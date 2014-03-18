@@ -12,6 +12,7 @@ exports.config =
     "coffeescript"
     "sass"
     "ractive"
+    "web-package"
   ]
   template:
     wrapType: 'common'

@@ -27,7 +27,7 @@ what
 
 # Output folder
 /public
-/dist
+#/dist
 /.mimosa/require/tracking.json
 
 # Numerous always-ignore extensions
