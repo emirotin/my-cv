@@ -29,6 +29,7 @@ what
 /public
 #/dist
 /.mimosa/require/tracking.json
+/dist/lcd-cv.tar.gz
 
 # Numerous always-ignore extensions
 *~

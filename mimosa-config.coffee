@@ -34,3 +34,5 @@ exports.config =
     aliases:
       templates: 'javascripts/templates'
     noParse: ['jquery', 'ractive']
+  webPackage:
+    exclude: ['images-src', 'alphabet-src', 'parse-font', 'assets', 'node_modules', 'mimosa-config.coffee']
