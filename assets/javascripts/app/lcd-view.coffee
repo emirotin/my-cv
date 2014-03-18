@@ -63,8 +63,9 @@ class LcdView
       @_shiftRows()
       @_currRow -= fullRowHeight
 
+    vOffset = @_currRow + lcdFont.lineHeight - char.length + charDef.vOffset
     for row, i in char
-      i += @_currRow + charDef.vOffset
+      i += vOffset
       if i < 0 or i >= gridHeight
         continue
       for bit, j in row

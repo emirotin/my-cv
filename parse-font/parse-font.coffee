@@ -71,7 +71,6 @@ separateChars = (matrix, cb) ->
     jmax += 1
 
     state = 0 # 0 = whitespace, 1 = in character
-
     charStart = jmin
     for j in [jmin..jmax]
       allWhite = j == jmax or not _.any (matrix[i][j] for i in sliceHeightInterval)
@@ -91,74 +90,55 @@ separateChars = (matrix, cb) ->
   cb null, chars
 
 charsMap = [
-  {
-    chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    vOffset: 0
-  }
-  {
-    chars: "abcdefghijklmnopqrstuvwxyz"
-    vOffset: 4
-  }
-  {
-    chars: "0123456789"
-    vOffset: 0
-  }
-  {
-    chars: ".,"
-    vOffset: 10
-  }
-  {
-    chars: "?!"
-    vOffset: 0
-  }
-  {
-    chars: "-–—"
-    vOffset: 6
-  }
-  {
-    chars: "+"
-    vOffset: 1
-  }
-  {
-    chars: "()[]{}"
-    vOffset: -2
-  }
-  {
-    chars: "#@$%^&"
-    vOffset: 0
-  }
-  {
-    chars: "*"
-    vOffset: 4
-  }
-  {
-    chars: "_"
-    vOffset: 12
-  }
-  {
-    chars: "="
-    vOffset: 5
-  }
-  {
-    chars: ":;"
-    vOffset: 3
-  }
-  {
-    chars: "'"
-    vOffset: 0
-  }
-  {
-    chars: "/\\|"
-    vOffset: -2
-  }
+  "ABCDEFGHIJKLMNOP"
+  { chars: "Q", vOffset: 2 }
+  "RSTUVWXYZ"
+  "abcdef"
+  { chars: "g", vOffset: 2 }
+  "hi"
+  { chars: "j", vOffset: 2 }
+  "klmno"
+  { chars: "pq", vOffset: 2 }
+  "rstuvwx"
+  { chars: "y", vOffset: 2 }
+  "z"
+  "0123456789"
+  "."
+  { chars: ",", vOffset: 2 }
+  "?!"
+  { chars: "-–—", vOffset: -4 }
+  { chars: "+", vOffset: 0 }
+  { chars: "()[]{}", vOffset: 1 }
+  "#"
+  { chars: "@$", vOffset: 2 }
+  "%"
+  { chars: "^", vOffset: -5 }
+  "&"
+  { chars: "*", vOffset: -2 }
+  "_"
+  { chars: "=", vOffset: -3 }
+  ":"
+  { chars: ";", vOffset: 2 }
+  { chars: "'", vOffset: -6 }
+  { chars: "/\\|", vOffset: 2 }
 ]
+
+printChar = (char) ->
+  for row in char
+    console.log (if bit then '*' else '' for bit in row).join ''
+
 
 mapChars = (chars, cb) ->
   res = {}
   parsedMap = []
   for def in charsMap
-    for c in def.chars.split('')
-      parsedMap.push char: c, vOffset: def.vOffset
+    if typeof def == 'string'
+      vOffset = 0
+      cs = def
+    else
+      { vOffset, chars: cs } = def
+    for c in cs.split('')
+      parsedMap.push { char: c, vOffset }
   if parsedMap.length != chars.length
     return cb new Error 'Length mismatch between configured chars and detected'
   for def, i in parsedMap
@@ -185,10 +165,10 @@ parseFile = (fileName, cb) ->
 
 createExport = (charDefs) ->
   exports =
-    lineHeight: 13
-    charWidth: 15
-    spaceWidth: 3
-    lineSpacing: 5
+    lineHeight: 10
+    charWidth: 8
+    spaceWidth: 2
+    lineSpacing: 3
     letterSpacing: 1
     characterMap: charDefs
     replace:

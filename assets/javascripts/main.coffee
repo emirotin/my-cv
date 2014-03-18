@@ -15,7 +15,7 @@ $ ->
   typeLine = ->
     if i >= lines.length
       return
-    setTimeout typeLine, 800
+    setTimeout typeLine, 10
     view.type lines[i] + '\n'
     i += 1
   setTimeout typeLine, 400
