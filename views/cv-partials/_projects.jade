@@ -1,4 +1,6 @@
 ul.media-list
+  // LIKEANDPAY
+
   li.media
     .pull-left
       a.thumbnail(href="javascript:void(0)")
@@ -9,15 +11,50 @@ ul.media-list
       h2.media-heading
         | Like'n'Pay&#32;
         small FB like, but with payments
-      p 1111
+      p
+        strong Customer and Employer:&#32;
+        a(href="http://likeandpay.ru", target="_blank") Like'n'Pay
+        br
+        | The project allows users to support content authors
+        | through the pay what you want model.
+      p
+        strong Role:&nbsp;
+        | Full-stack JS developer.
+        br
+        strong Tech:&nbsp;
+        | CoffeeScript, Node.js, Express, MongoDB, jQuery, Ractive, Meteor,
+        | CSS3, Sass, Bourbon,
+        | iframe, postMessage, AJAX, HTTPS,
+        | Heroku, Mandrill.
+      p
+        strong What I did:&nbsp;
+        ul
+          li
+            | client-side — a master script installable on customer sites,
+            | generates buttons (iframes) according to HTML markup and <code>data-</code> attributes,
+            | button click opens another iframe with payment dialog,
+          li server-side API (Node.js, Express), authentication system (Passport),
+          li
+            | payment systems integration
+            | (
+            a(href="https://money.yandex.ru/", target="_blank") Yandex Money
+            | ,&#32;
+            a(href="https://www.qiwi.ru/main.action", target="_blank") QIWI
+            | , direct payments through&#32;
+            a(href="http://payture.ru/", target="_blank") Payture
+            | ).
+  hr
+
+  // EPAM - FLUX
 
   li.media
-    .pull-left
+    .pull-right
       #carousel-flux.carousel-flux.carousel.slide(data-ride="carousel")
         ol.carousel-indicators
          li.active(data-target="#carousel-flux", data-slide-to="0")
          li(data-target="#carousel-flux", data-slide-to="1")
          li(data-target="#carousel-flux", data-slide-to="2")
+         li(data-target="#carousel-flux", data-slide-to="3")
 
         .carousel-inner
           .item.active
@@ -35,9 +72,219 @@ ul.media-list
               img.media-object(src="/images/projects/flux3.png")
               span.preview
                 span.glyphicon.glyphicon-zoom-in
+          .item
+            a.thumbnail(href="javascript:void(0)")
+              img.media-object(src="/images/projects/flux4.png")
+              span.preview
+                span.glyphicon.glyphicon-zoom-in
 
     .media-body
       h2.media-heading
-        | MTV&#32;
-        small FB like, but with payments
-      p 1111
+        | Flux&#32;
+        small A set of reusable widgets met across Viacom sites
+      p
+        strong Customer:&#32;
+        a(href="http://www.viacom.com/", target="_blank") Viacom
+        | ,&#32;
+        strong Employer:&#32;
+        a(href="http://www.epam.com/", target="_blank") EPAM Systems
+        br
+        | The project allows the developers of various Viacom sites
+        | (MTV, EMA, GameTrailers, Colbert Nation, Nickelodeon, et. al.)
+        | to reuse a standard set of JS widgets
+        | (login, profile, vote up / down, social share, comments, file upload, wysiwyg, etc.).
+      p
+        strong Role:&nbsp;
+        | Front-end developer.
+        br
+        strong Tech:&nbsp;
+        | JavaScript, jQuery, CSS3, SCSS, Bourbon.
+      p
+        strong What I did:&nbsp;
+        ul
+          li supported and expanded existing code base,
+          li developed several new widgets, including AJAX file upload and WYSIWYG,
+          li performed code review for new features,
+          li introduced SCSS to the project, made a stand-alone fork of Bourbon to be used with Mindscape Web Workbench.
+
+  hr
+
+  // EPAM - SKILL MANAGER
+
+  li.media
+    .pull-left
+      .thumbnail
+        img.media-object(src="/images/projects/guru.png")
+    .media-body
+      h2.media-heading
+        | &#8220;Front-End Skill Manager&#8221;&#32;
+        small I'm too modest to explain
+      p
+        strong Employer:&#32;
+        a(href="http://www.epam.com/", target="_blank") EPAM Systems
+      p
+        | While working as a (Senior / Lead) front-end developer I was also asked to oversee
+        | the front-end development processes at EPAM's Media & Entertainment division.
+      p
+        | This included interviewing new job applicants and internal candidates for new positions,
+        | evaluate developer's level, find out their weaknesses, or advice on possible promotions.
+      p
+        | I also organized a series of workshops aimed at showing modern tools for DRY development
+        | (like Sass, CoffeeScript, HAML, Middleman), modern HTML5 and CSS3 features,
+        | and general best practices for JavaScript coding.
+  hr
+
+  // PROHQ
+
+  li.media
+    .pull-right
+      a.thumbnail(href="javascript:void(0)")
+        img.media-object(src="/images/projects/prohq.png")
+        span.preview
+          span.glyphicon.glyphicon-zoom-in
+    .media-body
+      h2.media-heading
+        | ProHQ&#32;
+        small Freelance Marketplace
+      p
+        strong Customer:&#32;
+        a(href="http://www.prohq.ru/", target="_blank") ProHQ
+        br
+        | A front-end coding project for Russian job marketplace.
+      p
+        strong Role:&nbsp;
+        | Front-end coder.
+        br
+        strong Tech:&nbsp;
+        | Middleman, HTML5, HAML, CSS3, Sass, Compass,
+        | CoffeeScript, jQuery, jQuery UI.
+      p
+        strong What I did:&nbsp;
+        ul
+          li prototyped 50+ pages using Middleman static site generator,
+          li then continued working on the project in RoR environment,
+          li used jQuery UI without theme, custom-styled all components,
+          li created a set of reusable components (modal, slider, etc.) around jQuery UI widgets.
+  hr
+
+  // TRANIO
+
+  li.media
+    .pull-left
+      a.thumbnail(href="javascript:void(0)")
+        img.media-object(src="/images/projects/tranio.png")
+        span.preview
+          span.glyphicon.glyphicon-zoom-in
+    .media-body
+      h2.media-heading
+        | Tranio.ru&#32;
+        small Overseas Property Catalogue
+      p
+        strong Customer:&#32;
+        a(href="http://tranio.ru/", target="_blank") Tranio.ru
+        br
+        | A Russian catalogue of overseas property with powerful search and focus on information.
+      p
+        strong Role:&nbsp;
+        | Python and Front-end developer.
+        br
+        strong Tech:&nbsp;
+        | Python, Django, PostgreSQL,
+        | Javascript, jQuery, jQuery UI, CSS3.
+      p
+        strong What I did —&#32;
+        | worked on various features related to all parts of the site, for example:
+        ul
+          li
+            | featured locations carousel on&nbsp;
+            a(href="http://tranio.ru/", target="_blank") index
+            | &#32;(front-end),
+          li
+            | site usage&nbsp;
+            a(href="http://tranio.ru/stats/", target="_blank") statistics page
+            | &#32;(back and front-end),
+          li
+            a(href="http://tranio.ru/luxury/", target="_blank") luxury page
+            | &#32;(front-end),
+          li
+            | sophisticated data export functionality (from PostgreSQL to XML)
+            | with transformations according to
+            a(href="http://advertising.yandex.com/product/media/realty.xml", target="_blank") Yandex.Realty
+            | &#32;format (Python command-line).
+  hr
+
+  // TRANIO STARS
+
+  li.media
+    .pull-right
+      a.thumbnail(href="javascript:void(0)")
+        img.media-object(src="/images/projects/tranio-stars.png")
+        span.preview
+          span.glyphicon.glyphicon-zoom-in
+    .media-body
+      h2.media-heading
+        | Tranio Stars&#32;
+        small Stars Property — Promo Site
+      p
+        strong Customer:&#32;
+        a(href="http://tranio.ru/", target="_blank") Tranio.ru
+        br
+        | A promo site for Tranio.ru focused on famouse people's real estate over the world.
+      p
+        strong Role:&nbsp;
+        | Python and Front-end developer.
+        br
+        strong Tech:&nbsp;
+        | Python, Django,
+        | Javascript, jQuery, jQuery UI, CSS3.
+      p
+        strong What I did:
+        | implemented overall design with as much CSS3 as possible,
+        | coded some custom controls (checkbpxes, drop-downs as seen in search block on index).
+  hr
+
+  // BUILDSITE
+
+  li.media
+    .pull-left
+      a.thumbnail(href="javascript:void(0)")
+        img.media-object(src="/images/projects/buildsite.png")
+        span.preview
+          span.glyphicon.glyphicon-zoom-in
+    .media-body
+      h2.media-heading
+        | BuildSite&#32;
+        small Construction Submittals Managing Software
+      p
+        strong Customer:&#32;
+        a(href="http://www.buildsite.com/", target="_blank") BuildSite, LLC
+        br
+        | A site allowing construction companies to manage submittals (documents packs).
+      p
+        strong Role:&nbsp;
+        | Project Manager / Team Lead (3-5 developers).
+        br
+        strong Tech:&nbsp;
+        | Python, Django,
+        | Javascript, jQuery, Bash & Linux black magic.
+      p
+        strong What I did.
+        | Besides normal PM / TL responsibilities I help developers
+        | with some front-end tasks (CSS, jQuery),
+        | but also implemented 2 major features:
+        ul
+          li
+            | Django Admin as DB editor for copany's staff, with lots of customizations:
+            | custom fields editing widgets (WYSIWYG, comma-separated list edited as
+            | line feed separated text in textarea) and custom data saving logic,
+          li
+            | an in-browser PDF annotation tool&#32;
+            em (the feature I'm extremely proud of)
+            | , completely based on OSS. The tool allows annotating PDF pages
+            | (rectangles, ellipses, lines, free pen, custom text, undo and redo),
+            | as well as removing individual pages from the doc.
+            br
+            | For this tool I designed the interface, wrote bash scripts for preparing PDFs
+            | for annotation and reconstructing annotated documents,
+            | wrote front-end code, and created the working Django prototype.
+  hr
