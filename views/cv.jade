@@ -16,19 +16,28 @@ block scripts-top
 block content
   .container
     header.page-header
+      .print.pull-right
+        button.btn.btn-sm.btn-default(onclick="window.print();")
+          span.glyphicon.glyphicon-print
+          | &nbsp;Print
       .media
-        .pull-left.thumbnail
+        .my-photo.pull-left.thumbnail
           img.media-object(src="/images/me.jpg", alt="Me")
         hgroup.media-body
           h1.media-heading
             | Eugene Mirotin
             small (left)
+          .h4 Web Developer
           .h4
             | Age: #{age}.&nbsp;
             | Location:&nbsp;
             a(href="#", data-toggle="modal", data-target="#map-modal") Minsk, Belarus
             | .
-          h2 Occupation: Web Developer
+          .h4
+            a(href="mailto:emirotin@gmail.com") emirotin@gmail.com
+            | ,&nbsp;
+            a(href="skype:guardante") skype:guardante
+            | .
           .h3.skills
             | Core skills:&nbsp;
             include cv-partials/_skills
@@ -53,9 +62,32 @@ block content
     hr
 
     section.projects
-      h1 Past Experience
+      h1 Relevant Experience
       include cv-partials/_projects
 
+    section
+      h1 Other Experience
+      p
+        | My previous experience also includes working as technical writer, information architect,
+        | business analyst and UX designer.
+
+    section
+      h1 Education
+      p
+        | I graduated from&nbsp;
+        a(href="http://www.bsu.by/en/main.aspx", target="_blank") Belarusian State University,
+        | &#32;Faculty of Applied Math and Computer Science.
+        | Got Magister degree in 2009.
+
+    section
+      h1 Need references from my former colleagues?
+      p
+        a(href="mailto:emirotin@gmail.com") Request contacts, write to emirotin@gmail.com
+
+    footer
+      p
+        | &copy; Eugene Mirotin, 2014.&#32;
+        a(href="mailto:emirotin@gmail.com") emirotin@gmail.com
 
   #map-modal.modal.fade
     .modal-dialog
