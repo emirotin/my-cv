@@ -8,10 +8,10 @@ block head
 
 block styles
   link(href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/flatly/bootstrap.min.css", rel="stylesheet")
-  //link(rel="stylesheet", href="/stylesheets/vendor/bootstrap/bootstrap.css")
 
 block scripts-top
   script(src="https://maps.googleapis.com/maps/api/js?key=#{MAPS_API_KEY}&sensor=false")
+  script(src="http://lab.lepture.com/github-cards/widget.js")
 
 block content
   .container
@@ -32,8 +32,28 @@ block content
           .h3.skills
             | Core skills:&nbsp;
             include cv-partials/_skills
+
+    section.links
+      .pull-right
+        .github-card(data-github="emirotin", data-target="blank", data-width="300", data-height="150")
+      .code-link
+        h2 Sample Code
+        ul.lead
+          li
+            a(href="https://github.com/emirotin/lcd-cv", target="_blank") This CV, has some interesting parts
+          li
+            a(href="https://github.com/emirotin/mongodb-migrations", target="_blank") Migration lib for MongoDB
+          li
+            a(href="https://github.com/emirotin/mimosa-ember", target="_blank") Sample Ember project for Mimosa
+          li
+            a(href="http://emirotin.github.io/hover-dover/", target="_blank") A fun experiment with PNG
+          li
+            a(href="http://emirotin.github.io/loop-machine/", target="_blank") A fun experiment with SoundCloud API
+      .clearfix
+    hr
+
     section.projects
-      h1 Relevant Experience
+      h1 Past Experience
       include cv-partials/_projects
 
 
