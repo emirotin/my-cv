@@ -27,6 +27,6 @@ exports.startServer = (config, callback) ->
     app.use express.errorHandler()
 
   app.get '/', routes.index(config)
+  app.get '/cv', routes.cv(config)
 
   callback(server)
-

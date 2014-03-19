@@ -1,11 +1,16 @@
-index = (config) ->
+moment = require 'moment'
+
+birthDate = '1985-10-26'
+
+cv = (config) ->
 
   options =
     reload:    config.liveReload.enabled
     optimize:  config.isOptimize ? false
     cachebust: if process.env.NODE_ENV isnt "production" then "?b=#{(new Date()).getTime()}" else ''
 
-  (req, res) -> res.render "index", options
+    age: moment().diff(birthDate, 'years')
 
-exports.index = index
-exports.cv = require './cv'
+  (req, res) -> res.render "cv", options
+
+module.exports = cv

@@ -1,0 +1,34 @@
+extends layout
+
+block vars
+  pageId = 'cv'
+
+block head
+  meta(name="viewport", content="width=device-width, initial-scale=1")
+
+block styles
+  link(href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/flatly/bootstrap.min.css", rel="stylesheet")
+  //link(rel="stylesheet", href="/stylesheets/vendor/bootstrap/bootstrap.css")
+
+block content
+  .container
+    header.page-header
+      .media
+        .pull-left.thumbnail
+          img.media-object(src="/images/me.jpg", alt="Me")
+        hgroup.media-body
+          h1.media-heading
+            | Eugene Mirotin
+            small (left)
+          .h4
+            | Age: #{age}.&nbsp;
+            | Location:&nbsp;
+            a(href="#") Minsk, Belarus
+            | .
+          h2 Occupation: Web Developer
+          .h3.skills
+            | Core skills:&nbsp;
+            include cv-partials/_skills
+    section.projects
+      h1 Relevant Experience
+      include cv-partials/_projects

@@ -8,3 +8,4 @@ index = (config) ->
   (req, res) -> res.render "index", options
 
 exports.index = index
+exports.cv = require './cv'

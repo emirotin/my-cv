@@ -1,0 +1,35 @@
+@import compass
+
+.page-circuit
+
+  background: image-url('circuit-board.png')
+
+  .display
+    background: image-url('display.png') center top no-repeat
+    width: 1072px
+    height: 407px
+    margin: 20px auto
+
+  .lcd-root
+    +inline-block
+    +box-sizing(border-box)
+    height: 315px
+    width: 935px
+    margin-left: 72px
+    margin-top: 46px
+    padding: 27px 0 0 28px
+    +border-radius(15px)
+    +box-shadow(inset 12px 9px 20px -1px rgba(black, 0.8), inset -7px -4px 40px rgba(0, 0, 0, 0.7))
+
+  .grid
+    .row
+      +clearfix
+      .cell
+        float: left
+        width: 4px
+        height: 4px
+        margin-bottom: 1px
+        margin-right: 1px
+        &.on
+          background: #333
+          background: rgba(black, 0.6)

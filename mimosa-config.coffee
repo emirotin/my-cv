@@ -28,6 +28,11 @@ exports.config =
       jquery:
         path: 'javascripts/vendor/jquery/jquery'
         exports: '$'
+      bootstrap:
+        path: 'javascripts/vendor/bootstrap/bootstrap'
+        exports: ''
+        depends:
+          'jquery': 'jQuery'
       ractive:
         path: 'javascripts/vendor/ractive'
         exports: 'Ractive'
