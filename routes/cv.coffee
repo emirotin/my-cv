@@ -11,6 +11,8 @@ cv = (config) ->
 
     age: moment().diff(birthDate, 'years')
 
+    MAPS_API_KEY: 'AIzaSyBXfayCu_fu5PMwBw45A_PcTU_b3KVndFw'
+
   (req, res) -> res.render "cv", options
 
 module.exports = cv
