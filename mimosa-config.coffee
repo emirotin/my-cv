@@ -36,6 +36,9 @@ exports.config =
     noParse: ['jquery', 'ractive']
   webPackage:
     exclude: [
-      'images-src', 'alphabet-src', 'parse-font', 'assets', 'node_modules', 'mimosa-config.coffee'
+      'images-src', 'alphabet-src', 'parse-font'
+      'assets', 'node_modules', 'mimosa-config.coffee'
       '.gitignore', 'README.md', 'package.json'
+      'config.rb'
+      '.git', '.mimosa'
     ]
