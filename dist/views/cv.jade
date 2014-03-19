@@ -10,6 +10,9 @@ block styles
   link(href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/flatly/bootstrap.min.css", rel="stylesheet")
   //link(rel="stylesheet", href="/stylesheets/vendor/bootstrap/bootstrap.css")
 
+block scripts-top
+  script(src="https://maps.googleapis.com/maps/api/js?key=#{MAPS_API_KEY}&sensor=false")
+
 block content
   .container
     header.page-header
@@ -23,7 +26,7 @@ block content
           .h4
             | Age: #{age}.&nbsp;
             | Location:&nbsp;
-            a(href="#") Minsk, Belarus
+            a(href="#", data-toggle="modal", data-target="#map-modal") Minsk, Belarus
             | .
           h2 Occupation: Web Developer
           .h3.skills
@@ -32,3 +35,15 @@ block content
     section.projects
       h1 Relevant Experience
       include cv-partials/_projects
+
+
+  #map-modal.modal.fade
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type="button", data-dismiss="modal")&times;
+          h4.modal-title Wut? Krakozhia?
+        .modal-body
+          .map-canvas
+        .modal-footer
+          button.btn.btn-default(type="button", data-dismiss="modal") Close
