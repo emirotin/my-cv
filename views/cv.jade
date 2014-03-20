@@ -23,24 +23,31 @@ block content
       .media
         .my-photo.pull-left.thumbnail
           img.media-object(src="/images/me.jpg", alt="Me")
-        hgroup.media-body
+        .media-body
           h1.media-heading
             | Eugene Mirotin
             small (left)
-          .h4 Web Developer
-          .h4
+          .p.lead
+            | Web Developer
+            br
             | Age: #{age}.&nbsp;
             | Location:&nbsp;
-            a(href="#", data-toggle="modal", data-target="#map-modal") Minsk, Belarus
+            a.location(href="#", data-toggle="modal", data-target="#map-modal")
+              span.glyphicon.glyphicon-globe
+              | &nbsp;Minsk, Belarus
             | .
-          .h4
-            a(href="mailto:emirotin@gmail.com") emirotin@gmail.com
-            | ,&nbsp;
-            a(href="skype:guardante") skype:guardante
-            | .
-          .h3.skills
-            | Core skills:&nbsp;
-            include cv-partials/_skills
+            span.contacts
+              a(href="mailto:emirotin@gmail.com")
+                span.icon-mail
+                | emirotin@gmail.com
+              | ,&nbsp;
+              a(href="skype:guardante")
+                span.icon-skype
+                | skype:guardante
+              | .
+            span.skills
+              | Core skills:&nbsp;
+              include cv-partials/_skills
 
     section.links
       .pull-right
@@ -79,10 +86,10 @@ block content
         | &#32;Faculty of Applied Math and Computer Science.
         | Got Magister degree in 2009.
 
-    section
+    section.reference
       h1 Need references from my former colleagues?
       p
-        a(href="mailto:emirotin@gmail.com") Request contacts, write to emirotin@gmail.com
+        a.btn.btn-sm.btn-default(href="mailto:emirotin@gmail.com") Request contacts, write to emirotin@gmail.com
 
     footer
       p

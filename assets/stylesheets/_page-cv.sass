@@ -5,7 +5,14 @@
     width: 558px
     height: 400px
 
+  .location .glyphicon
+    font-size: 80%
+
+  .skills, .contacts
+    display: block
+
   .skills
+    margin-top: 0.8em
     .label
       +inline-block
       margin-bottom: 0.2em
@@ -70,8 +77,15 @@
       display: none
     .my-photo
       width: 100px
+    .contacts, .reference, footer
+      a:after
+        content: ""
+    .reference
+      margin-top: 4em
+      h1
+        font-size: 160%
     .skills
-      font-size: 120%
+      font-size: 110%
       br
         display: none
       .label

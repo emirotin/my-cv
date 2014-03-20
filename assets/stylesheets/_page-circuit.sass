@@ -1,4 +1,5 @@
 @import compass
+@import compass/css3/user-interface
 
 .page-circuit
   margin: 0
@@ -22,6 +23,8 @@
     +box-shadow(inset 12px 9px 20px -1px rgba(black, 0.8), inset -7px -4px 40px rgba(0, 0, 0, 0.7))
 
   .grid
+    +user-select(none)
+    pointer-events: none
     .row
       +clearfix
       .cell

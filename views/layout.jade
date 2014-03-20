@@ -6,9 +6,13 @@ html
   head
     meta(charset="utf-8")
     meta(http-equiv="X-UA-Compatible", content="IE=edge")
-    block head
 
     title Eugene Mirotin's CV
+
+    link(rel="shortcut icon", href="/fav.ico", type="image/x-icon")
+    link(rel="icon", href="/fav.ico", type="image/x-icon")
+
+    block head
 
     link(rel='stylesheet', href='/stylesheets/style.css' + cachebust)
     block styles
@@ -21,4 +25,4 @@ html
     block content
 
     block scripts-top
-    script(src='/javascripts/bundle.js')
+    script(src='/javascripts/bundle.js' + cachebust)
