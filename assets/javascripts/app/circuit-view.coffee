@@ -9,6 +9,9 @@ class CircuitView
     @lcdView = new LcdView()
     @lcdView.render $el.find '#lcd-root'
 
+  showButtons: ->
+    @$el.find('.buttons').fadeIn()
+
   type: (done) ->
     view = @lcdView
     i = 0

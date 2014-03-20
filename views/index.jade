@@ -1,8 +1,20 @@
 extends layout
 
 block vars
-  pageId = 'circuit' 
+  pageId = 'circuit'
 
 block content
   .display
     #lcd-root.lcd-root
+
+  .buttons
+    a.mailto(href="mailto:emirotin@gmail.com")
+      span.icon-mail
+      | emirotin@gmail.com
+    a.skype(href="skype:guardante")
+      span.icon-skype
+      | skype:guardante
+    .clearfix
+    a.cv(href="/cv")
+      span.icon-button
+      | OK, cool, but... Have you something more boring?

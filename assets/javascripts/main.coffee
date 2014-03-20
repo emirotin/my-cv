@@ -8,7 +8,7 @@ $ ->
     view = new CircuitView()
     view.render 'body'
     view.type ->
-      console.log 111
+      view.showButtons()
 
   if $body.hasClass 'page-cv'
     CvView = require './app/cv-view'
