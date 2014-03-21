@@ -15,31 +15,35 @@ block scripts-top
 
 block content
   .container
-    header.page-header
+    header.page-header(itemscope, itemtype="http://schema.org/Person")
       .print.pull-right
         button.btn.btn-sm.btn-default(onclick="window.print();")
           span.glyphicon.glyphicon-print
           | &nbsp;Print
       .media
         .my-photo.pull-left.thumbnail
-          img.media-object(src="/images/me.jpg", alt="Eugene Mirotin")
+          img.media-object(src="/images/me.jpg", alt="Eugene Mirotin", itemprop="image")
         .media-body
           h1.media-heading
-            | Eugene Mirotin
+            span(itemprop="name") Eugene Mirotin
             small (left)
           .p.lead
-            | Web Developer
+            span(itemprop="jobTitle") Web Developer
             br
             | Age: #{age}.&nbsp;
-            | Location:&nbsp;
-            a.location(href="#", data-toggle="modal", data-target="#map-modal")
-              span.glyphicon.glyphicon-globe
-              | &nbsp;Minsk, Belarus
-            | .
+            span(itemprop="address" itemscope itemtype="http://schema.org/PostalAddress")
+              | Location:&nbsp;
+              a.location(href="#", data-toggle="modal", data-target="#map-modal")
+                span.glyphicon.glyphicon-globe
+                | &nbsp;
+                span(itemprop="addressLocality") Minsk
+                | ,&nbsp;
+                span(itemprop="addressCountry") Belarus
+              | .
             span.contacts
               a(href="mailto:emirotin@gmail.com")
                 span.icon-mail
-                | emirotin@gmail.com
+                span(itemprop="email") emirotin@gmail.com
               | ,&nbsp;
               a(href="skype:guardante")
                 span.icon-skype
