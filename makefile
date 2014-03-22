@@ -26,5 +26,3 @@ clean:
 pack:
 	@echo "[x] Building and packaging application..."
 	@$(build) -omp
-	./node_modules/.bin/uglifyjs dist/public/javascripts/bundle.js -o dist/public/javascripts/bundle.js -mc
-	rm dist/*.tar.gz

@@ -15,7 +15,6 @@
     "mimosa-coffeescript": "*",
     "mimosa-handlebars": "*",
     "mimosa-sass": "*",
-    "pngjs": "^0.4.0",
-    "uglify-js": "^2.4.13"
+    "pngjs": "^0.4.0"
   }
 }

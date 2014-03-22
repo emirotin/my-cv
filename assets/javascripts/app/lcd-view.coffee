@@ -6,14 +6,13 @@ COL_COUNT = 20
 ROW_COUNT = 4
 
 ###
-lineHeight: 13
-charWidth: _.max (charDefs[c].char[0].length for c of charDefs)
-spaceWidth: 3
-lineSpacing: 5
-letterSpacing: 1
-characterMap: charDefs
-replace:
-  '"': "'"
+lineHeight
+charWidth
+spaceWidth
+lineSpacing
+letterSpacing
+characterMap
+replace
 ###
 
 fullColWidth = lcdFont.charWidth + lcdFont.letterSpacing
