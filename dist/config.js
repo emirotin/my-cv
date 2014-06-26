@@ -15,6 +15,7 @@ var config = {
     "interval": 100,
     "binaryInterval": 300,
     "usePolling": true,
+    "delay": 0,
     "excludeRegex": {},
     "compiledJavascriptDir": [
       "public",
@@ -41,7 +42,8 @@ var config = {
       "extension": "jade",
       "path": [
         "views"
-      ]
+      ],
+      "options": {}
     }
   }
 }
