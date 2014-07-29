@@ -45,7 +45,6 @@ class CircuitView
       view.type lines[i] + '\n'
       i += 1
 
-
     # wait for bg image to load
     $display = @$el.find('.display')
     bgUrl = $display.css('background-image')?.match(/^url\((.*)\)$/)
@@ -54,9 +53,8 @@ class CircuitView
       setTimeout tyleLine, 250
     else
       img = new Image()
-      img.onload = typeLine
+      img.onload = ->
+        setTimeout tyleLine, 50
       img.src = bgUrl[1]
-
-
 
 module.exports = CircuitView
