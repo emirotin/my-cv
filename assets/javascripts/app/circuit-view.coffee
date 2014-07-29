@@ -24,10 +24,13 @@ class CircuitView
       'Tech: JS, CoffeeScript, Node.js'
       'Express, Passport, Mongoose'
       'MongoDB, PostgreSQL, Redis'
-      'Backbone, Ractive, Ember'
-      'Mustache, Handlebars'
-      'jQuery, jQuery UI, Underscore /\nLodash, Bootstrap'
-      'HTML5, CSS3, Sass, Compass'
+      'Angular, Ractive'
+      'Backbone, Ember'
+      'Mustache, Handlebars, Jade'
+      'jQuery, jQuery UI'
+      'Underscore / Lodash, Bootstrap'
+      'HTML5, CSS3'
+      'Sass, Compass, LESS'
       'Grunt, Mocha, Mimosa'
       'Git, Git Flow, GitHub'
       ''
@@ -38,9 +41,22 @@ class CircuitView
     typeLine = ->
       if i >= lines.length
         return done?()
-      setTimeout typeLine, 1000
+      setTimeout typeLine, 900
       view.type lines[i] + '\n'
       i += 1
-    setTimeout typeLine, 200
+
+
+    # wait for bg image to load
+    $display = @$el.find('.display')
+    bgUrl = $display.css('background-image')?.match(/^url\((.*)\)$/)
+    if not bgUrl
+      # wtf?
+      setTimeout tyleLine, 250
+    else
+      img = new Image()
+      img.onload = typeLine
+      img.src = bgUrl[1]
+
+
 
 module.exports = CircuitView
