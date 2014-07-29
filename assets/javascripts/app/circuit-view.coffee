@@ -55,6 +55,6 @@ class CircuitView
       img = new Image()
       img.onload = ->
         setTimeout typeLine, 50
-      img.src = bgUrl[1]
+      img.src = bgUrl[1].replace(/^['"]|['"]$/, '')
 
 module.exports = CircuitView
