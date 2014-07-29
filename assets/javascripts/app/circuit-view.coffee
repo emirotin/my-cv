@@ -50,11 +50,11 @@ class CircuitView
     bgUrl = $display.css('background-image')?.match(/^url\((.*)\)$/)
     if not bgUrl
       # wtf?
-      setTimeout tyleLine, 250
+      setTimeout typeLine, 250
     else
       img = new Image()
       img.onload = ->
-        setTimeout tyleLine, 50
+        setTimeout typeLine, 50
       img.src = bgUrl[1]
 
 module.exports = CircuitView
