@@ -7,11 +7,11 @@
     "jade": "0.35.0",
     "coffee-script": "~1.9.1",
     "express": "3.4.7",
-    "moment": "^2.5.1"
+    "moment": "^2.5.1",
+    "lodash": "^3.6.0"
   },
   "devDependencies": {
     "async": "^0.2.10",
-    "lodash": "^2.4.1",
     "mimosa-coffeescript": "*",
     "mimosa-handlebars": "*",
     "mimosa-sass": "*",
