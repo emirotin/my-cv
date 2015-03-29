@@ -1,4 +1,56 @@
 ul.media-list
+
+  // RESIN
+
+  li.media
+    .pull-right
+      #carousel-resin.carousel-resin.carousel.slide(data-ride="carousel")
+        ol.carousel-indicators
+         li.active(data-target="#carousel-resin", data-slide-to="0")
+         li(data-target="#carousel-resin", data-slide-to="1")
+
+        .carousel-inner
+          .item.active
+            a.thumbnail(href="javascript:void(0)")
+              img.media-object(src="/images/projects/resin-dashboard.jpg", alt="Resin.io, AngularJS, CoffeeScript and Node.js")
+              span.preview
+                span.glyphicon.glyphicon-zoom-in
+          .item
+            a.thumbnail(href="javascript:void(0)")
+              img.media-object(src="/images/projects/resin-site.jpg", alt="Resin.io, Wintersmith, CoffeeScript and Node.js")
+              span.preview
+                span.glyphicon.glyphicon-zoom-in
+
+    .media-body
+      h2.media-heading
+        | Resin.io&#32;
+        small Git push to your devices
+      p
+        strong Customer and Employer:&#32;
+        a(href="https://resin.io", target="_blank") Resin.io
+        | .
+        br
+        | A San-Francisco based startup allowing users to deploy code to their
+        | IoT devices (Raspberry Pi, Beaglebone Black, Intel Edison, etc.)
+        | with simple <code>git push</code>.
+      p
+        strong Role:&nbsp;
+        | Senior Front-end Developer.
+        br
+        strong Tech:&nbsp;
+        | CoffeeScript, Node.js, Express, PostgreSQL, AngularJS,
+        | CSS3, LESS, Bootstrap.
+      p
+        strong What I did:&nbsp;
+        ul
+          li Supported and evolved the resin.io dashboard – an AngularJS SPA,
+          li
+            | Implemented several end-to-end features, including Device URLs —
+            | ability to give your resin-connected devices individual publicly accessible URLs,
+          li Coded <a href="https://resin.io">https://resin.io</a> using Wintersmith static site generator.
+
+  hr
+
   // LIKEANDPAY
 
   li.media
