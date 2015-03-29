@@ -1,11 +1,8 @@
+utils = require './utils'
+
 index = (config) ->
-
-  options =
-    reload:    config.liveReload.enabled
-    optimize:  config.isOptimize ? false
-    cachebust: if process.env.NODE_ENV isnt "production" then "?b=#{(new Date()).getTime()}" else ''
-
-  (req, res) -> res.render "index", options
+  return (req, res) ->
+    res.render "index", utils.getContext(config)
 
 exports.index = index
 exports.cv = require './cv'
