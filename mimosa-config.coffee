@@ -30,13 +30,14 @@ exports.config =
         exports: '$'
       bootstrap:
         path: 'javascripts/vendor/bootstrap/bootstrap'
-        exports: ''
+        exports: null
         depends:
           'jquery': 'jQuery'
       ractive:
         path: 'javascripts/vendor/ractive'
         exports: 'Ractive'
     aliases:
+      moment: 'javascripts/vendor/moment/moment'
       templates: 'javascripts/templates'
     noParse: ['jquery', 'ractive']
   webPackage:

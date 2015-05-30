@@ -1,5 +1,8 @@
 $ = require('jquery')
 require('bootstrap')
+moment = require('moment')
+
+birthDate = '1985-10-26'
 
 class CircuitView
   render: (element) ->
@@ -18,7 +21,7 @@ class CircuitView
     lines = [
       'Hello, World!'
       'Name: Eugene Mirotin'
-      'Age: 28'
+      'Age: ' + moment().diff(birthDate, 'years')
       'Location: Minsk, Belarus'
       'Occupation: Web Developer'
       'Tech: JS, CoffeeScript, Node.js'
