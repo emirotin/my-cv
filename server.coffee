@@ -1,3 +1,4 @@
+require 'newrelic'
 express = require 'express'
 engines = require 'consolidate'
 routes  = require './routes'
