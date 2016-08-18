@@ -36,6 +36,8 @@
     position: relative
     top: 1px
 
+$screenWidth: 935px
+
 .page-circuit
   margin: 0
   background: image-url('circuit-board.png')
@@ -50,7 +52,7 @@
     +inline-block
     +box-sizing(border-box)
     height: 315px
-    width: 935px
+    width: $screenWidth
     margin-left: 72px
     margin-top: 46px
     padding: 27px 0 0 28px
@@ -73,9 +75,10 @@
           background: rgba(black, 0.6)
 
   .buttons
-    width: 600px
+    width: $screenWidth
     margin: 20px auto
     display: none
+    +clear
     a
       +button
       display: block
@@ -84,13 +87,6 @@
     .mailto
       float: left
       width: 250px
-    .skype
-      float: right
-      width: 250px
     .cv
-      margin-top: 10px
-      font-size: 18px
-      padding: 14px
-
-  .clearfix
-    +clear
+      float: right
+      width: 450px
