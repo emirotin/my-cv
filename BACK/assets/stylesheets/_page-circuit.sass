@@ -1,63 +1,7 @@
-@import compass
-@import compass/css3/user-interface
-
-=clear
-  *zoom: 1
-
-  &:before, &:after
-    content: " "
-    display: table
-
-  &:after
-    clear: both
 
 =button
-  +box-shadow(inset 0px 1px 0px 0px #fff)
-  +background(linear-gradient(center top, #ededed 5%, #dfdfdf 100%))
-  background-color: #ededed
-  +border-radius(6px)
-  text-indent: 0
-  border: 1px solid #dcdcdc
-  +inline-block
-  color: #777
-  font-family: Tahoma
-  font-size: 16px
-  font-weight: bold
-  font-style: normal
-  text-decoration: none
-  text-align: center
-  +text-shadow(1px 1px 0px #fff)
 
-  &:hover
-    +background(linear-gradient(center top, #dfdfdf 5%, #ededed 100%))
-    background-color: #dfdfdf
 
-  &:active
-    position: relative
-    top: 1px
-
-$screenWidth: 935px
-
-.page-circuit
-  margin: 0
-  background: image-url('circuit-board.png')
-
-  .display
-    background: image-url('display.png') center top no-repeat
-    width: 1072px
-    height: 407px
-    margin: 20px auto
-
-  .lcd-root
-    +inline-block
-    +box-sizing(border-box)
-    height: 315px
-    width: $screenWidth
-    margin-left: 72px
-    margin-top: 46px
-    padding: 27px 0 0 28px
-    +border-radius(15px)
-    +box-shadow(inset 12px 9px 20px -1px rgba(black, 0.8), inset -7px -4px 40px rgba(0, 0, 0, 0.7))
 
   .grid
     +user-select(none)
@@ -74,19 +18,8 @@ $screenWidth: 935px
           background: #333
           background: rgba(black, 0.6)
 
-  .buttons
-    width: $screenWidth
-    margin: 20px auto
-    display: none
-    +clear
+
     a
       +button
-      display: block
-      padding: 10px
-      font-size: 16px
-    .mailto
-      float: left
-      width: 250px
-    .cv
-      float: right
-      width: 450px
+
+
