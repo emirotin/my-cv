@@ -1,51 +1,10 @@
-$ = require('jquery')
-require('bootstrap')
-moment = require('moment')
-
-birthDate = '1985-10-26'
-
 class CircuitView
-  render: (element) ->
-    @$el = $el = $ element
 
-    LcdView = require './lcd-view'
-    @lcdView = new LcdView()
-    @lcdView.render $el.find '#lcd-root'
 
   showButtons: ->
     @$el.find('.buttons').fadeIn()
 
   type: (done) ->
-    view = @lcdView
-    i = 0
-    lines = [
-      'Hello, World!'
-      'Name: Eugene Mirotin'
-      'Age: ' + moment().diff(birthDate, 'years')
-      'Location: Minsk, Belarus'
-      'Occupation: Web Developer'
-      'Tech:'
-      'JS, ES6, CoffeeScript, Node.js'
-      'React, Redux'
-      'Angular, Ractive'
-      'Express, Passport, Mongoose'
-      'MongoDB, PostgreSQL, Redis'
-      'Mustache, Handlebars, Jade'
-      'Lodash, Bootstrap, jQuery'
-      'HTML5, CSS3'
-      'Sass, LESS'
-      'Webpack, Babel, Grunt, Mocha'
-      'Git, GitHub'
-      ''
-      '---'
-      'Contact: emirotin@gmail.com'
-    ]
-    typeLine = ->
-      if i >= lines.length
-        return done?()
-      setTimeout typeLine, 900
-      view.type lines[i] + '\n'
-      i += 1
 
     # wait for bg image to load
     $display = @$el.find('.display')

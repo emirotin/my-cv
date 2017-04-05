@@ -1,12 +1,22 @@
 import { Component } from 'react'
 
 import Buttons from './buttons'
+import LCDPlayer from './lcd-player'
+
+import lcdTextLines from './lcd-text-lines'
 
 const DISPLAY_WIDTH = 935
 
 export default class LCD extends Component {
 	state = {
-		showButtons: true
+		showButtons: false
+	}
+
+	componentDidMount() {
+		this.lcdPlayer.play()
+		.then(() => {
+			this.setState({ showButtons: true })
+		})
 	}
 
 	render() {
@@ -39,7 +49,11 @@ export default class LCD extends Component {
 				`}</style>
 
 				<div className="lcd-wrap">
-					<div className="lcd-inner">LCD</div>
+					<div className="lcd-inner">
+						<LCDPlayer
+							lines={lcdTextLines}
+							ref={(lcdPlayer => this.lcdPlayer = lcdPlayer)} />
+					</div>
 				</div>
 
 				{ showButtons && <Buttons width={DISPLAY_WIDTH} /> }

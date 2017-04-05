@@ -1,9 +1,0 @@
-<div class="grid">
-  {{#grid}}
-  <div class="row">
-    {{#.}}
-    <span class="cell{{. ? ' on' : ''}}"></span>
-    {{/.}}
-  </div>
-  {{/grid}}
-</div>
