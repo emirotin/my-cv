@@ -1,0 +1,10 @@
+{
+	"lineHeight": 10,
+	"charWidth": 8,
+	"spaceWidth": 2,
+	"lineSpacing": 3,
+	"letterSpacing": 1,
+	"replace": {
+		"\"": "'"
+	}
+}
