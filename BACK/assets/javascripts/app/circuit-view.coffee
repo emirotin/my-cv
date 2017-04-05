@@ -1,9 +1,5 @@
 class CircuitView
 
-
-  showButtons: ->
-    @$el.find('.buttons').fadeIn()
-
   type: (done) ->
 
     # wait for bg image to load

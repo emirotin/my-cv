@@ -4,8 +4,8 @@ import Link from 'next/link'
 const EMAIL = 'emirotin@gmail.com'
 
 
-export default ({ width }) => (
-	<div className="buttons" style={{ width }}>
+export default ({ width, hidden }) => (
+	<div className={`buttons${ hidden ? " hidden" : ""}`} style={{ width }}>
 		<Head>
 			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 		</Head>
@@ -17,6 +17,15 @@ export default ({ width }) => (
 				flex-wrap: nowrap;
 				justify-content: space-between;
 				margin: 20px auto;
+
+				transition: 0.5s;
+				opacity: 1;
+				visibility: visible;
+			}
+
+			.buttons.hidden {
+				opacity: 0;
+				visibility: hidden;
 			}
 
 			.button {

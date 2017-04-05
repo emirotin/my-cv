@@ -56,7 +56,7 @@ export default class LCD extends Component {
 					</div>
 				</div>
 
-				{ showButtons && <Buttons width={DISPLAY_WIDTH} /> }
+				<Buttons width={DISPLAY_WIDTH} hidden={!showButtons} />
 			</div>
 		)
 	}
