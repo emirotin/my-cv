@@ -3,7 +3,7 @@ import { Component } from 'react'
 
 import LCDText from './lcd-text'
 
-import lcdFont from '../lcd-font/alphabet.json'
+import lcdFont from '../../lcd-font/alphabet.json'
 
 const LINE_INTERVAL_MS = 900
 const COL_COUNT = 20
