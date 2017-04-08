@@ -1,11 +1,9 @@
-import differenceInYears from 'date-fns/difference_in_years'
-
-const BIRTH_DATE = '1985-10-26'
+import { getAge } from '../../util'
 
 export default [
 	'Hello, World!',
 	'Name: Eugene Mirotin',
-	'Age: ' + differenceInYears(new Date(), BIRTH_DATE),
+	'Age: ' + getAge(),
 	'Location: Minsk, Belarus',
 	'Occupation: Web Developer',
 	'Tech:',

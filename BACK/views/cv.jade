@@ -1,53 +1,10 @@
-extends layout
 
-block vars
-  pageId = 'cv'
-
-block head
-  meta(name="viewport", content="width=device-width, initial-scale=1")
-
-block styles
-  link(href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/flatly/bootstrap.min.css", rel="stylesheet")
 
 block scripts-top
   script(src="https://maps.googleapis.com/maps/api/js?key=#{MAPS_API_KEY}&sensor=false")
   script(src="http://lab.lepture.com/github-cards/widget.js")
 
-block content
   .container
-    header.page-header(itemscope, itemtype="http://schema.org/Person")
-      .print.pull-right
-        button.btn.btn-sm.btn-default(onclick="window.print();")
-          span.glyphicon.glyphicon-print
-          | &nbsp;Print
-      .media
-        .my-photo.pull-left.thumbnail
-          img.media-object(src="/images/me.jpg", alt="Eugene Mirotin", itemprop="image")
-        .media-body
-          h1.media-heading
-            span(itemprop="name") Eugene Mirotin
-            small (left)
-          .p.lead
-            span(itemprop="jobTitle") Web Developer
-            br
-            | Age: #{age}.&nbsp;
-            span(itemprop="address" itemscope itemtype="http://schema.org/PostalAddress")
-              | Location:&nbsp;
-              a.location(href="#", data-toggle="modal", data-target="#map-modal")
-                span.glyphicon.glyphicon-globe
-                | &nbsp;
-                span(itemprop="addressLocality") Minsk
-                | ,&nbsp;
-                span(itemprop="addressCountry") Belarus
-              | .
-            span.contacts
-              a(href="mailto:emirotin@gmail.com")
-                span.icon-mail
-                span(itemprop="email") emirotin@gmail.com
-              | .
-            span.skills
-              | Core skills:&nbsp;
-              include cv-partials/_skills
 
     section.links
       .pull-right
