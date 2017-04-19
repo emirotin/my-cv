@@ -10,6 +10,10 @@ const Item = (props) => {
 			<style jsx>{`
 				.thumbnail {
 					transition: all .6s ease-in-out;
+					position: relative;
+					width: 300px;
+					max-width: 300px;
+					text-align: center;
 				}
 				.thumbnail .preview {
 					display: none;
@@ -54,25 +58,8 @@ const Item = (props) => {
 }
 
 export default class CvCarousel extends Component {
-	state = {
-		activeIndex: 0
-	}
-
-	componentDidMount() {
-		this.slideInterval = setInterval(() => {
-			this.setState(({ activeIndex }, { items }) => {
-				return { activeIndex: (activeIndex + 1) % items.length }
-			})
-		}, 3000)
-	}
-
-	componentWillUnmount() {
-		clearInterval(this.slideInterval)
-	}
-
 	render() {
 		const { items } = this.props
-		const { activeIndex } = this.state
 
 		return (
 			<div className="root">
@@ -86,7 +73,7 @@ export default class CvCarousel extends Component {
 						min-height: 320px;
 					}
 				`}</style>
-				<Carousel controls={false} activeIndex={activeIndex}>
+				<Carousel controls={false}>
 					{items.map((item, i) => <Item
 						item={item} key={i} />)}
 				</Carousel>

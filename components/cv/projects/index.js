@@ -6,13 +6,6 @@ export default () => (
 			h1 {
 				margin-bottom: 20px;
 			}
-
-			.projects :global(.thumbnail) {
-				position: relative;
-				width: 300px;
-				max-width: 300px;
-				text-align: center;
-			}
 		`}</style>
 		<h1>Relevant Experience</h1>
 		<ul className="media-list">
