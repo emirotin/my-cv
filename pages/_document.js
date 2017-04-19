@@ -15,7 +15,7 @@ export default class MyDocument extends Document {
 		return (
 			<html>
 				<Head>
-					<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+					<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
 					<meta name='viewport' content='initial-scale=1.0, width=device-width' />
 
 					<meta name="description" content="A CV of Eugene Mirotin, front-end and Node.js developer" />
