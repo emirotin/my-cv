@@ -9,7 +9,7 @@ exports.startServer = (config, callback) ->
 
   app = express()
   server = app.listen port, ->
-    console.log "Express server listening on port %d in %s mode", server.address().port, app.settings.env
+    console.log "Server listening on port %d in %s mode", server.address().port, app.settings.env
 
   app.configure ->
     app.set 'port', port
