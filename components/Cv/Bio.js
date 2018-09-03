@@ -75,8 +75,8 @@ export default () => (
         complexities, I&apos;ve done a lot of stuff: <em>UI (Angular 1)</em>,{" "}
         <em>back-end (Node.js, PostgreSQL)</em>, full-stack (a single codebase
         SDK delivered as Node.js module and as a UMD build), etc. I have also{" "}
-        <em>interviewed</em> probably a hundred of people there (and we've hired
-        ome half a dozen of them).
+        <em>interviewed</em> probably a hundred of people there (and we&apos;ve
+        hired some half a dozen of them).
       </p>
       <p>
         I&apos;ve also worked as a consultant on a graphics framework project (
