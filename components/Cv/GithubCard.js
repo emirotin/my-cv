@@ -1,6 +1,6 @@
 export default ({ username, width = 300, height = 150 }) => {
   const id = `ghcard-${username}-1`;
-  const url = `http://lab.lepture.com/github-cards/cards/default.html?user=${username}&amp;identity=${id}&amp;target=blank`;
+  const url = `https://lab.lepture.com/github-cards/cards/default.html?user=${username}&amp;identity=${id}&amp;target=blank`;
 
   return (
     <iframe
