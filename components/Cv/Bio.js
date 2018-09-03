@@ -74,7 +74,9 @@ export default () => (
         focused on solving the <em>IoT</em> development and deployment
         complexities, I&apos;ve done a lot of stuff: <em>UI (Angular 1)</em>,{" "}
         <em>back-end (Node.js, PostgreSQL)</em>, full-stack (a single codebase
-        SDK delivered as Node.js module and as a UMD build), etc.
+        SDK delivered as Node.js module and as a UMD build), etc. I have also
+        <em>interviewed</em> probably a hundred people there (and we've hired
+        ome half a dozen of them).
       </p>
       <p>
         I&apos;ve also worked as a consultant on a graphics framework project (
