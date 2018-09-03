@@ -1,3 +1,6 @@
 {
-  "alias": "mirotin.online"
+  "alias": [
+    "mirotin.online",
+    "cv.mirotin.online"
+  ]
 }
