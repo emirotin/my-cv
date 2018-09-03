@@ -122,7 +122,7 @@ export default () => (
         fine.
       </p>
       <p>
-        Currently I live in UTC+2 timezone but have flexibility on working hours
+        Currently I live in UTC+5 timezone but have flexibility on working hours
         (it&apos;s fine to me to have a call in the evening or answer some
         emails before I go to bed around midnight).
       </p>
