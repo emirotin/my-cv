@@ -8,7 +8,7 @@
     "dev": "next dev",
     "build": "npm run build-font && next build",
     "build-font": "node scripts/build-font.js",
-    "start": "NODE_ENV=production next start"
+    "start": "NODE_ENV=production next start -p 8000"
   },
   "keywords": [],
   "author": "",
