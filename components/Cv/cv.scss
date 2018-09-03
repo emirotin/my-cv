@@ -1,0 +1,96 @@
+.root {
+  margin: 3rem auto 2rem;
+  padding: 0 1rem;
+  max-width: 64rem;
+}
+
+.myPhoto {
+  margin-right: 10px;
+}
+
+:global(.fa) {
+  font-size: 80%;
+}
+
+.skills,
+.contacts {
+  display: block;
+  margin-top: 0.4em;
+}
+
+.skills {
+  & :global(.badge) {
+    display: inline-block;
+    margin-right: 0.4em;
+    margin-bottom: 0.2em;
+  }
+}
+
+.body {
+  font-size: 1.3rem;
+  border-bottom: 1px dashed #ccc;
+  padding: 1rem 0;
+
+  em {
+    background-color: aquamarine;
+    padding: 0 .5rem;
+  }
+}
+
+.smaller {
+  font-size: 1.15rem;
+}
+
+@media print {
+  .print,
+  iframe[id^='ghcard-'] {
+    display: none;
+  }
+
+  .myPhoto img {
+    width: 100px;
+  }
+
+  :global(.media-heading) {
+    margin-top: 0;
+    margin-bottom: 0.1rem;
+  }
+
+  .body em {
+    background: transparent;
+    font-weight: 600;
+    padding: 0;
+  }
+
+  a {
+    color: black;
+    text-decoration: underline;
+  }
+
+  .skills,
+  .contacts {
+    margin-top: 0;
+  }
+
+  .skills :global(.badge) {
+    background: none;
+    color: black;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    display: inline-block;
+    font-weight: normal;
+    margin-right: 0.5rem;
+    &:after {
+      content: ',';
+    }
+    &:last-child {
+      margin-right: 0;
+      &:after {
+        content: '.';
+      }
+    }
+  }
+}

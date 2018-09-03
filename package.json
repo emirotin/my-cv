@@ -1,21 +1,32 @@
 {
-  "name": "lcd-cv",
-  "version": "0.0.1",
-  "description": "A Mimosa starter skeleton",
+  "name": "cv-new",
+  "version": "1.0.0",
+  "description": "Eugene Mirotin's CV",
+  "private": true,
+  "main": "pages/index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "npm run build-font && next build",
+    "build-font": "node scripts/build-font.js",
+    "start": "NODE_ENV=production next start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "coffee-script": "~1.9.3",
-    "consolidate": "0.10.0",
-    "express": "3.4.7",
-    "jade": "0.35.0",
-    "lodash": "^3.6.0",
-    "moment": "^2.10.3",
-    "newrelic": "^1.19.2"
+    "@zeit/next-sass": "^0.2.0",
+    "bluebird": "^3.5.0",
+    "classnames": "^2.2.6",
+    "date-fns": "^1.28.2",
+    "next": "^6.1.1",
+    "node-sass": "^4.9.3",
+    "normalize.css": "^8.0.0",
+    "react": "^16.4.2",
+    "reactstrap": "^6.4.0",
+    "react-dom": "^16.4.2"
   },
   "devDependencies": {
-    "async": "^0.2.10",
-    "mimosa-coffeescript": "*",
-    "mimosa-handlebars": "*",
-    "mimosa-sass": "*",
-    "pngjs": "^0.4.0"
+    "lodash": "^4.17.4",
+    "pngjs": "^3.3.0"
   }
 }
