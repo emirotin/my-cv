@@ -41,9 +41,50 @@
   font-size: 1.15rem;
 }
 
+@media screen and (max-width: 680px) {
+  .root {
+    margin-top: 2em;
+  }
+
+  .myPhoto img {
+    width: 100px;
+  }
+
+  h1 {
+    margin-top: 0;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  .print {
+    float: none;
+    overflow: hidden;
+    padding-bottom: 0.5rem;
+    :global(.btn) {
+      float: right;
+    }
+  }
+
+  .githubCard {
+    display: none;
+  }
+
+  .skills :global(.badge) {
+    margin-right: 0.2em;
+    margin-bottom: 0.1em;
+  }
+
+  .skills,
+  .contacts {
+    margin-top: 0.2em;
+  }
+}
+
 @media print {
   .print,
-  iframe[id^='ghcard-'] {
+  .githubCard {
     display: none;
   }
 
