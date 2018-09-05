@@ -64,7 +64,7 @@ export default () => (
         buck to the author) in Russia I&apos;ve lead the development of the
         entire product (
         <em>
-          embeddable widget with some iFrame magic vanilla JS, admin panel
+          embeddable widget with some iFrame magic – vanilla JS, admin panel
           – Meteor.js, backend – Node.js
         </em>
         ).
