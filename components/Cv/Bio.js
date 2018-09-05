@@ -47,9 +47,9 @@ export default () => (
         <a href="https://www.epam.com/" target="_blank">
           Epam Systems
         </a>{" "}
-        (2011–2012). There I&apos;ve been leading the development of a set of{" "}
-        <em>reusable client-side widgets (jQuery, custom templates)</em> used
-        across a wild number of <em>Viacom</em> web-sites.
+        (office, 2011–2012). There I&apos;ve been leading the development of a
+        set of <em>reusable client-side widgets (jQuery, custom templates)</em>{" "}
+        used across a wild number of <em>Viacom</em> web-sites.
       </p>
       <p>
         I&apos;ve also been assigned a position of{" "}
@@ -59,8 +59,8 @@ export default () => (
         doing interviews and organizing workshops.
       </p>
       <p>
-        At <em>LikeAndPay</em> (2012-2014), a startup aimed at creating the
-        industry of micro-payments (you liked an article? how about giving a
+        At <em>LikeAndPay</em> (remote, 2012-2014), a startup aimed at creating
+        the industry of micro-payments (you liked an article? how about giving a
         buck to the author) in Russia I&apos;ve lead the development of the
         entire product (
         <em>
@@ -70,8 +70,8 @@ export default () => (
         ).
       </p>
       <p>
-        At <a href="https://resin.io/">Resin.io</a> (2014–2017), a startup
-        focused on solving the <em>IoT</em> development and deployment
+        At <a href="https://resin.io/">Resin.io</a> (remote, 2014–2017), a
+        startup focused on solving the <em>IoT</em> development and deployment
         complexities, I&apos;ve done a lot of stuff: <em>UI (Angular 1)</em>,{" "}
         <em>back-end (Node.js, PostgreSQL)</em>, full-stack (a single codebase
         SDK delivered as Node.js module and as a UMD build), etc. I have also{" "}
@@ -81,10 +81,12 @@ export default () => (
       <p>
         I&apos;ve also worked as a consultant on a graphics framework project (
         <em>TypeScript, canvas</em>) and as a team lead (another widgets
-        project, <em>React, Redux</em>) at <em>Skywind</em> (2017–2018), and as
-        a full-stack developer (<em>React, Redux, Node.js, TypeScript</em>) at{" "}
-        <a href="https://botpress.io/">Botpress</a>, a startup dreaming to make
-        developing chatbots as easy as a Wordpress-powered websites.
+        project, <em>React, Redux</em>) at <em>Skywind</em> (office, 2017–2018),
+        and as a full-stack developer (
+        <em>React, Redux, Node.js, TypeScript</em>) at{" "}
+        <a href="https://botpress.io/">Botpress</a> (remote, 2017–2018), a
+        startup dreaming to make developing chatbots as easy as a
+        Wordpress-powered websites.
       </p>
     </section>
     <section className={css.body}>
