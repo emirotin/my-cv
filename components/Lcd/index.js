@@ -24,7 +24,7 @@ export default class Lcd extends Component {
       let done = false;
       const doResolve = () => {
         if (done) return;
-        setTimeout(resolve, 50);
+        setTimeout(resolve, 100);
         done = true;
       };
 
@@ -33,7 +33,7 @@ export default class Lcd extends Component {
       img.src = DISPLAY_IMG;
 
       // set load timeout, results in degraded UX but kinda OK?
-      setTimeout(doResolve, 800);
+      setTimeout(doResolve, 850);
     });
   }
 
