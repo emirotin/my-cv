@@ -30,6 +30,21 @@ export default class MyDocument extends Document {
           />
           <link rel="icon" href="/static/fav.ico" type="image/x-icon" />
           <link rel="stylesheet" href="/_next/static/style.css" />
+
+          <script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${config.GA_ID}`}
+          />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${config.GA_ID}');
+              `
+            }}
+          />
         </Head>
         <body>
           <Main />
