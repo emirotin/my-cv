@@ -10,7 +10,7 @@ export default () => (
       <h2>Work Story</h2>
 
       <p className={css.smaller}>
-        I&apos;ve started working in IT in 2014 and for the first 7 year have
+        I&apos;ve started working in IT in 2014 and for the first 7 years have
         held a number of BA- and PM-related positions, including Tech Writer,
         Business Analyst, UI/UX designer, and Project Manager.
       </p>
