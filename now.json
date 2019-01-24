@@ -1,4 +1,5 @@
 {
   "version": 2,
-  "alias": ["mirotin.online", "cv.mirotin.online"]
+  "alias": ["mirotin.online", "cv.mirotin.online"],
+  "builds": [{ "src": "package.json", "use": "@now/next" }]
 }
