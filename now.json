@@ -1,6 +1,4 @@
 {
-  "alias": [
-    "mirotin.online",
-    "cv.mirotin.online"
-  ]
+  "version": 2,
+  "alias": ["mirotin.online", "cv.mirotin.online"]
 }
