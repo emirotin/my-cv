@@ -37,7 +37,7 @@ export default () => (
       </p>
       <p className={css.smaller}>
         Around 2010 I&apos;ve started doing my first paid freelance projects as
-        front-end / ful;stack developer, using JS + jQuery, HTML/CSS (and
+        front-end / full-stack developer, using JS + jQuery, HTML/CSS (and
         sometimes HAML/SASS) on the front-end, and Python + Django on the
         back-end.
       </p>
@@ -85,7 +85,7 @@ export default () => (
         and as a full-stack developer (
         <em>React, Redux, Node.js, TypeScript</em>) at{" "}
         <a href="https://botpress.io/">Botpress</a> (remote, 2017–2018), a
-        startup dreaming to make developing chatbots as easy as a
+        startup dreaming of making developing chatbots as simple as a
         Wordpress-powered websites.
       </p>
     </section>
