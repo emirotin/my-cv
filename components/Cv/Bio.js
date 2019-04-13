@@ -82,11 +82,12 @@ export default () => (
         I&apos;ve also worked as a consultant on a graphics framework project (
         <em>TypeScript, canvas</em>) and as a team lead (another widgets
         project, <em>React, Redux</em>) at <em>Skywind</em> (office, 2017–2018),
-        and as a full-stack developer (
-        <em>React, Redux, Node.js, TypeScript</em>) at{" "}
-        <a href="https://botpress.io/">Botpress</a> (remote, 2017–2018), a
+        as a full-stack developer (<em>React, Redux, Node.js, TypeScript</em>)
+        at <a href="https://botpress.io/">Botpress</a> (remote, 2017–2018), a
         startup dreaming of making developing chatbots as simple as a
-        Wordpress-powered websites.
+        Wordpress-powered websites, and as a full-stack developer (
+        <em>React, Redux, Next.js, Node.js</em>) for a European online casino
+        company (2018–present time).
       </p>
     </section>
     <section className={css.body}>
