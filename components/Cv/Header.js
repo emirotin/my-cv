@@ -28,7 +28,7 @@ export default class Header extends Component {
             />
           </div>
           <Media body>
-            <Media heading tag="h1">
+            <Media heading tag="h1" className={css.name}>
               <span itemProp="name">Eugene Mirotin</span>
             </Media>
             <p className="lead">

@@ -4,6 +4,10 @@
   max-width: 64rem;
 }
 
+.name {
+  margin-top: 0;
+}
+
 .myPhoto {
   margin-right: 10px;
 }
@@ -33,7 +37,7 @@
 
   em {
     background-color: aquamarine;
-    padding: 0 .5rem;
+    padding: 0 0.5rem;
   }
 }
 
@@ -125,12 +129,12 @@
     font-weight: normal;
     margin-right: 0.5rem;
     &:after {
-      content: ',';
+      content: ",";
     }
     &:last-child {
       margin-right: 0;
       &:after {
-        content: '.';
+        content: ".";
       }
     }
   }

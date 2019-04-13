@@ -23,7 +23,7 @@
     "normalize.css": "^8.0.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "reactstrap": "^6.5.0"
+    "reactstrap": "^8.0.0"
   },
   "devDependencies": {
     "lodash": "^4.17.11",
