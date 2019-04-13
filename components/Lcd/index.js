@@ -18,8 +18,13 @@ export default class Lcd extends Component {
   imgPromise = null;
   isMounted = false;
 
-  componentWillMount() {
-    this.imgPromise = new Promise(resolve => {
+  componentWillUnmount() {
+    this.isMounted = false;
+  }
+
+  componentDidMount() {
+    this.isMounted = true;
+    new Promise(resolve => {
       // implements _once_
       let done = false;
       const doResolve = () => {
@@ -34,18 +39,11 @@ export default class Lcd extends Component {
 
       // set load timeout, results in degraded UX but kinda OK?
       setTimeout(doResolve, 850);
-    });
-  }
-
-  componentWillUnmount() {
-    this.isMounted = false;
-  }
-
-  componentDidMount() {
-    this.isMounted = true;
-    this.imgPromise.then(() => this.lcdPlayer.play()).then(() => {
-      this.isMounted && this.setState({ showButtons: true });
-    });
+    })
+      .then(() => this.lcdPlayer.play())
+      .then(() => {
+        this.isMounted && this.setState({ showButtons: true });
+      });
   }
 
   render() {
