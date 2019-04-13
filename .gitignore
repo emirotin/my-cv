@@ -16,6 +16,7 @@ node_modules
 *.sass-cache
 
 .next
+dist
 
 .DS_Store
 .cache
