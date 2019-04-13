@@ -26,6 +26,7 @@
     "reactstrap": "^8.0.0"
   },
   "devDependencies": {
+    "@now/static-build": "^0.4.18",
     "lodash": "^4.17.11",
     "pngjs": "^3.4.0"
   }
