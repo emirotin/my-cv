@@ -15,7 +15,7 @@ const Bio = () => (
       </p>
       <p>
         I worked for several <em>large companies</em> (including Epam Systems)
-        and for several <em>startups</em>, including (balena.io).
+        and for several <em>startups</em> (including balena.io).
       </p>
       <p>
         In addition to programming, I've also handled a fair amount of
