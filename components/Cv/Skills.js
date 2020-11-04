@@ -4,13 +4,15 @@ import list from "./skillsList";
 
 const flatList = list
   .map(({ type, label, skills }) =>
-    skills.map(skill => ({ skill, type, label }))
+    skills.map((skill) => ({ skill, type, label }))
   )
   .reduce((a, b) => a.concat(b), []);
 
-export default () =>
+const Skills = () =>
   flatList.map(({ skill, label }, i) => (
     <Badge key={i} color={label}>
       {skill}
     </Badge>
   ));
+
+export default Skills;

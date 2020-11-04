@@ -5,7 +5,7 @@ import GithubCard from "./GithubCard";
 import Links from "./Links";
 import Bio from "./Bio";
 
-import css from "./cv.scss";
+import css from "./cv.module.scss";
 
 export default class Cv extends Component {
   render() {

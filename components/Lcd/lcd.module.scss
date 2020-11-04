@@ -1,4 +1,4 @@
-$displayWidth: calc(935/1072 * 100%);
+$displayWidth: calc(935 / 1072 * 100%);
 
 .lcdRoot {
   width: 1072px;
@@ -9,7 +9,7 @@ $displayWidth: calc(935/1072 * 100%);
 .lcdWrapOuter {
   position: relative;
   width: 100%;
-  padding-bottom: calc((1 - 407/1072)*100%);
+  padding-bottom: calc((1 - 407 / 1072) * 100%);
   margin-bottom: -22%;
 }
 
@@ -19,7 +19,7 @@ $displayWidth: calc(935/1072 * 100%);
   bottom: 0;
   left: 0;
   right: 0;
-  background: url('/static/images/display.png') center top no-repeat;
+  background: url("/images/display.png") center top no-repeat;
   background-size: contain;
 }
 
@@ -30,12 +30,11 @@ $displayWidth: calc(935/1072 * 100%);
 .lcdInner {
   display: inline-block;
   width: $displayWidth;
-  height: calc(315/665 * 100%);
+  height: calc(315 / 665 * 100%);
   margin-left: 6.6%;
   margin-top: 4.3%;
   border-radius: 1.4%/2.7%;
-  box-shadow:
-    inset 12px 9px 20px -1px rgba(0, 0, 0, 0.8),
+  box-shadow: inset 12px 9px 20px -1px rgba(0, 0, 0, 0.8),
     inset -7px -4px 40px rgba(0, 0, 0, 0.7);
 }
 
@@ -54,7 +53,7 @@ $displayWidth: calc(935/1072 * 100%);
   overflow: hidden;
 }
 
-$cellWidth: calc(5/(935 * 0.97) * 100%);
+$cellWidth: calc(5 / (935 * 0.97) * 100%);
 
 .cell {
   float: left;
@@ -101,7 +100,6 @@ $cellWidth: calc(5/(935 * 0.97) * 100%);
     opacity: 0;
     visibility: hidden;
   }
-
 }
 
 .buttonMailto {
@@ -116,7 +114,7 @@ $cellWidth: calc(5/(935 * 0.97) * 100%);
 
 .button {
   display: block;
-  background: #1AAB8A;
+  background: #1aab8a;
   color: #fff;
   border: none;
   position: relative;
@@ -138,29 +136,31 @@ $cellWidth: calc(5/(935 * 0.97) * 100%);
     margin-bottom: 10px;
   }
 
-  &:before, &:after{
-    content: '';
+  &:before,
+  &:after {
+    content: "";
     position: absolute;
     top: 0;
     right: 0;
     height: 2px;
     width: 0;
-    background: #1AAB8A;
+    background: #1aab8a;
     transition: 400ms ease all;
   }
 
-  &:after{
+  &:after {
     right: inherit;
     top: inherit;
     left: 0;
     bottom: 0;
   }
 
-  &:hover{
+  &:hover {
     background: #fff;
-    color: #1AAB8A;
+    color: #1aab8a;
 
-    &:before, &:after{
+    &:before,
+    &:after {
       width: 100%;
       transition: 800ms ease all;
     }

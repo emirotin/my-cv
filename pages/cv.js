@@ -2,7 +2,7 @@ import Head from "next/head";
 import Layout from "../components/Layout";
 import Cv from "../components/Cv";
 
-export default () => (
+const CvPage = () => (
   <Layout>
     <Head>
       <link
@@ -21,3 +21,5 @@ export default () => (
     <Cv />
   </Layout>
 );
+
+export default CvPage;

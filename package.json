@@ -15,19 +15,21 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@zeit/next-sass": "^1.0.0",
-    "bluebird": "^3.5.4",
+    "bluebird": "^3.7.2",
     "classnames": "^2.2.6",
-    "date-fns": "^1.30.1",
-    "next": "^8.0.4",
-    "node-sass": "^4.11.0",
+    "date-fns": "^2.0.0",
+    "next": "^9.0.0",
     "normalize.css": "^8.0.1",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "reactstrap": "^8.0.0"
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "reactstrap": "^8.7.1",
+    "sass": "^1.28.0"
   },
   "devDependencies": {
-    "lodash": "^4.17.11",
-    "pngjs": "^3.4.0"
+    "lodash": "^4.17.20",
+    "pngjs": "^6.0.0"
+  },
+  "engines": {
+    "node": "^12.0.0"
   }
 }

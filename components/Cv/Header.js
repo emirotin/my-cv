@@ -8,7 +8,7 @@ import MailMe from "./MailMe";
 
 import { getAge, getProgrammingExp, getTotalExp } from "../../util";
 
-import css from "./cv.scss";
+import css from "./cv.module.scss";
 
 export default class Header extends Component {
   render() {
@@ -21,11 +21,7 @@ export default class Header extends Component {
         </div>
         <Media>
           <div className={classnames(css.myPhoto, "pull-left", "thumbnail")}>
-            <img
-              src="/static/images/me.jpg"
-              alt="Eugene Mirotin"
-              itemProp="image"
-            />
+            <img src="/images/me.jpg" alt="Eugene Mirotin" itemProp="image" />
           </div>
           <Media body>
             <Media heading tag="h1" className={css.name}>

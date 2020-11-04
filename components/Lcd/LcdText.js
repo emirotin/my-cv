@@ -1,6 +1,6 @@
 import classnames from "classnames";
 
-import css from "./lcd.scss";
+import css from "./lcd.module.scss";
 
 const Row = ({ row }) => (
   <div className={css.row}>
@@ -18,7 +18,7 @@ const Cell = ({ bit }) => (
   </span>
 );
 
-export default ({ pixels }) =>
+const LcdText = ({ pixels }) =>
   pixels && (
     <div className={css.grid}>
       {pixels.map((row, i) => (
@@ -26,3 +26,5 @@ export default ({ pixels }) =>
       ))}
     </div>
   );
+
+export default LcdText;

@@ -2,11 +2,36 @@ import { Fragment } from "react";
 
 import MailMe from "./MailMe";
 
-import css from "./cv.scss";
+import css from "./cv.module.scss";
 
-export default () => (
+const Bio = () => (
   <Fragment>
     <section className={css.body}>
+      <h2>Summary</h2>
+
+      <p>
+        I work in IT since 2004, since 2011 — as full-time JS developer,{" "}
+        <em>since 2012 — as full-stack</em>.
+      </p>
+      <p>
+        I worked for several <em>large companies</em> (including Epam Systems)
+        and for several <em>startups</em>, including (balena.io).
+      </p>
+      <p>
+        In addition to programming, I've also handled a fair amount of
+        <em>interviews</em>, created a course on Node.js, and wrote some
+        technical interview questions for the automated hiring platform
+        (Toggle.Hire).
+      </p>
+      <p>
+        Other than doing IT I do play <em>intellectual games</em> and create
+        questions for them.
+      </p>
+      <p>
+        I love writing <em>clean and expressive code</em> and enjoy playing with
+        the new tech.
+      </p>
+
       <h2>Work Story</h2>
 
       <p className={css.smaller}>
@@ -16,8 +41,9 @@ export default () => (
       </p>
       <p className={css.smaller}>
         At the same time I&apos;ve been always keen on programming and have
-        learned a bunch of languages myself, including HTML/CSS, JS (with
-        jQuery), Perl, Python, C#, OCaml / F#.
+        self-learned a bunch of languages, including HTML/CSS,{" "}
+        <strong>JS</strong> (with jQuery), Perl (that was fun),{" "}
+        <strong>Python</strong> (with Django), C#, OCaml / F#.
       </p>
       <p>
         Even when not holding the engineering position officially I&apos;ve been
@@ -27,13 +53,10 @@ export default () => (
           BuildSite
         </a>{" "}
         I&apos;ve introuced the highly customized Django as CRUD admin panel,
-        and also introduced (designed and implemented from scratch) the feature
+        and also produced (designed and implemented from scratch) the feature
         that remains one of my most favorite achievement over the years: a
-        completely OSS-based{" "}
-        <em>
-          in-browser PDF annotation tool (jQuery, Django, bash, PDF Toolkit)
-        </em>
-        .
+        completely OSS-based <em>in-browser PDF annotation tool</em> (jQuery,
+        Django, bash, PDF Toolkit, Inkscape) .
       </p>
       <p className={css.smaller}>
         Around 2010 I&apos;ve started doing my first paid freelance projects as
@@ -56,13 +79,13 @@ export default () => (
         <em>Front-end Skill Manager</em> there in a 100+ people department,
         assessing the developer&apos;s levels of proffeciency, recommending the
         topics to pay attention to, suggesting level promotions to the managers,
-        doing interviews and organizing workshops.
+        doing <em>interviews</em> and organizing workshops.
       </p>
       <p>
-        At <em>LikeAndPay</em> (remote, 2012-2014), a startup aimed at creating
-        the industry of micro-payments (you liked an article? how about giving a
-        buck to the author) in Russia I&apos;ve lead the development of the
-        entire product (
+        At LikeAndPay (remote, 2012-2014), a startup aimed at creating the
+        industry of <em>micro-payments</em> (you liked an article? how about
+        giving a buck to the author) in Russia I&apos;ve lead the development of
+        the entire product (
         <em>
           embeddable widget with some iFrame magic – vanilla JS, admin panel
           – Meteor.js, backend – Node.js
@@ -70,24 +93,37 @@ export default () => (
         ).
       </p>
       <p>
-        At <a href="https://resin.io/">Resin.io</a> (remote, 2014–2017), a
+        At <a href="https://balena.io/">balena.io</a> (remote, 2014–2017), a
         startup focused on solving the <em>IoT</em> development and deployment
         complexities, I&apos;ve done a lot of stuff: <em>UI (Angular 1)</em>,{" "}
         <em>back-end (Node.js, PostgreSQL)</em>, full-stack (a single codebase
-        SDK delivered as Node.js module and as a UMD build), etc. I have also{" "}
+        SDK delivered as Node.js module and as a UMD bundle), etc. I have also{" "}
         <em>interviewed</em> probably a hundred of people there (and we&apos;ve
-        hired some half a dozen of them).
+        hired some half a dozen of great engineers during that time).
       </p>
       <p>
-        I&apos;ve also worked as a consultant on a graphics framework project (
-        <em>TypeScript, canvas</em>) and as a team lead (another widgets
-        project, <em>React, Redux</em>) at <em>Skywind</em> (office, 2017–2018),
+        I&apos;ve also worked as a consultant on the graphical games framework
+        project (<em>TypeScript, canvas</em>) and as a Team Lead (another
+        widgets project, <em>React, Redux</em>) at Skywind (office, 2017–2018),
         as a full-stack developer (<em>React, Redux, Node.js, TypeScript</em>)
         at <a href="https://botpress.io/">Botpress</a> (remote, 2017–2018), a
-        startup dreaming of making developing chatbots as simple as a
+        startup dreaming of making developing chatbots as simple as the
         Wordpress-powered websites, and as a full-stack developer (
         <em>React, Redux, Next.js, Node.js</em>) for a European online casino
         company (2018–present time).
+      </p>
+      <p>
+        Since 2019 I've been doing webinars and workshops for{" "}
+        <a href="https://skillbox.ru/" target="_blank">
+          Skillbox
+        </a>
+        , the Russian online university, and in 2020 I've created a{" "}
+        <em>
+          <a href="https://skillbox.ru/course/nodejs/" target="_blank">
+            Node.js course
+          </a>
+        </em>{" "}
+        for them.
       </p>
     </section>
     <section className={css.body}>
@@ -109,7 +145,8 @@ export default () => (
         I like travelling and dislike going to the office 9-to-5 (or even worse
         10-to-8, you name it). That&apos;s why I&apos;m looking for remote
         position. It also means I have more flexibility to spend time with the
-        people I love.
+        people I love. I don't mind and actually enjoy visiting the office
+        occasionally to communicate with the team.
       </p>
     </section>
     <section className={css.body}>
@@ -120,16 +157,17 @@ export default () => (
       </p>
       <p>
         I can work with multiple technologies and can learn new stuff but as of
-        now I prefer doing <em>Node.js, React, ES6+ or TypeScript</em>.
+        now I prefer doing{" "}
+        <em>Node.js, React (or Svelte), ES6+ or TypeScript</em>.
       </p>
       <p>
-        I can work independently or in the remote team if async communication is
-        fine.
+        I can work independently or in the remote team if semi-async
+        communication is fine.
       </p>
       <p>
-        Currently I live in UTC+5 timezone but have flexibility on working hours
-        (it&apos;s fine to me to have a call in the evening or answer some
-        emails before I go to bed around midnight).
+        Currently I live in Tallinn (ET timezone) but have flexibility on
+        working hours (it&apos;s fine to me to have a call in the evening or
+        answer some emails before I go to bed around midnight).
       </p>
     </section>
     <section className={css.body}>
@@ -137,3 +175,5 @@ export default () => (
     </section>
   </Fragment>
 );
+
+export default Bio;

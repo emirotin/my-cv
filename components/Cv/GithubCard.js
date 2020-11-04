@@ -1,6 +1,6 @@
-import css from "./cv.scss";
+import css from "./cv.module.scss";
 
-export default ({ username, width = 300, height = 150 }) => {
+const GithubCard = ({ username, width = 300, height = 150 }) => {
   const id = `ghcard-${username}-1`;
   const url = `https://lab.lepture.com/github-cards/cards/default.html?user=${username}&amp;identity=${id}&amp;target=blank`;
 
@@ -17,3 +17,5 @@ export default ({ username, width = 300, height = 150 }) => {
     />
   );
 };
+
+export default GithubCard;

@@ -1,9 +1,7 @@
 import Head from "next/head";
 import { Fragment } from "react";
 
-import "./style.scss";
-
-const Layout = props => (
+const Layout = (props) => (
   <Fragment>
     <Head>
       <title>Eugene Mirotin CV</title>

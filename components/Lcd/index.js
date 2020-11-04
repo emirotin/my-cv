@@ -6,13 +6,13 @@ import LcdPlayer from "./LcdPlayer";
 
 import lcdTextLines from "./lcdTextLines";
 
-import css from "./lcd.scss";
+import css from "./lcd.module.scss";
 
-const DISPLAY_IMG = "/static/images/display.png";
+const DISPLAY_IMG = "/images/display.png";
 
 export default class Lcd extends Component {
   state = {
-    showButtons: false
+    showButtons: false,
   };
 
   imgPromise = null;
@@ -24,7 +24,7 @@ export default class Lcd extends Component {
 
   componentDidMount() {
     this.isMounted = true;
-    new Promise(resolve => {
+    new Promise((resolve) => {
       // implements _once_
       let done = false;
       const doResolve = () => {
@@ -56,7 +56,7 @@ export default class Lcd extends Component {
             <div className={css.lcdInner}>
               <LcdPlayer
                 lines={lcdTextLines}
-                ref={lcdPlayer => (this.lcdPlayer = lcdPlayer)}
+                ref={(lcdPlayer) => (this.lcdPlayer = lcdPlayer)}
               />
             </div>
           </div>

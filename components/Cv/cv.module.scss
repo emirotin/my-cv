@@ -12,10 +12,6 @@
   margin-right: 10px;
 }
 
-:global(.fa) {
-  font-size: 80%;
-}
-
 .skills,
 .contacts {
   display: block;
@@ -48,18 +44,18 @@
 @media screen and (max-width: 680px) {
   .root {
     margin-top: 2em;
+
+    h1 {
+      margin-top: 0;
+    }
+
+    h2 {
+      font-size: 2rem;
+    }
   }
 
   .myPhoto img {
     width: 100px;
-  }
-
-  h1 {
-    margin-top: 0;
-  }
-
-  h2 {
-    font-size: 2rem;
   }
 
   .print {
@@ -96,20 +92,24 @@
     width: 100px;
   }
 
-  :global(.media-heading) {
-    margin-top: 0;
-    margin-bottom: 0.1rem;
+  .root {
+    :global(.media-heading) {
+      margin-top: 0;
+      margin-bottom: 0.1rem;
+    }
   }
 
-  .body em {
-    background: transparent;
-    font-weight: 600;
-    padding: 0;
-  }
+  .body {
+    em {
+      background: transparent;
+      font-weight: 600;
+      padding: 0;
+    }
 
-  a {
-    color: black;
-    text-decoration: underline;
+    a {
+      color: black;
+      text-decoration: underline;
+    }
   }
 
   .skills,
