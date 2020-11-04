@@ -1,6 +1,5 @@
 {
   "version": 2,
   "name": "lcd-cv",
-  "builds": [{ "src": "package.json", "use": "@now/static-build" }],
   "alias": ["mirotin.online", "cv.mirotin.online"]
 }
