@@ -1,27 +1,39 @@
-import { Fragment } from "react";
-
 import MailMe from "./MailMe";
 
 import css from "./cv.module.scss";
 
 const Bio = () => (
-  <Fragment>
+  <>
     <section className={css.body}>
       <h2>Summary</h2>
 
       <p>
         I work in IT since 2004, since 2011 — as full-time JS developer,{" "}
-        <em>since 2012 — as full-stack</em>.
+        <em>since 2012 — as full-stack (started using Node.js)</em>.
       </p>
       <p>
         I worked for several <em>large companies</em> (including Epam Systems)
-        and for several <em>startups</em> (including balena.io).
+        and for several <em>startups</em> (including{" "}
+        <a href="https://balena.io" target="_blank">
+          balena.io
+        </a>
+        ).
       </p>
       <p>
         In addition to programming, I've also handled a fair amount of
-        <em>interviews</em>, created a course on Node.js, and wrote some
-        technical interview questions for the automated hiring platform
-        (Toggle.Hire).
+        <em>interviews</em>, created a{" "}
+        <em>
+          <a href="https://skillbox.ru/course/nodejs/" target="_blank">
+            course
+          </a>{" "}
+          on Node.js
+        </em>
+        , and wrote some technical interview questions for the automated hiring
+        platform (
+        <a href="https://toggl.com/hire/" target="_blank">
+          Toggl Hire
+        </a>
+        ).
       </p>
       <p>
         Other than doing IT I do play <em>intellectual games</em> and create
@@ -125,6 +137,11 @@ const Bio = () => (
         </em>{" "}
         for them.
       </p>
+      <p>
+        Since 2020 I also work with Toggl Hiere for whom I create and review the
+        technical interview questions on various topics (JS, TS, Node.js, React,
+        Vue.js, git, HTML/CSS, SQL, algorithms, etc.)
+      </p>
     </section>
     <section className={css.body}>
       <h2>What else</h2>
@@ -134,7 +151,7 @@ const Bio = () => (
       </p>
       <p>
         I have a hobby I spend quite some time on, we call it{" "}
-        <em>Intellectual games</em>, it&apos;s a special kind of intellectual
+        <em>intellectual games</em>, it&apos;s a special kind of intellectual
         entertainment popular in xUSSR countries and among Russian-speaking
         people in the West. It&apos;s like a pub-quiz but with more sportish
         atmosphere and entourage, making it a bit similar to chess tournaments
@@ -152,8 +169,8 @@ const Bio = () => (
     <section className={css.body}>
       <h2>What am I looking for</h2>
       <p>
-        I look for <em>remote</em>, well-paid senior position in front-end or
-        full-stack.
+        I look for <em>remote/mixed</em>, well-paid senior position in front-end
+        or full-stack.
       </p>
       <p>
         I can work with multiple technologies and can learn new stuff but as of
@@ -173,7 +190,7 @@ const Bio = () => (
     <section className={css.body}>
       Interested? Write me an email at <MailMe />.
     </section>
-  </Fragment>
+  </>
 );
 
 export default Bio;
