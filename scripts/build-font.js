@@ -4,21 +4,21 @@ const path = require("path");
 const fs = require("fs");
 const PNG = require("pngjs").PNG;
 
-const readPng = filePath =>
+const readPng = (filePath) =>
   new Promise((resolve, reject) => {
     fs.createReadStream(filePath)
       .pipe(
         new PNG({
-          filterType: 4
+          filterType: 4,
         })
       )
-      .on("parsed", function() {
+      .on("parsed", function () {
         resolve(this);
       })
       .on("error", reject);
   });
 
-const pngToMatrix = png => {
+const pngToMatrix = (png) => {
   const m = [];
   m.width = png.width;
   m.height = png.height;
@@ -41,7 +41,7 @@ const pngToMatrix = png => {
   return m;
 };
 
-const separateChars = matrix => {
+const separateChars = (matrix) => {
   const chars = [];
 
   const w = matrix.width;
@@ -50,12 +50,12 @@ const separateChars = matrix => {
 
   // vertical trim
   let imin = 0;
-  while (!_.some(widthInterval.map(j => matrix[imin][j]))) {
+  while (!_.some(widthInterval.map((j) => matrix[imin][j]))) {
     imin += 1;
   }
 
   let imax = h - 1;
-  while (!_.some(widthInterval.map(j => matrix[imax][j]))) {
+  while (!_.some(widthInterval.map((j) => matrix[imax][j]))) {
     imax -= 1;
   }
   imax += 1;
@@ -65,7 +65,8 @@ const separateChars = matrix => {
   let state = 0; // 0 = whitespace, 1 = in character
   let sliceStart = imin;
   for (let i = imin; i <= imax; i++) {
-    const allWhite = i == imax || !_.some(widthInterval.map(j => matrix[i][j]));
+    const allWhite =
+      i === imax || !_.some(widthInterval.map((j) => matrix[i][j]));
     if (state === 0 && !allWhite) {
       state = 1;
       sliceStart = i;
@@ -73,7 +74,7 @@ const separateChars = matrix => {
       state = 0;
       slices.push({
         sliceStart,
-        sliceEnd: i - 1
+        sliceEnd: i - 1,
       });
     }
   }
@@ -83,12 +84,12 @@ const separateChars = matrix => {
     const sliceHeightInterval = _.range(sliceStart, sliceEnd + 1);
     // horizontal trim
     let jmin = 0;
-    while (!_.some(sliceHeightInterval.map(i => matrix[i][jmin]))) {
+    while (!_.some(sliceHeightInterval.map((i) => matrix[i][jmin]))) {
       jmin += 1;
     }
 
     let jmax = w - 1;
-    while (!_.some(sliceHeightInterval.map(i => matrix[i][jmax]))) {
+    while (!_.some(sliceHeightInterval.map((i) => matrix[i][jmax]))) {
       jmax -= 1;
     }
     jmax += 1;
@@ -97,7 +98,7 @@ const separateChars = matrix => {
     let charStart = jmin;
     for (let j = jmin; j <= jmax; j++) {
       const allWhite =
-        j == jmax || !_.some(sliceHeightInterval.map(i => matrix[i][j]));
+        j === jmax || !_.some(sliceHeightInterval.map((i) => matrix[i][j]));
       if (state === 0 && !allWhite) {
         state = 1;
         charStart = j;
@@ -116,7 +117,7 @@ const separateChars = matrix => {
         }
 
         chars.push(
-          _.range(charVertStart, charVertEnd + 1).map(i =>
+          _.range(charVertStart, charVertEnd + 1).map((i) =>
             matrix[i].slice(charStart, j)
           )
         );
@@ -143,7 +144,7 @@ const mapChars = (chars, charMapping) => {
   parsedMap.forEach((def, i) => {
     res[def.char] = {
       char: chars[i],
-      vOffset: def.vOffset
+      vOffset: def.vOffset,
     };
   });
 
@@ -154,10 +155,10 @@ const parseFile = (pngFilePath, charMapping) =>
   readPng(pngFilePath)
     .then(pngToMatrix)
     .then(separateChars)
-    .then(chars => mapChars(chars, charMapping));
+    .then((chars) => mapChars(chars, charMapping));
 
 const buildFont = (pngFilePath, charMapping, config) =>
-  parseFile(pngFilePath, charMapping).then(charDefs =>
+  parseFile(pngFilePath, charMapping).then((charDefs) =>
     Object.assign({}, config, { characterMap: charDefs })
   );
 
@@ -168,7 +169,7 @@ const CHAR_MAPPING = require("../lcd-font/charmap.json");
 const CONFIG = require("../lcd-font/config.json");
 const OUT_FILE = path.resolve(__dirname, "..", "lcd-font", "alphabet.json");
 
-buildFont(PNG_FILE, CHAR_MAPPING, CONFIG).then(fontConfig => {
+buildFont(PNG_FILE, CHAR_MAPPING, CONFIG).then((fontConfig) => {
   fs.writeFileSync(OUT_FILE, JSON.stringify(fontConfig));
   console.log("Done, OK");
 });
