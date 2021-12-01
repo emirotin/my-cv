@@ -21,7 +21,6 @@ export default class MyDocument extends Document {
 
           <link rel="shortcut icon" href="/fav.ico" type="image/x-icon" />
           <link rel="icon" href="/fav.ico" type="image/x-icon" />
-          <link rel="stylesheet" href="/_next/static/style.css" />
 
           <script
             async
