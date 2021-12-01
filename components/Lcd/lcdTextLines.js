@@ -12,10 +12,10 @@ export default [
   "Docker, Bash",
   "OOP, FP, Promises",
   "PostgreSQL, Redis, SQLite",
-  "HTML5, CSS3, Sass, Bootstrap",
+  "HTML5, CSS3, Sass/CSCC",
   "Webpack, Babel",
   "Git, GitHub",
   "",
   "---",
-  "Contact: emirotin@gmail.com"
+  "Contact: emirotin@gmail.com",
 ];

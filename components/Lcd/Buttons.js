@@ -22,13 +22,17 @@ const Buttons = ({ hidden }) => (
       className={classnames(css.button, css.buttonMailto)}
       href={`mailto:${EMAIL}`}
     >
-      <i className="fa fa-envelope" />
-      {EMAIL}
+      <span>
+        <i className="fa fa-envelope" />
+        {EMAIL}
+      </span>
     </a>
     <Link href="/cv">
       <a className={classnames(css.button, css.buttonCv)}>
-        <i className="fa fa-address-card" />
-        OK, cool, but... Do you have something more boring?
+        <span>
+          <i className="fa fa-address-card" />
+          OK, cool, but... Do you have something more boring?
+        </span>
       </a>
     </Link>
   </div>

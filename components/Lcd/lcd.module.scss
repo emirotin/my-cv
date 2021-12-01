@@ -103,7 +103,7 @@ $cellWidth: calc(5 / (935 * 0.97) * 100%);
 }
 
 .buttonMailto {
-  width: 255px;
+  width: 280px;
 }
 
 .buttonCv {
@@ -113,7 +113,11 @@ $cellWidth: calc(5 / (935 * 0.97) * 100%);
 // kudos https://codepen.io/onediv/pen/jEmjap
 
 .button {
-  display: block;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+
   background: #1aab8a;
   color: #fff;
   border: none;
@@ -124,7 +128,7 @@ $cellWidth: calc(5 / (935 * 0.97) * 100%);
   transition: 800ms ease all;
   outline: none;
 
-  font-family: Tahoma;
+  font-family: sans-serif;
   font-size: 16px;
   font-weight: bold;
   font-style: normal;
