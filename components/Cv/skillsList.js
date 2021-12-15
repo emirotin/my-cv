@@ -2,31 +2,31 @@ export default [
   {
     type: "lang",
     label: "info",
-    skills: ["JavaScript", "ES6", "TypeScript", "Node.js"]
-  },
-  {
-    type: "backend",
-    label: "success",
-    skills: ["Express", "Lodash", "Passport", "Promises"]
-  },
-  {
-    type: "db",
-    label: "warning",
-    skills: ["PostgreSQL", "SQLite", "Redis", "MongoDB"]
+    skills: ["JavaScript", "ES6", "TypeScript", "Node.js"],
   },
   {
     type: "front",
     label: "danger",
-    skills: ["React", "Redux", "Redux-Saga", "Mustache", "Handlebars"]
+    skills: ["React", "Svelte"],
+  },
+  {
+    type: "db",
+    label: "warning",
+    skills: ["PostgreSQL", "SQLite", "Redis", "MongoDB"],
   },
   {
     type: "tech",
     label: "primary",
-    skills: ["HTML5", "CSS3", "Sass", "LESS", "Bootstrap"]
+    skills: ["HTML5", "CSS3", "Sass"],
   },
   {
     type: "tools",
     label: "dark",
-    skills: ["Webpack", "Babel", "Docker", "Prettier", "Git"]
-  }
+    skills: ["Webpack", "Babel", "Docker", "Prettier", "Git"],
+  },
+  {
+    type: "backend",
+    label: "success",
+    skills: ["FP", "OOP", "Promises"],
+  },
 ];

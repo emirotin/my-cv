@@ -64,7 +64,7 @@ const Bio = () => (
         <a href="https://www.buildsite.com/" target="_blank">
           BuildSite
         </a>{" "}
-        I&apos;ve introuced the highly customized Django as CRUD admin panel,
+        I&apos;ve introduced the highly customized Django as CRUD admin panel,
         and also produced (designed and implemented from scratch) the feature
         that remains one of my most favorite achievement over the years: a
         completely OSS-based <em>in-browser PDF annotation tool</em> (jQuery,
@@ -138,7 +138,7 @@ const Bio = () => (
         for them.
       </p>
       <p>
-        Since 2020 I also work with Toggl Hiere for whom I create and review the
+        Since 2020 I also work with Toggl Hire for whom I create and review the
         technical interview questions on various topics (JS, TS, Node.js, React,
         Vue.js, git, HTML/CSS, SQL, algorithms, etc.)
       </p>
@@ -151,19 +151,18 @@ const Bio = () => (
       </p>
       <p>
         I have a hobby I spend quite some time on, we call it{" "}
-        <em>intellectual games</em>, it&apos;s a special kind of intellectual
-        entertainment popular in xUSSR countries and among Russian-speaking
-        people in the West. It&apos;s like a pub-quiz but with more sportish
-        atmosphere and entourage, making it a bit similar to chess tournaments
-        in that sense. I play, write and edit questions, and sometimes host the
-        tournaments.
+        <em>mind games</em>, a special kind of intellectual entertainment
+        popular in xUSSR countries and among Russian-speaking people in the
+        West. It&apos;s like a pub-quiz but with more competitive atmosphere and
+        entourage, making it a bit similar to chess tournaments in that sense. I
+        play, write and edit questions, and sometimes host the tournaments.
       </p>
       <p>
         I like travelling and dislike going to the office 9-to-5 (or even worse
         10-to-8, you name it). That&apos;s why I&apos;m looking for remote
         position. It also means I have more flexibility to spend time with the
-        people I love. I don't mind and actually enjoy visiting the office
-        occasionally to communicate with the team.
+        people I love. Although I can, and actually enjoy visiting the office
+        occasionally to meet with the team.
       </p>
     </section>
     <section className={css.body}>
@@ -182,9 +181,9 @@ const Bio = () => (
         communication is fine.
       </p>
       <p>
-        Currently I live in Tallinn (ET timezone) but have flexibility on
-        working hours (it&apos;s fine to me to have a call in the evening or
-        answer some emails before I go to bed around midnight).
+        Currently I live in Tallinn (EET timezone) but have flexibility on
+        working hours (it&apos;s possible for me to have a call in the evening
+        or answer some emails before I go to bed around midnight).
       </p>
     </section>
     <section className={css.body}>
