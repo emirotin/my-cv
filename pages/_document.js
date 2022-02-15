@@ -10,7 +10,7 @@ export default class MyDocument extends Document {
 
           <meta
             name="description"
-            content="A CV of Eugene Mirotin, front-end and Node.js developer"
+            content="A CV of Eugene Mirotin, Full-Stack JS developer"
           />
           <meta property="og:image" content="/images/me.jpg" />
 

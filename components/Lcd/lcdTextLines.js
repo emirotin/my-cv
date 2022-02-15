@@ -12,7 +12,7 @@ export default [
   "OOP, FP, Promises",
   "PostgreSQL, SQLite",
   "Redis, MongoDB",
-  "HTML5, CSS3, Sass/CSCC",
+  "HTML5, CSS3, Sass/SCSS",
   "Webpack, Babel",
   "Git, GitHub",
   "",
