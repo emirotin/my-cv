@@ -57,7 +57,7 @@ const buildGrid = (lines) => {
       currRow + lcdFont.lineHeight - char.length + charDef.vOffset;
     char.forEach((row, i) => {
       i += vOffset;
-      if (i < 0 || i >= gridHeight) return;
+      if (i < 0 || i >= grid.length) return;
 
       row.forEach((bit, j) => {
         grid[i][currCol + j] = bit;
