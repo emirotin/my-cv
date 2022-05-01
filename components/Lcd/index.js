@@ -13,6 +13,7 @@ const DISPLAY_IMG = "/images/display.png";
 export default class Lcd extends Component {
   state = {
     showButtons: false,
+    isPlaying: false,
   };
 
   imgPromise = null;
@@ -39,15 +40,11 @@ export default class Lcd extends Component {
 
       // set load timeout, results in degraded UX but kinda OK?
       setTimeout(doResolve, 850);
-    })
-      .then(() => this.lcdPlayer.play())
-      .then(() => {
-        this.isMounted && this.setState({ showButtons: true });
-      });
+    }).then(() => this.setState({ isPlaying: true }));
   }
 
   render() {
-    const { showButtons } = this.state;
+    const { showButtons, isPlaying } = this.state;
 
     return (
       <div className={css.lcdRoot}>
@@ -56,7 +53,11 @@ export default class Lcd extends Component {
             <div className={css.lcdInner}>
               <LcdPlayer
                 lines={lcdTextLines}
-                ref={(lcdPlayer) => (this.lcdPlayer = lcdPlayer)}
+                isPlaying={isPlaying}
+                onDonePlaying={() => {
+                  this.isMounted &&
+                    this.setState({ isPlaying: false, showButtons: true });
+                }}
               />
             </div>
           </div>

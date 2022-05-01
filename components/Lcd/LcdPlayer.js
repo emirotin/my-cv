@@ -1,5 +1,6 @@
 import Promise from "bluebird";
-import { Component } from "react";
+import { useState, useMemo } from "react";
+import { useInterval } from "usehooks-ts";
 
 import LcdText from "./LcdText";
 
@@ -15,45 +16,27 @@ const gridWidth = fullColWidth * COL_COUNT;
 const gridHeight = fullRowHeight * ROW_COUNT;
 const characterMap = lcdFont.characterMap;
 
-const buildRow = n => new Array(n).fill(0);
+const buildRow = (n) => new Array(n).fill(0);
 
-export default class LcdPlayer extends Component {
-  _grid = null;
-  _currCol = 0;
-  _currRow = 0;
-  _i = 0;
+const buildGrid = (lines) => {
+  const grid = [];
+  let currCol = 0;
+  let currRow = 0;
 
-  state = {
-    grid: null
+  const addRows = (n = 1) => {
+    const rows = Array.from({ length: n }, () => buildRow(gridWidth));
+    grid.push(...rows);
   };
 
-  _addRows(n = 1) {
-    const rows = new Array(n);
-    for (let i = 0; i < n; i++) {
-      rows[i] = buildRow(gridWidth);
-    }
-    this._grid = [...this._grid, ...rows];
-  }
-
-  _setupGrid() {
-    this._grid = [];
-    this._addRows(gridHeight);
-  }
-
-  _shiftRows() {
-    this._grid = this._grid.slice(fullRowHeight);
-    this._addRows(fullRowHeight);
-  }
-
-  _addChar(c) {
+  const addChar = (c) => {
     c = lcdFont.replace[c] || c;
     if (c === " ") {
-      this._currCol += lcdFont.spaceWidth;
+      currCol += lcdFont.spaceWidth;
       return;
     }
     if (c === "\n") {
-      this._currCol = 0;
-      this._currRow += fullRowHeight;
+      currCol = 0;
+      currRow += fullRowHeight;
       return;
     }
 
@@ -61,66 +44,71 @@ export default class LcdPlayer extends Component {
     if (!charDef) return;
 
     const { char } = charDef;
-    if (this._currCol + char[0].length >= gridWidth) {
-      this._currCol = 0;
-      this._currRow += fullRowHeight;
+    if (currCol + char[0].length >= gridWidth) {
+      currCol = 0;
+      currRow += fullRowHeight;
     }
 
-    while (this._currRow >= gridHeight) {
-      this._shiftRows();
-      this._currRow -= fullRowHeight;
+    while (currRow >= grid.length) {
+      addRows(fullRowHeight);
     }
 
     const vOffset =
-      this._currRow + lcdFont.lineHeight - char.length + charDef.vOffset;
+      currRow + lcdFont.lineHeight - char.length + charDef.vOffset;
     char.forEach((row, i) => {
       i += vOffset;
       if (i < 0 || i >= gridHeight) return;
 
       row.forEach((bit, j) => {
-        this._grid[i][this._currCol + j] = bit;
+        grid[i][currCol + j] = bit;
       });
     });
 
-    this._currCol += char[0].length + lcdFont.letterSpacing;
-  }
-
-  resetGrid() {
-    this._setupGrid();
-    this._currCol = 0;
-    this._currRow = 0;
-    this._renderGrid();
-  }
-
-  _renderGrid() {
-    this.setState({ grid: this._grid });
-  }
-
-  addLine(line) {
-    line.split("").forEach(c => this._addChar(c));
-    this._renderGrid();
-  }
-
-  typeLine = () => {
-    const { lines } = this.props;
-    const i = this._i;
-
-    if (i >= lines.length) return;
-
-    return Promise.try(() => {
-      this.addLine(lines[i] + "\n");
-      this._i = i + 1;
-    })
-      .delay(LINE_INTERVAL_MS)
-      .then(this.typeLine);
+    currCol += char[0].length + lcdFont.letterSpacing;
   };
 
-  play() {
-    this.resetGrid();
-    return this.typeLine();
-  }
+  lines.forEach((line) => {
+    (line + "\n").split("").forEach((c) => addChar(c));
+  });
 
-  render() {
-    return <LcdText pixels={this.state.grid} />;
-  }
-}
+  return grid;
+};
+
+const LcdPlayer = ({ lines, isPlaying, onDonePlaying }) => {
+  const [state, setState] = useState({
+    offset: 0,
+    visibleLines: 0,
+  });
+
+  const grid = useMemo(() => buildGrid(lines), [lines]);
+
+  useInterval(
+    () => {
+      setState((state) => {
+        const { offset, visibleLines } = state;
+
+        if (offset + visibleLines >= lines.length) {
+          onDonePlaying?.();
+          return state;
+        }
+
+        if (visibleLines < ROW_COUNT) {
+          return { offset, visibleLines: visibleLines + 1 };
+        } else {
+          return { offset: offset + 1, visibleLines };
+        }
+      });
+    },
+    isPlaying ? LINE_INTERVAL_MS : null
+  );
+
+  return (
+    <LcdText
+      pixels={grid}
+      offset={state.offset * fullRowHeight}
+      visibleLines={state.visibleLines * fullRowHeight}
+    />
+  );
+};
+
+export default LcdPlayer;

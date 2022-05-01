@@ -22,6 +22,8 @@ export default class MyDocument extends Document {
           <link rel="shortcut icon" href="/fav.ico" type="image/x-icon" />
           <link rel="icon" href="/fav.ico" type="image/x-icon" />
 
+          <link rel="preload" href="/images/display.png" as="image" />
+
           <script
             async
             src={`https://www.googletagmanager.com/gtag/js?id=${config.GA_ID}`}

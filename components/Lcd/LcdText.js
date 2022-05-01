@@ -18,13 +18,14 @@ const Cell = ({ bit }) => (
   </span>
 );
 
-const LcdText = ({ pixels }) =>
-  pixels && (
+const LcdText = ({ pixels, offset, visibleLines }) => {
+  return pixels ? (
     <div className={css.grid}>
-      {pixels.map((row, i) => (
-        <Row row={row} key={i} />
+      {pixels.slice(offset, offset + visibleLines).map((row, i) => (
+        <Row row={row} key={i + offset} />
       ))}
     </div>
-  );
+  ) : null;
+};
 
 export default LcdText;
