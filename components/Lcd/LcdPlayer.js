@@ -1,126 +1,49 @@
-import Promise from "bluebird";
-import { Component } from "react";
+import { useState, useMemo } from "react";
+import { useInterval } from "usehooks-ts";
 
 import LcdText from "./LcdText";
 
-import lcdFont from "../../lcd-font/alphabet.json";
+import { fullRowHeight, buildGrid, ROW_COUNT } from "../../util/grid";
 
 const LINE_INTERVAL_MS = 900;
-const COL_COUNT = 20;
-const ROW_COUNT = 4;
 
-const fullColWidth = lcdFont.charWidth + lcdFont.letterSpacing;
-const fullRowHeight = lcdFont.lineHeight + lcdFont.lineSpacing;
-const gridWidth = fullColWidth * COL_COUNT;
-const gridHeight = fullRowHeight * ROW_COUNT;
-const characterMap = lcdFont.characterMap;
+const LcdPlayer = ({ lines, isPlaying, onDonePlaying }) => {
+  const [state, setState] = useState({
+    offset: 0,
+    visibleLines: 0,
+  });
 
-const buildRow = n => new Array(n).fill(0);
+  const grid = useMemo(() => buildGrid(lines), [lines]);
 
-export default class LcdPlayer extends Component {
-  _grid = null;
-  _currCol = 0;
-  _currRow = 0;
-  _i = 0;
+  useInterval(
+    () => {
+      setState((state) => {
+        const { offset, visibleLines } = state;
 
-  state = {
-    grid: null
-  };
+        if (offset + visibleLines >= lines.length) {
+          setTimeout(() => {
+            onDonePlaying?.();
+          });
+          return state;
+        }
 
-  _addRows(n = 1) {
-    const rows = new Array(n);
-    for (let i = 0; i < n; i++) {
-      rows[i] = buildRow(gridWidth);
-    }
-    this._grid = [...this._grid, ...rows];
-  }
-
-  _setupGrid() {
-    this._grid = [];
-    this._addRows(gridHeight);
-  }
-
-  _shiftRows() {
-    this._grid = this._grid.slice(fullRowHeight);
-    this._addRows(fullRowHeight);
-  }
-
-  _addChar(c) {
-    c = lcdFont.replace[c] || c;
-    if (c === " ") {
-      this._currCol += lcdFont.spaceWidth;
-      return;
-    }
-    if (c === "\n") {
-      this._currCol = 0;
-      this._currRow += fullRowHeight;
-      return;
-    }
-
-    const charDef = characterMap[c];
-    if (!charDef) return;
-
-    const { char } = charDef;
-    if (this._currCol + char[0].length >= gridWidth) {
-      this._currCol = 0;
-      this._currRow += fullRowHeight;
-    }
-
-    while (this._currRow >= gridHeight) {
-      this._shiftRows();
-      this._currRow -= fullRowHeight;
-    }
-
-    const vOffset =
-      this._currRow + lcdFont.lineHeight - char.length + charDef.vOffset;
-    char.forEach((row, i) => {
-      i += vOffset;
-      if (i < 0 || i >= gridHeight) return;
-
-      row.forEach((bit, j) => {
-        this._grid[i][this._currCol + j] = bit;
+        if (visibleLines < ROW_COUNT) {
+          return { offset, visibleLines: visibleLines + 1 };
+        } else {
+          return { offset: offset + 1, visibleLines };
+        }
       });
-    });
+    },
+    isPlaying ? LINE_INTERVAL_MS : null
+  );
 
-    this._currCol += char[0].length + lcdFont.letterSpacing;
-  }
+  return (
+    <LcdText
+      pixels={grid}
+      offset={state.offset * fullRowHeight}
+      visibleLines={state.visibleLines * fullRowHeight}
+    />
+  );
+};
 
-  resetGrid() {
-    this._setupGrid();
-    this._currCol = 0;
-    this._currRow = 0;
-    this._renderGrid();
-  }
-
-  _renderGrid() {
-    this.setState({ grid: this._grid });
-  }
-
-  addLine(line) {
-    line.split("").forEach(c => this._addChar(c));
-    this._renderGrid();
-  }
-
-  typeLine = () => {
-    const { lines } = this.props;
-    const i = this._i;
-
-    if (i >= lines.length) return;
-
-    return Promise.try(() => {
-      this.addLine(lines[i] + "\n");
-      this._i = i + 1;
-    })
-      .delay(LINE_INTERVAL_MS)
-      .then(this.typeLine);
-  };
-
-  play() {
-    this.resetGrid();
-    return this.typeLine();
-  }
-
-  render() {
-    return <LcdText pixels={this.state.grid} />;
-  }
-}
+export default LcdPlayer;

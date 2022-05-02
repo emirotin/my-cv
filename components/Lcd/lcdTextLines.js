@@ -1,4 +1,5 @@
 import { getAge } from "../../util";
+import config from "../../config";
 
 export default [
   "Hello, World!",
@@ -17,5 +18,5 @@ export default [
   "Git, GitHub",
   "",
   "---",
-  "Contact: emirotin@gmail.com",
+  `Contact: ${config.EMAIL}`,
 ];

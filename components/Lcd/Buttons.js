@@ -1,12 +1,9 @@
-import Head from "next/head";
 import Link from "next/link";
 import classnames from "classnames";
 
-import css from "./lcd.module.scss";
+import config from "../../config";
 
-const EMAIL = "emirotin@gmail.com";
-const FA_CSS =
-  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
+import css from "./lcd.module.scss";
 
 const Buttons = ({ hidden }) => (
   <div
@@ -14,17 +11,13 @@ const Buttons = ({ hidden }) => (
       [css.hidden]: hidden,
     })}
   >
-    <Head>
-      <link rel="stylesheet" href={FA_CSS} />
-    </Head>
-
     <a
       className={classnames(css.button, css.buttonMailto)}
-      href={`mailto:${EMAIL}`}
+      href={`mailto:${config.EMAIL}`}
     >
       <span>
         <i className="fa fa-envelope" />
-        {EMAIL}
+        {config.EMAIL}
       </span>
     </a>
     <Link href="/cv">

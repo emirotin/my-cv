@@ -1,8 +1,10 @@
+import config from "../../config";
+
 const MailMe = () => (
-  <a href="mailto:emirotin@gmail.com">
+  <a href={`mailto:${config.EMAIL}`}>
     <i className="fa fa-envelope" />
     &nbsp;
-    <span itemProp="email">emirotin@gmail.com</span>
+    <span itemProp="email">{config.EMAIL}</span>
   </a>
 );
 

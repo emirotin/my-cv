@@ -155,10 +155,10 @@ const Bio = () => (
         popular in xUSSR countries and among Russian-speaking people in the
         West. It&apos;s like a pub-quiz but with more competitive atmosphere and
         entourage, making it a bit similar to chess tournaments in that sense. I
-        play, write and edit questions, and sometimes host the tournaments.
+        play, author and edit questions, and sometimes host the tournaments.
       </p>
       <p>
-        I like travelling and dislike going to the office 9-to-5 (or even worse
+        I like traveling and dislike going to the office 9-to-5 (or even worse
         10-to-8, you name it). That&apos;s why I&apos;m looking for remote
         position. It also means I have more flexibility to spend time with the
         people I love. Although I can, and actually enjoy visiting the office
