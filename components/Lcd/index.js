@@ -1,5 +1,4 @@
-import Promise from "bluebird";
-import { Component } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import Buttons from "./Buttons";
 import LcdPlayer from "./LcdPlayer";
@@ -10,21 +9,13 @@ import css from "./lcd.module.scss";
 
 const DISPLAY_IMG = "/images/display.png";
 
-export default class Lcd extends Component {
-  state = {
+const Lcd = () => {
+  const [state, setState] = useState({
     showButtons: false,
     isPlaying: false,
-  };
+  });
 
-  imgPromise = null;
-  isMounted = false;
-
-  componentWillUnmount() {
-    this.isMounted = false;
-  }
-
-  componentDidMount() {
-    this.isMounted = true;
+  useEffect(() => {
     new Promise((resolve) => {
       // implements _once_
       let done = false;
@@ -40,31 +31,30 @@ export default class Lcd extends Component {
 
       // set load timeout, results in degraded UX but kinda OK?
       setTimeout(doResolve, 850);
-    }).then(() => this.setState({ isPlaying: true }));
-  }
+    }).then(() => setState({ isPlaying: true }));
+  }, []);
 
-  render() {
-    const { showButtons, isPlaying } = this.state;
+  const { showButtons, isPlaying } = state;
 
-    return (
-      <div className={css.lcdRoot}>
-        <div className={css.lcdWrapOuter}>
-          <div className={css.lcdWrapInner}>
-            <div className={css.lcdInner}>
-              <LcdPlayer
-                lines={lcdTextLines}
-                isPlaying={isPlaying}
-                onDonePlaying={() => {
-                  this.isMounted &&
-                    this.setState({ isPlaying: false, showButtons: true });
-                }}
-              />
-            </div>
+  return (
+    <div className={css.lcdRoot}>
+      <div className={css.lcdWrapOuter}>
+        <div className={css.lcdWrapInner}>
+          <div className={css.lcdInner}>
+            <LcdPlayer
+              lines={lcdTextLines}
+              isPlaying={isPlaying}
+              onDonePlaying={() => {
+                setState({ isPlaying: false, showButtons: true });
+              }}
+            />
           </div>
         </div>
-
-        <Buttons hidden={!showButtons} />
       </div>
-    );
-  }
-}
+
+      <Buttons hidden={!showButtons} />
+    </div>
+  );
+};
+
+export default Lcd;

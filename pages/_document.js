@@ -1,19 +1,20 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
 import config from "../config";
 
+const FA_CSS =
+  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
+
 export default class MyDocument extends Document {
   render() {
     return (
       <Html>
         <Head>
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-
           <meta
             name="description"
             content="A CV of Eugene Mirotin, Full-Stack JS developer"
           />
           <meta property="og:image" content="/images/me.jpg" />
-
           <meta
             name="google-site-verification"
             content={config.GOOGLE_VERIFICATION_CODE}
@@ -22,12 +23,15 @@ export default class MyDocument extends Document {
           <link rel="shortcut icon" href="/fav.ico" type="image/x-icon" />
           <link rel="icon" href="/fav.ico" type="image/x-icon" />
 
+          <link rel="stylesheet" href={FA_CSS} />
+
           <link rel="preload" href="/images/display.png" as="image" />
 
           <script
             async
             src={`https://www.googletagmanager.com/gtag/js?id=${config.GA_ID}`}
           />
+
           <script
             dangerouslySetInnerHTML={{
               __html: `
