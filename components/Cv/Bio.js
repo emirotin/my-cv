@@ -44,6 +44,18 @@ const Bio = () => (
         the new tech.
       </p>
 
+      <h2>Current Position</h2>
+
+      <p>
+        At the moment, I'm the Principal Full-Stack Engineer (
+        <em>Node.js, PostgreSQL, GraphQL/Apollo, React, TypeScript</em>) at{" "}
+        <a href="https://www.cosuno.com/" target="_blank">
+          Cosuno
+        </a>
+        , the German startup working in the area of construction business
+        automation.
+      </p>
+
       <h2>Work Story</h2>
 
       <p className={css.smaller}>
@@ -68,11 +80,11 @@ const Bio = () => (
         and also produced (designed and implemented from scratch) the feature
         that remains one of my most favorite achievement over the years: a
         completely OSS-based <em>in-browser PDF annotation tool</em> (jQuery,
-        Django, bash, PDF Toolkit, Inkscape) .
+        Django, bash, PDF Toolkit, Inkscape).
       </p>
       <p className={css.smaller}>
         Around 2010 I&apos;ve started doing my first paid freelance projects as
-        front-end / full-stack developer, using JS + jQuery, HTML/CSS (and
+        front-end/full-stack developer, using JS + jQuery, HTML/CSS (and
         sometimes HAML/SASS) on the front-end, and Python + Django on the
         back-end.
       </p>
@@ -89,7 +101,7 @@ const Bio = () => (
       <p>
         I&apos;ve also been assigned a position of{" "}
         <em>Front-end Skill Manager</em> there in a 100+ people department,
-        assessing the developer&apos;s levels of proffeciency, recommending the
+        assessing the developer&apos;s levels of proficiency, recommending the
         topics to pay attention to, suggesting level promotions to the managers,
         doing <em>interviews</em> and organizing workshops.
       </p>
@@ -122,7 +134,7 @@ const Bio = () => (
         startup dreaming of making developing chatbots as simple as the
         Wordpress-powered websites, and as a full-stack developer (
         <em>React, Redux, Next.js, Node.js</em>) for a European online casino
-        company (2018–present time).
+        company (2018–2022).
       </p>
       <p>
         Since 2019 I've been doing webinars and workshops for{" "}
@@ -158,11 +170,10 @@ const Bio = () => (
         play, author and edit questions, and sometimes host the tournaments.
       </p>
       <p>
-        I like traveling and dislike going to the office 9-to-5 (or even worse
-        10-to-8, you name it). That&apos;s why I&apos;m looking for remote
-        position. It also means I have more flexibility to spend time with the
-        people I love. Although I can, and actually enjoy visiting the office
-        occasionally to meet with the team.
+        I like traveling and dislike going to the office 9-to-5. That&apos;s why
+        I&apos;m looking for remote position. It also means I have more
+        flexibility to spend time with the people I love. Although I can, and
+        actually enjoy visiting the office occasionally to meet with the team.
       </p>
     </section>
     <section className={css.body}>
@@ -181,9 +192,8 @@ const Bio = () => (
         communication is fine.
       </p>
       <p>
-        Currently I live in Tallinn (EET timezone) but have flexibility on
-        working hours (it&apos;s possible for me to have a call in the evening
-        or answer some emails before I go to bed around midnight).
+        Currently I live in Tallinn (EET timezone) but certain flexibility is
+        possible wrt working hours.
       </p>
     </section>
     <section className={css.body}>
