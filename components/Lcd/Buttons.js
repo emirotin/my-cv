@@ -20,13 +20,13 @@ const Buttons = ({ hidden }) => (
         {config.EMAIL}
       </span>
     </a>
-    <Link href="/cv">
-      <a className={classnames(css.button, css.buttonCv)}>
-        <span>
-          <i className="fa fa-address-card" />
-          OK, cool, but... Do you have something more boring?
-        </span>
-      </a>
+    <Link href="/cv" className={classnames(css.button, css.buttonCv)}>
+
+      <span>
+        <i className="fa fa-address-card" />
+        OK, cool, but... Do you have something more boring?
+      </span>
+
     </Link>
   </div>
 );
