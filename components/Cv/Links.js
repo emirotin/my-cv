@@ -10,10 +10,6 @@ const LINKS = [
   ["https://github.com/resin-io/resin-sdk", "OSS: resin-sdk"],
   ["https://github.com/botpress/botpress", "OSS: Botpress"],
   ["http://emirotin.github.io/hover-dover/", "A fun experiment with PNG"],
-  [
-    "http://emirotin.github.io/loop-machine/",
-    "A fun experiment with SoundCloud API",
-  ],
 ];
 
 const renderLink = ([link, title], i) => (

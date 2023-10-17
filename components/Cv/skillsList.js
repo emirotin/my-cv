@@ -2,7 +2,7 @@ export default [
   {
     type: "lang",
     label: "info",
-    skills: ["JavaScript", "ES6", "TypeScript", "Node.js"],
+    skills: ["TypeScript", "JavaScript", "ES6", "Node.js"],
   },
   {
     type: "front",
@@ -17,16 +17,16 @@ export default [
   {
     type: "tech",
     label: "primary",
-    skills: ["HTML5", "CSS3", "Sass"],
+    skills: ["HTML5", "CSS3"],
   },
   {
     type: "tools",
     label: "dark",
-    skills: ["Webpack", "Babel", "Docker", "Prettier", "Git"],
+    skills: ["Docker", "Prettier", "Git"],
   },
   {
     type: "backend",
     label: "success",
-    skills: ["FP", "OOP", "Promises"],
+    skills: ["FP", "OOP", "async"],
   },
 ];
