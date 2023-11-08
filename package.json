@@ -9,7 +9,7 @@
     "build": "npm run build-font && next build",
     "build-font": "node scripts/build-font.js",
     "start": "NODE_ENV=production next start -p 8000",
-    "now-build": "npm run build && next export -o dist"
+    "now-build": "npm run build"
   },
   "keywords": [],
   "author": "Eugene Mirotin <emirotin@gmail.com>",
