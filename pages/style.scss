@@ -7,3 +7,9 @@
 :global(.fa) {
   font-size: 80%;
 }
+
+@media print {
+  html {
+    font-size: 81.25%;
+  }
+}

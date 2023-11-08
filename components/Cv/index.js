@@ -14,12 +14,13 @@ const Cv = () => (
         <GithubCard username="emirotin" />
       </div>
       <div className="code-links">
-        <h2>Sample Code</h2>
+        <h2 className="h3">Code Examples</h2>
         <Links />
       </div>
       <div className="clearfix" />
     </section>
-    <hr />
+
+    <hr className={css.separator} />
 
     <Bio />
   </article>

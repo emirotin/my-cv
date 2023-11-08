@@ -26,13 +26,12 @@ const Header = () => (
         </Media>
         <p className="lead">
           <strong>
-            <span itemProp="jobTitle">Web Developer</span> (front-end and
-            full-stack).
+            <span itemProp="jobTitle">Full-Stack Web Developer</span>.
           </strong>
           <br />
           Age: {getAge()}
           .&nbsp; Experience: {getProgrammingExp()} years as programmer,{" "}
-          {getTotalExp()} years total in IT.
+          {getTotalExp()} years total in tech.
           <span className={css.contacts}>
             Contact:&nbsp;
             <MailMe />.

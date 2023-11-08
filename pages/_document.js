@@ -1,8 +1,11 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
 import config from "../config";
 
-const FA_CSS =
-  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
+const STYLESHEETS = [
+  "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css",
+  "https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/flatly/bootstrap.min.css",
+  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css",
+];
 
 export default class MyDocument extends Document {
   render() {
@@ -23,7 +26,9 @@ export default class MyDocument extends Document {
           <link rel="shortcut icon" href="/fav.ico" type="image/x-icon" />
           <link rel="icon" href="/fav.ico" type="image/x-icon" />
 
-          <link rel="stylesheet" href={FA_CSS} />
+          {STYLESHEETS.map((href) => (
+            <link key={href} rel="stylesheet" href={href} />
+          ))}
 
           <link rel="preload" href="/images/display.png" as="image" />
 

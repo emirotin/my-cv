@@ -2,11 +2,9 @@ import { Badge } from "reactstrap";
 
 import list from "./skillsList";
 
-const flatList = list
-  .map(({ type, label, skills }) =>
-    skills.map((skill) => ({ skill, type, label }))
-  )
-  .reduce((a, b) => a.concat(b), []);
+const flatList = list.flatMap(({ skills, type, label }) =>
+  skills.map((skill) => ({ skill, type, label }))
+);
 
 const Skills = () =>
   flatList.map(({ skill, label }, i) => (

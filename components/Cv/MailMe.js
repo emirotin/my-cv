@@ -1,11 +1,13 @@
 import config from "../../config";
 
 const MailMe = () => (
-  <a href={`mailto:${config.EMAIL}`}>
+  <span>
     <i className="fa fa-envelope" />
     &nbsp;
-    <span itemProp="email">{config.EMAIL}</span>
-  </a>
+    <a href={`mailto:${config.EMAIL}`}>
+      <span itemProp="email">{config.EMAIL}</span>
+    </a>
+  </span>
 );
 
 export default MailMe;

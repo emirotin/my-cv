@@ -1,15 +1,20 @@
 .root {
   margin: 3rem auto 2rem;
   padding: 0 1rem;
-  max-width: 64rem;
+  max-width: 1200px;
 }
 
 .name {
-  margin-top: 0;
+  margin: 0 0 1rem;
+  font-size: 3rem;
 }
 
 .myPhoto {
-  margin-right: 10px;
+  margin-right: 2rem;
+}
+
+.separator {
+  margin-bottom: 0;
 }
 
 .skills,
@@ -31,9 +36,17 @@
   border-bottom: 1px dashed #ccc;
   padding: 1rem 0;
 
+  &:last-child {
+    border-bottom: 0;
+  }
+
   em {
     background-color: aquamarine;
     padding: 0 0.5rem;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
   }
 }
 
@@ -97,9 +110,7 @@
       margin-top: 0;
       margin-bottom: 0.1rem;
     }
-  }
 
-  .body {
     em {
       background: transparent;
       font-weight: 600;
@@ -122,7 +133,7 @@
   }
 
   .skills :global(.badge) {
-    background: none;
+    background-color: transparent;
     color: black;
     border: 0;
     margin: 0;
