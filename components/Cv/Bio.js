@@ -8,8 +8,8 @@ const Bio = () => (
       <h2>Summary</h2>
 
       <p>
-        I work in tech since 2004, since 2011 — as full-time JS developer,{" "}
-        <em>since 2012 — as full-stack JS (started using Node.js)</em>.
+        I work in tech since 2004, since 2011—as full-time JS developer,{" "}
+        <em>since 2012—as full-stack JS (started using Node.js)</em>.
       </p>
       <p>
         I worked for several <em>large companies</em> (including Epam Systems){" "}
