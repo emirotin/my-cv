@@ -1,35 +1,24 @@
 {
-  "name": "cv-new",
-  "version": "1.0.0",
-  "description": "Eugene Mirotin's CV",
-  "private": true,
-  "main": "pages/index.js",
+  "name": "my-cv",
+  "type": "module",
+  "version": "0.0.1",
   "scripts": {
-    "dev": "next dev",
-    "build": "npm run build-font && next build",
-    "build-font": "node scripts/build-font.js",
-    "start": "NODE_ENV=production next start -p 8000",
-    "now-build": "npm run build"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "pages:dev": "wrangler pages dev --compatibility-date=2023-12-18 -- astro dev",
+    "pages:deploy": "astro build && wrangler pages deploy ./dist"
   },
-  "keywords": [],
-  "author": "Eugene Mirotin <emirotin@gmail.com>",
-  "license": "ISC",
   "dependencies": {
-    "classnames": "^2.3.1",
-    "date-fns": "^2.27.0",
-    "next": "^14.0.1",
-    "normalize.css": "^8.0.1",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0",
-    "reactstrap": "^9.0.1",
-    "sass": "^1.44.0",
-    "usehooks-ts": "^2.5.1"
+    "@astrojs/cloudflare": "^8.0.1",
+    "astro": "^4.0.9"
   },
   "devDependencies": {
-    "lodash": "^4.17.21",
-    "pngjs": "^6.0.0"
-  },
-  "engines": {
-    "node": ">=18.17.0"
+    "normalize.css": "^8.0.1",
+    "prettier": "^3.1.1",
+    "prettier-plugin-astro": "^0.12.3",
+    "wrangler": "^3.22.2"
   }
 }

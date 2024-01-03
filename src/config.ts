@@ -5,4 +5,4 @@ export default {
   PROGRAMMING_START_DATE: "2011-09-01",
   GOOGLE_VERIFICATION_CODE: "1a7IQKDRhoR_F_NmvHr3Njs5uB2rXhYaBBpswdcnQO4",
   GA_ID: "UA-125546423-1",
-};
+} as const;
