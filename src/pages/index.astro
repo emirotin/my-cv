@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+import Lcd from "../components/Lcd";
+---
+
+<style>
+  .index {
+    width: 100%;
+    min-height: 100%;
+    padding: 20px 0;
+    background: url("/images/circuit-board.png") left top repeat;
+  }
+</style>
+
+<Layout>
+  <div class="index">
+    <Lcd client:load />
+  </div>
+</Layout>
