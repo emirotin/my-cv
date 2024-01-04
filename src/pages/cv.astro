@@ -1,0 +1,17 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+import Cv from "../components/Cv";
+---
+
+<Layout>
+  <div class="index">
+    <Cv />
+  </div>
+</Layout>
+
+<script>
+  document.getElementById("print-button")?.addEventListener("click", () => {
+    window.print();
+  });
+</script>

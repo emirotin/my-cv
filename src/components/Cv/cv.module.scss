@@ -1,0 +1,164 @@
+.root {
+  margin: 3rem auto 2rem;
+  padding: 0 1rem;
+  max-width: 1200px;
+}
+
+.name {
+  margin: 0 0 1rem;
+  font-size: 3rem;
+}
+
+.myPhoto {
+  margin-right: 2rem;
+}
+
+.separator {
+  margin-bottom: 0;
+}
+
+.skills,
+.contacts {
+  display: block;
+  margin-top: 0.4em;
+}
+
+.skills {
+  & :global(.badge) {
+    display: inline-block;
+    margin-right: 0.4em;
+    margin-bottom: 0.2em;
+  }
+}
+
+.body {
+  font-size: 1.3rem;
+  border-bottom: 1px dashed #ccc;
+  padding: 1rem 0;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  em {
+    background-color: aquamarine;
+    padding: 0 0.5rem;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.smaller {
+  font-size: 1.15rem;
+}
+
+@media screen and (max-width: 680px) {
+  .root {
+    margin-top: 2em;
+
+    h1 {
+      margin-top: 0;
+    }
+
+    h2 {
+      font-size: 2rem;
+    }
+  }
+
+  .myPhoto img {
+    width: 100px;
+  }
+
+  .print {
+    float: none;
+    overflow: hidden;
+    padding-bottom: 0.5rem;
+    :global(.btn) {
+      float: right;
+    }
+  }
+
+  .githubCard {
+    display: none;
+  }
+
+  .skills :global(.badge) {
+    margin-right: 0.2em;
+    margin-bottom: 0.1em;
+  }
+
+  .skills,
+  .contacts {
+    margin-top: 0.2em;
+  }
+}
+
+@media print {
+  .print,
+  .githubCard {
+    display: none;
+  }
+
+  .myPhoto img {
+    width: 100px;
+  }
+
+  .body {
+    font-size: 1rem;
+  }
+
+  .root {
+    :global(.media-heading) {
+      margin-top: 0;
+      margin-bottom: 0.1rem;
+    }
+
+    em {
+      background: transparent;
+      font-weight: 600;
+      padding: 0;
+    }
+
+    a {
+      color: black;
+      text-decoration: underline;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+    }
+  }
+
+  .skills,
+  .contacts {
+    margin-top: 0;
+  }
+
+  .skills :global(.badge) {
+    background-color: transparent;
+    color: black;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    display: inline-block;
+    font-weight: normal;
+    margin-right: 0.5rem;
+    &:after {
+      content: ",";
+    }
+    &:last-child {
+      margin-right: 0;
+      &:after {
+        content: ".";
+      }
+    }
+  }
+}
