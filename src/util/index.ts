@@ -1,5 +1,5 @@
-import differenceInYears from "date-fns/differenceInYears";
-import parseDate from "date-fns/parse";
+import { differenceInYears } from "date-fns/differenceInYears";
+import { parse as parseDate } from "date-fns/parse";
 
 import config from "../config";
 
