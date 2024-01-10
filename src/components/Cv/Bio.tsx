@@ -258,10 +258,7 @@ const Bio: React.FC = () => (
       <h2>Full Employment History</h2>
       <p>
         The full list of my employment history is available on{" "}
-        <a
-          href="https://www.linkedin.com/in/emirotin/details/experience/"
-          target="_blank"
-        >
+        <a href="https://www.linkedin.com/in/emirotin" target="_blank">
           LinkedIn
         </a>
         .
