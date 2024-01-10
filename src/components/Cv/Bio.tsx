@@ -16,15 +16,15 @@ const Bio: React.FC = () => (
       <p>
         I worked for several <em>large companies</em> (including Epam Systems){" "}
         and for several <em>startups</em> (including{" "}
-        <a href="https://balena.io" target="_blank">
+        <a href="https://balena.io" target="_blank" rel="noreferrer">
           balena.io
         </a>
         ,{" "}
-        <a href="https://botpress.io/" target="_blank">
+        <a href="https://botpress.io/" target="_blank" rel="noreferrer">
           Botpress
         </a>
         , and{" "}
-        <a href="https://www.cosuno.com/" target="_blank">
+        <a href="https://www.cosuno.com/" target="_blank" rel="noreferrer">
           Cosuno
         </a>
         ), as well as did multiple short- to mid-term freelance projects.
@@ -33,14 +33,18 @@ const Bio: React.FC = () => (
         In addition to programming, I've also handled a fair amount of{" "}
         <em>interviews</em>, created a{" "}
         <em>
-          <a href="https://skillbox.ru/course/nodejs/" target="_blank">
+          <a
+            href="https://skillbox.ru/course/nodejs/"
+            target="_blank"
+            rel="noreferrer"
+          >
             course
           </a>{" "}
           on Node.js
         </em>
         , and wrote some technical interview questions for the automated hiring{" "}
         platform (
-        <a href="https://toggl.com/hire/" target="_blank">
+        <a href="https://toggl.com/hire/" target="_blank" rel="noreferrer">
           Toggl Hire
         </a>
         ).
@@ -60,7 +64,7 @@ const Bio: React.FC = () => (
         Since 2022 I work through my company, MIROTIN OÜ, registered in Estonia,{" "}
         with various clients. Between several smaller projects, I have kept the{" "}
         positions of Principal Full-Stack Engineer at{" "}
-        <a href="https://www.cosuno.com/" target="_blank">
+        <a href="https://www.cosuno.com/" target="_blank" rel="noreferrer">
           Cosuno
         </a>
         , the German startup working in the area of construction business{" "}
@@ -91,7 +95,7 @@ const Bio: React.FC = () => (
       <h3>Construction business automation</h3>
       <p>
         <strong>
-          <a href="https://www.cosuno.com/" target="_blank">
+          <a href="https://www.cosuno.com/" target="_blank" rel="noreferrer">
             https://www.cosuno.com/
           </a>
         </strong>
@@ -112,7 +116,11 @@ const Bio: React.FC = () => (
       <h3>In-browser 3D experience for Sarine</h3>
       <p>
         <strong>
-          <a href="https://sarine.com/diamond-journey360/" target="_blank">
+          <a
+            href="https://sarine.com/diamond-journey360/"
+            target="_blank"
+            rel="noreferrer"
+          >
             https://sarine.com/diamond-journey360/
           </a>
         </strong>
@@ -134,7 +142,11 @@ const Bio: React.FC = () => (
       <h3>Exponential View</h3>
       <p>
         <strong>
-          <a href="https://www.exponentialview.co/" target="_blank">
+          <a
+            href="https://www.exponentialview.co/"
+            target="_blank"
+            rel="noreferrer"
+          >
             https://www.exponentialview.co/
           </a>
         </strong>
@@ -151,7 +163,7 @@ const Bio: React.FC = () => (
       <h3>Technical interview questions creation and review</h3>
       <p>
         <strong>
-          <a href="https://toggl.com/hire/" target="_blank">
+          <a href="https://toggl.com/hire/" target="_blank" rel="noreferrer">
             https://toggl.com/hire/
           </a>
         </strong>
@@ -166,7 +178,11 @@ const Bio: React.FC = () => (
       <h3>Node.js Course</h3>
       <p>
         <strong>
-          <a href="https://skillbox.ru/course/nodejs/" target="_blank">
+          <a
+            href="https://skillbox.ru/course/nodejs/"
+            target="_blank"
+            rel="noreferrer"
+          >
             https://skillbox.ru/course/nodejs/
           </a>
         </strong>
@@ -174,7 +190,7 @@ const Bio: React.FC = () => (
       <p>
         Between 2019 and 2022 (when the war started) I've been doing webinars
         and workshops for{" "}
-        <a href="https://skillbox.ru/" target="_blank">
+        <a href="https://skillbox.ru/" target="_blank" rel="noreferrer">
           Skillbox
         </a>{" "}
         online university, and in 2020 I've created a Node.js course for them.
@@ -186,7 +202,7 @@ const Bio: React.FC = () => (
       <h3>Cross-site Widgets for Viacom</h3>
       <p>
         In 2011–2012, while working as <em>Senior Front-end Engineer</em> at{" "}
-        <a href="https://www.epam.com/" target="_blank">
+        <a href="https://www.epam.com/" target="_blank" rel="noreferrer">
           Epam Systems
         </a>{" "}
         (office, 2011–2012), I&apos;ve been leading the development of a set of{" "}
@@ -205,7 +221,7 @@ const Bio: React.FC = () => (
       <h3>In-browser PDF annotation tool</h3>
       <p>
         Around 2010, while working as a Project Manager for{" "}
-        <a href="https://www.buildsite.com/" target="_blank">
+        <a href="https://www.buildsite.com/" target="_blank" rel="noreferrer">
           BuildSite
         </a>
         , I&apos;ve created the fully functional prototype for the feature that
@@ -237,7 +253,10 @@ const Bio: React.FC = () => (
       </p>
       <p>
         In 2010 I have failed the JS interview for{" "}
-        <a href="https://www.apptio.com/products/targetprocess/">
+        <a
+          href="https://www.apptio.com/products/targetprocess/"
+          rel="noreferrer"
+        >
           TargetProcess
         </a>
         , a Belarusian startup later acquired by IBM. Now that I have your
@@ -248,17 +267,21 @@ const Bio: React.FC = () => (
       </p>
       <p>
         In 2011 I&apos;ve accepted my first full-time developer position at
-        Epam, and since then I&apos;ve been working as a full-time JS developer.
+        Epam, and since then I&apos;ve been writing JS full-time.
       </p>
       <p>
-        In 2012 started using Node.js and have been doing full-stack JS ever
+        In 2012 I started using Node.js and have been doing full-stack JS ever
         since.
       </p>
 
       <h2>Full Employment History</h2>
       <p>
         The full list of my employment history is available on{" "}
-        <a href="https://www.linkedin.com/in/emirotin" target="_blank">
+        <a
+          href="https://www.linkedin.com/in/emirotin"
+          target="_blank"
+          rel="noreferrer"
+        >
           LinkedIn
         </a>
         .
