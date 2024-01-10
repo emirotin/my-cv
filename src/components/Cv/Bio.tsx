@@ -73,8 +73,10 @@ const Bio: React.FC = () => (
 
       <h2>Notable Projects</h2>
       <p>
-        NB: this is not the full list of projects I've worked on, just several
-        most recent and the ones I consider the most interesting.
+        <em>
+          NB: this is not the full list of projects I've worked on, just several
+          most recent and the ones I consider the most interesting.
+        </em>
       </p>
 
       <h3>iGaming platform</h3>
