@@ -6,12 +6,19 @@ const LINKS = [
     "This CV, it has some interesting parts",
   ],
   [
+    "https://github.com/emirotin/advent2023",
+    "My solutions to Advent of Code 2023",
+  ],
+  [
     "https://medium.com/@kennel_panic/aoc-2017-intro-299b668330c",
     "A series of blog posts about my solutions to Advent of Code 2017",
   ],
   ["https://github.com/resin-io/resin-sdk", "OSS: resin-sdk"],
   ["https://github.com/botpress/botpress", "OSS: Botpress"],
-  ["http://emirotin.github.io/hover-dover/", "A fun experiment with PNG"],
+  [
+    "http://emirotin.github.io/hover-dover/",
+    "A fun experiment with PNG management from JS",
+  ],
 ];
 
 const Links: React.FC = () => (
