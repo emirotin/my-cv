@@ -6,7 +6,7 @@ import { Media, Button } from "reactstrap";
 import Skills from "./Skills";
 import MailMe from "./MailMe";
 
-import { getAge, getProgrammingExp, getTotalExp } from "../../util";
+import { getProgrammingExp, getTotalExp } from "../../util";
 
 import css from "./cv.module.scss";
 
@@ -30,9 +30,8 @@ const Header: React.FC = () => (
             <span itemProp="jobTitle">Full-Stack Web Developer</span>.
           </strong>
           <br />
-          Age: {getAge()}
-          .&nbsp; Experience: {getProgrammingExp()} years as programmer,{" "}
-          {getTotalExp()} years total in tech.
+          Experience: {getProgrammingExp()} years as programmer, {getTotalExp()}{" "}
+          years total in tech.
           <span className={css.contacts}>
             Contact:&nbsp;
             <MailMe />.
