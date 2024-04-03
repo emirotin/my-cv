@@ -1,0 +1,43 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <slot name="custom-head">
+    <style>
+      :root {
+        --light-fg-color: rgb(100, 116, 139);
+        --light-bg-color: rgb(255, 255, 255);
+        --dark-fg-color: rgb(148, 163, 184);
+        --dark-bg-color: rgb(15, 23, 42);
+        --bg-color: var(--dark-bg-color);
+        --fg-color: var(--dark-fg-color);
+
+        color-scheme: light dark;
+        color: var(--fg-color);
+        background-color: var(--bg-color);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg-color: var(--light-bg-color);
+          --fg-color: var(--light-fg-color);
+        }
+      }
+    </style>
+
+    <script is:inline>
+      (function () {
+        const cl = document.documentElement.classList;
+
+        if (localStorage.theme === "light") {
+          cl.add("is-light");
+        } else if (localStorage.theme === "dark") {
+          cl.add("is-dark");
+        }
+      })();
+    </script>
+  </slot>
+
+  ABC
+</Layout>

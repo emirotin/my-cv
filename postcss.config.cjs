@@ -1,3 +1,3 @@
 module.exports = {
-  plugins: [require("autoprefixer"), require("cssnano")],
+  plugins: [require("postcss-dark-theme-class"), require("autoprefixer"), require("cssnano")],
 };

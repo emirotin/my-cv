@@ -37,8 +37,6 @@ import config from "../config";
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
 
-    <link rel="preload" href="/images/display.png" as="image" />
-
     <style is:global>
       html,
       body {
@@ -60,7 +58,7 @@ import config from "../config";
       }
     </style>
 
-    <slot name="custom-js" />
+    <slot name="custom-head" />
 
     <script
       is:inline
@@ -71,11 +69,11 @@ import config from "../config";
     <script
       is:inline
       set:html={`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${config.GA_ID}');
-        `}
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '${config.GA_ID}');
+      `}
     />
   </head>
   <body>
