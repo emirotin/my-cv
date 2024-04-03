@@ -1,7 +1,8 @@
 import { defineConfig } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
-
 import react from "@astrojs/react";
+
+import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,7 +13,12 @@ export default defineConfig({
       entrypoint: "astro/assets/services/sharp",
     },
   },
-  integrations: [react()],
+  integrations: [
+    react(),
+    tailwind({
+      applyBaseStyles: false,
+    }),
+  ],
   vite: {
     ssr: {
       noExternal: ["react-use"],
