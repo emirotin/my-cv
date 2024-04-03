@@ -1,5 +1,5 @@
 import type React from "react";
-import classnames from "classnames";
+import clsx from "clsx";
 
 import config from "../../config";
 
@@ -7,12 +7,12 @@ import css from "./lcd.module.scss";
 
 const Buttons: React.FC<{ hidden: boolean }> = ({ hidden }) => (
   <div
-    className={classnames(css.buttons, {
+    className={clsx(css.buttons, {
       [css.hidden]: hidden,
     })}
   >
     <a
-      className={classnames(css.button, css.buttonMailto)}
+      className={clsx(css.button, css.buttonMailto)}
       href={`mailto:${config.EMAIL}`}
     >
       <span>
@@ -20,7 +20,7 @@ const Buttons: React.FC<{ hidden: boolean }> = ({ hidden }) => (
         {config.EMAIL}
       </span>
     </a>
-    <a href="/cv" className={classnames(css.button, css.buttonCv)}>
+    <a href="/cv" className={clsx(css.button, css.buttonCv)}>
       <span>
         <i className="fa fa-address-card" />
         OK, cool, but... Do you have something more boring?

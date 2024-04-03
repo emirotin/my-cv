@@ -1,5 +1,5 @@
 import type React from "react";
-import classnames from "classnames";
+import clsx from "clsx";
 
 import { Media, Button } from "reactstrap";
 
@@ -12,13 +12,13 @@ import css from "./cv.module.scss";
 
 const Header: React.FC = () => (
   <header itemScope itemType="http://schema.org/Person">
-    <div className={classnames(css.print, "pull-right")}>
+    <div className={clsx(css.print, "pull-right")}>
       <Button size="small" color="dark" id="print-button">
         <i className="fa fa-print" /> Print
       </Button>
     </div>
     <Media>
-      <div className={classnames(css.myPhoto, "pull-left", "thumbnail")}>
+      <div className={clsx(css.myPhoto, "pull-left", "thumbnail")}>
         <img src="/images/me.jpg" alt="Eugene Mirotin" itemProp="image" />
       </div>
       <Media body>

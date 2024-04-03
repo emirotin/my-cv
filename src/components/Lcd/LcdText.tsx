@@ -1,5 +1,5 @@
 import type React from "react";
-import classnames from "classnames";
+import clsx from "clsx";
 
 import css from "./lcd.module.scss";
 
@@ -12,7 +12,7 @@ const Row: React.FC<{ row: number[] }> = ({ row }) => (
 );
 
 const Cell: React.FC<{ bit: number }> = ({ bit }) => (
-  <span className={classnames(css.cell, { [css.cellOn]: bit })}>
+  <span className={clsx(css.cell, { [css.cellOn]: bit })}>
     <span className={css.cellInner}>
       <span className={css.cellInnerInner} />
     </span>
