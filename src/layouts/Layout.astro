@@ -61,11 +61,13 @@ import config from "../config";
     </style>
 
     <script
+      is:inline
       async
       src={`https://www.googletagmanager.com/gtag/js?id=${config.GA_ID}`}
     ></script>
 
     <script
+      is:inline
       dangerouslySetInnerHTML={{
         __html: `
           window.dataLayer = window.dataLayer || [];
