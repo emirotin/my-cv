@@ -23,4 +23,3 @@ pnpm-debug.log*
 
 # build artifacts
 src/lcd-font/alphabet.json
-public/**/_*
