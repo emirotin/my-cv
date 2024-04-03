@@ -1,5 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
+
+import ThemeSwitcher from "../components/ThemeSwitcher";
 ---
 
 <Layout>
@@ -39,5 +41,9 @@ import Layout from "../layouts/Layout.astro";
     </script>
   </Fragment>
 
-  ABC
+  <div>
+    <ThemeSwitcher client:load />
+  </div>
+
+  <h1>Eugene</h1>
 </Layout>
