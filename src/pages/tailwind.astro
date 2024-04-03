@@ -1,4 +1,5 @@
 ---
+import "@fontsource-variable/inter";
 import Layout from "../layouts/Layout.astro";
 
 import TailwindAnimation from "../components/TailwindAnimation";
@@ -25,7 +26,8 @@ import "./tailwind.css";
       .hero {
         color: var(--fg-color);
 
-        font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+        font-family: "Inter Variable", Inter, system-ui, Avenir, Helvetica,
+          Arial, sans-serif;
       }
 
       @media (prefers-color-scheme: light) {
@@ -57,10 +59,11 @@ import "./tailwind.css";
   </div>
 
   <article class="hero h-full flex items-center justify-center">
-    <h1 class="text-[10rem] flex items-center">
-      <span>Eugene&nbsp;+</span>
-      <TailwindAnimation />
-      <span>=&nbsp;?</span>
+    <h1 class="text-[10rem] flex items-center font-bold">
+      <span>Eugene</span><span>+</span>
+      <TailwindAnimation className="top-4" />
+      <span>=</span>
+      <span class="pt-0.5">?</span>
     </h1>
   </article>
 

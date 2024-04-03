@@ -1,4 +1,6 @@
-const TailwindAnimation: React.FC = () => {
+const TailwindAnimation: React.FC<{
+  className?: string;
+}> = ({ className }) => {
   const rootClass = "relative w-[200px] h-[200px]";
 
   const wrapClass = "absolute top-0 left-0 w-full h-full";
@@ -6,7 +8,7 @@ const TailwindAnimation: React.FC = () => {
     "absolute top-0 left-0 w-full h-full [&_path]:fill-current [&_text]:text-[0]";
 
   return (
-    <div className={rootClass}>
+    <div className={`${className ?? ""} ${rootClass}`}>
       <div className={wrapClass}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
