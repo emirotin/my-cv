@@ -5,18 +5,18 @@ import Lcd from "../components/Lcd";
 ---
 
 <Layout>
-  <slot name="custom-head">
+  <Fragment slot="custom-head">
     <link rel="preload" href="/images/display.png" as="image" />
+  </Fragment>
 
-    <style>
-      .index {
-        width: 100%;
-        min-height: 100%;
-        padding: 20px 0;
-        background: url("/images/circuit-board.png") left top repeat;
-      }
-    </style>
-  </slot>
+  <style>
+    .index {
+      width: 100%;
+      min-height: 100%;
+      padding: 20px 0;
+      background: url("/images/circuit-board.png") left top repeat;
+    }
+  </style>
 
   <div class="index">
     <Lcd client:load />

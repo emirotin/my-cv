@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  <slot name="custom-head">
+  <Fragment slot="custom-head">
     <style>
       :root {
         --light-fg-color: rgb(100, 116, 139);
@@ -37,7 +37,7 @@ import Layout from "../layouts/Layout.astro";
         }
       })();
     </script>
-  </slot>
+  </Fragment>
 
   ABC
 </Layout>
