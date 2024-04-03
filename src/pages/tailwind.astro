@@ -5,9 +5,8 @@ import Layout from "../layouts/Layout.astro";
 import TailwindAnimation from "../components/TailwindAnimation";
 import ThemeSwitcher from "../components/ThemeSwitcher";
 
-import { Content } from "./tailwind.md";
-
-import "./tailwind.css";
+import { Content } from "./_tailwind.md";
+import "./_tailwind.css";
 ---
 
 <Layout>
@@ -71,9 +70,16 @@ import "./tailwind.css";
     </h1>
   </section>
 
-  <article class="py-8 border-t-2 border-dashed">
+  <article class="py-8 border-y-2 border-dashed">
     <div class="prose prose-slate dark:prose-invert mx-auto py-8">
       <Content />
     </div>
   </article>
+
+  <section class="py-4 md:py-6 lg:py-8 xl:py-10">
+    <video controls class="mx-auto block">
+      <source src="/tw_video/eugene.webm" type="video/webm" />
+      <source src="/tw_video/eugene.mp4" type="video/mp4" />
+    </video>
+  </section>
 </Layout>
