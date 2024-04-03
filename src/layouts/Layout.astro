@@ -60,6 +60,8 @@ import config from "../config";
       }
     </style>
 
+    <slot name="custom-js" />
+
     <script
       is:inline
       async
@@ -68,14 +70,13 @@ import config from "../config";
 
     <script
       is:inline
-      dangerouslySetInnerHTML={{
-        __html: `
+      set:html={`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
           gtag('config', '${config.GA_ID}');
-        `,
-      }}></script>
+        `}
+    />
   </head>
   <body>
     <slot />
