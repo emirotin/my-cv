@@ -5,6 +5,8 @@ import Layout from "../layouts/Layout.astro";
 import TailwindAnimation from "../components/TailwindAnimation";
 import ThemeSwitcher from "../components/ThemeSwitcher";
 
+import { Content } from "./tailwind.md";
+
 import "./tailwind.css";
 ---
 
@@ -58,7 +60,7 @@ import "./tailwind.css";
     <ThemeSwitcher client:load />
   </div>
 
-  <article class="hero h-full flex items-center justify-center">
+  <section class="hero h-full flex items-center justify-center">
     <h1
       class="flex items-center font-bold flex-col gap-1 text-[5rem] md:text-[6rem] md:gap-2 lg:flex-row lg:text-[7rem] lg:gap-4 xl:text-[8rem] 2xl:text-[10rem]"
     >
@@ -67,9 +69,11 @@ import "./tailwind.css";
       <span>=</span>
       <span class="pt-0.5">?</span>
     </h1>
-  </article>
+  </section>
 
-  <article class="prose prose-slate dark:prose-invert">
-    <h1>TEST</h1>
+  <article class="py-8 border-t-2 border-dashed">
+    <div class="prose prose-slate dark:prose-invert mx-auto py-8">
+      <Content />
+    </div>
   </article>
 </Layout>
