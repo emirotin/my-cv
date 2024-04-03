@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 
+import TailwindAnimation from "../components/TailwindAnimation";
 import ThemeSwitcher from "../components/ThemeSwitcher";
 
 import "./tailwind.css";
@@ -18,12 +19,17 @@ import "./tailwind.css";
         --fg-color: var(--dark-fg-color);
 
         color-scheme: light dark;
+      }
+
+      .hero {
         color: var(--fg-color);
         background-color: var(--bg-color);
+
+        font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
       }
 
       @media (prefers-color-scheme: light) {
-        :root {
+        .hero {
           --bg-color: var(--light-bg-color);
           --fg-color: var(--light-fg-color);
         }
@@ -47,7 +53,15 @@ import "./tailwind.css";
     <ThemeSwitcher client:load />
   </div>
 
-  <article class="prose dark:prose-invert">
-    <h1>Eugene</h1>
+  <article class="hero h-full flex items-center justify-center">
+    <h1 class="text-[10rem] flex items-center">
+      <span>Eugene +</span>
+      <TailwindAnimation />
+      <span>= ?</span>
+    </h1>
+  </article>
+
+  <article class="prose prose-slate dark:prose-invert">
+    <h1>TEST</h1>
   </article>
 </Layout>
