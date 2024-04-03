@@ -8,7 +8,7 @@ When I was starting, it was easy to capture my attention with some shiny new tec
 
 The second one is Tailwind 😃. I was so much against it. LONG class strings. MIXING concerns. This was not what I LEARNT. It was against my intuition. Until I actually _tried_ it. Well, it was less poetic than that. There were lots of overwhelmingly positive reviews on Twitter. I had to launch the new project, not solo, but with the team. Tailwind sounded like the right thing to do, despite my personal feelings. We used it. It worked great.
 
-So, when I learn that **Tailwind was hiring**, I was like, I have to apply. I have to work with the team that made me change my mind.
+So, when I learnt that **Tailwind was hiring**, I was like, I have to apply. I have to work with the team that made me change my mind.
 
 # Some anecdotes 🫣
 
