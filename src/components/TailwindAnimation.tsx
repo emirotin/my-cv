@@ -16,7 +16,7 @@ const TailwindAnimation: React.FC<{
           x="0px"
           y="0px"
           viewBox="0 0 100 125"
-          enable-background="new 0 0 100 100"
+          enableBackground="new 0 0 100 100"
           className={`${svgClass} animate-tail`}
         >
           <path d="M95,83c0,1.657-1.342,3-3,3c-3.835,0-6.328,1.248-9.217,2.694C79.689,90.244,76.183,92,71,92  c-5.206,0-8.73-1.762-11.839-3.316C56.281,87.244,53.794,86,50,86s-6.281,1.244-9.161,2.684C37.73,90.238,34.206,92,29,92  c-5.183,0-8.689-1.756-11.783-3.306C14.328,87.248,11.835,86,8,86c-1.658,0-3-1.343-3-3s1.342-3,3-3c5.253,0,8.783,1.768,11.9,3.33  C22.766,84.762,25.235,86,29,86c3.791,0,6.275-1.244,9.155-2.682C41.264,81.762,44.791,80,50,80s8.736,1.762,11.845,3.318  C64.725,84.756,67.209,86,71,86c3.765,0,6.234-1.238,9.1-2.67C83.217,81.768,86.747,80,92,80C93.658,80,95,81.343,95,83z"></path>
@@ -26,9 +26,9 @@ const TailwindAnimation: React.FC<{
             x="0"
             y="115"
             fill="#000000"
-            font-size="5px"
-            font-weight="bold"
-            font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif"
+            fontSize="5px"
+            fontWeight="bold"
+            fontFamily="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif"
           >
             Created by Ayub Irawan
           </text>
@@ -36,9 +36,9 @@ const TailwindAnimation: React.FC<{
             x="0"
             y="120"
             fill="#000000"
-            font-size="5px"
-            font-weight="bold"
-            font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif"
+            fontSize="5px"
+            fontWeight="bold"
+            fontFamily="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif"
           >
             from the Noun Project
           </text>
