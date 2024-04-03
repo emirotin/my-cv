@@ -19,18 +19,21 @@ import "./tailwind.css";
         --fg-color: var(--dark-fg-color);
 
         color-scheme: light dark;
+        background-color: var(--bg-color);
       }
 
       .hero {
         color: var(--fg-color);
-        background-color: var(--bg-color);
 
         font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
       }
 
       @media (prefers-color-scheme: light) {
-        .hero {
+        :root {
           --bg-color: var(--light-bg-color);
+        }
+
+        .hero {
           --fg-color: var(--light-fg-color);
         }
       }
@@ -55,9 +58,9 @@ import "./tailwind.css";
 
   <article class="hero h-full flex items-center justify-center">
     <h1 class="text-[10rem] flex items-center">
-      <span>Eugene +</span>
+      <span>Eugene&nbsp;+</span>
       <TailwindAnimation />
-      <span>= ?</span>
+      <span>=&nbsp;?</span>
     </h1>
   </article>
 
