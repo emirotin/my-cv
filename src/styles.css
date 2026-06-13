@@ -1,0 +1,163 @@
+@import "tailwindcss";
+@import "@xterm/xterm/css/xterm.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+}
+
+:root {
+  --radius: 0.5rem;
+  --background: oklch(0.985 0.006 83);
+  --foreground: oklch(0.18 0.01 75);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.01 75);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.01 75);
+  --primary: oklch(0.24 0.025 150);
+  --primary-foreground: oklch(0.98 0.006 83);
+  --secondary: oklch(0.94 0.014 88);
+  --secondary-foreground: oklch(0.24 0.025 150);
+  --muted: oklch(0.94 0.014 88);
+  --muted-foreground: oklch(0.48 0.015 75);
+  --accent: oklch(0.92 0.032 142);
+  --accent-foreground: oklch(0.22 0.03 150);
+  --destructive: oklch(0.58 0.19 24);
+  --border: oklch(0.88 0.014 80);
+  --input: oklch(0.88 0.014 80);
+  --ring: oklch(0.58 0.08 142);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  color: var(--foreground);
+  background: var(--background);
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.xterm {
+  height: 100%;
+  padding: 16px;
+}
+
+.xterm-viewport {
+  scrollbar-color: #5f656f #101112;
+}
+
+.cv-content {
+  max-width: 78ch;
+  color: #292524;
+  font-size: 1rem;
+  line-height: 1.72;
+}
+
+.cv-content h1,
+.cv-content h2,
+.cv-content h3 {
+  color: #1c1917;
+  line-height: 1.15;
+  scroll-margin-top: 2rem;
+}
+
+.cv-content h1 {
+  margin: 0 0 0.65rem;
+  font-size: clamp(2rem, 8vw, 3.6rem);
+  font-weight: 720;
+}
+
+.cv-content h2 {
+  margin: 2.4rem 0 0.9rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid #e7e2d8;
+  font-size: 1.42rem;
+  font-weight: 680;
+}
+
+.cv-content h3 {
+  margin: 1.7rem 0 0.55rem;
+  font-size: 1.08rem;
+  font-weight: 680;
+}
+
+.cv-content p,
+.cv-content ul {
+  margin: 0.85rem 0;
+}
+
+.cv-content ul {
+  padding-left: 1.25rem;
+}
+
+.cv-content li {
+  margin: 0.35rem 0;
+}
+
+.cv-content strong {
+  font-weight: 680;
+}
+
+.cv-content a {
+  color: #1d4f35;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.cv-content hr {
+  margin: 1.25rem 0;
+  border: 0;
+  border-top: 1px solid #e7e2d8;
+}
+
+@media (max-width: 640px) {
+  .xterm {
+    padding: 12px;
+  }
+
+  .cv-content {
+    font-size: 0.96rem;
+  }
+}
