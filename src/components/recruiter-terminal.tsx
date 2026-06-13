@@ -90,7 +90,10 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
     let busy = false;
     let enginePromise: Promise<WebLlmEngine | null> | undefined;
     let engineStatus: "fallback" | "idle" | "loading" | "ready" = "idle";
+    let conversationReady = false;
     let lastProgressPercent = -1;
+    let renderedLoadingMessageCount = 0;
+    const loadingMessages: Array<string> = [];
     const messages: Array<ChatMessage> = [
       {
         role: "system",
@@ -102,6 +105,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
       },
     ];
     const tools = createAssistantTools();
+    startEngineLoad();
 
     async function mountTerminal() {
       const [{ Terminal }, { FitAddon }] = await Promise.all([
@@ -155,8 +159,10 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
       term.focus();
 
       writeBanner(term);
-      writeAssistant(term, GREETING);
-      prompt(term);
+      renderLoadingMessages(term);
+      if (engineStatus !== "loading") {
+        markConversationReady(term);
+      }
 
       dataSubscription = term.onData((data) => {
         void handleInputData(data);
@@ -165,16 +171,10 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
         fitAddon.fit();
       });
       resizeObserver.observe(containerRef.current);
-
-      if (shouldLoadWebLlm()) {
-        void ensureEngine(term);
-      } else {
-        engineStatus = "fallback";
-      }
     }
 
     async function handleInputData(data: string) {
-      if (!terminal || busy) {
+      if (!terminal || !conversationReady || busy) {
         return;
       }
 
@@ -221,6 +221,100 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
       }
     }
 
+    function startEngineLoad() {
+      if (!shouldLoadWebLlm()) {
+        engineStatus = "fallback";
+        queueLoadingMessage("Local model loading skipped; using CV search fallback.");
+        return;
+      }
+
+      if (!hasWebGpu()) {
+        engineStatus = "fallback";
+        queueLoadingMessage(
+          "WebGPU is not available here, so I will answer from the CV search fallback.",
+        );
+        return;
+      }
+
+      engineStatus = "loading";
+      queueLoadingMessage("Preparing the local in-browser model...");
+      enginePromise = loadWebLlm((progress) => {
+        const percent =
+          typeof progress.progress === "number" ? Math.round(progress.progress * 100) : -1;
+
+        if (percent >= 0 && percent !== lastProgressPercent) {
+          lastProgressPercent = percent;
+          if (percent % 10 === 0 || percent >= 98) {
+            queueLoadingMessage(`Loading local model: ${percent}%`);
+          }
+          return;
+        }
+
+        if (progress.text) {
+          queueLoadingMessage(progress.text);
+        }
+      })
+        .then((engine) => {
+          if (disposed) {
+            return engine;
+          }
+
+          engineStatus = "ready";
+          queueLoadingMessage("Local in-browser model is ready.");
+          if (terminal) {
+            markConversationReady(terminal);
+          }
+          return engine;
+        })
+        .catch((error: unknown) => {
+          if (disposed) {
+            return null;
+          }
+
+          engineStatus = "fallback";
+          queueLoadingMessage(`Local model failed to initialize: ${getErrorMessage(error)}`);
+          queueLoadingMessage("Continuing with CV search fallback.");
+          if (terminal) {
+            markConversationReady(terminal);
+          }
+          return null;
+        });
+    }
+
+    function queueLoadingMessage(message: string) {
+      if (disposed) {
+        return;
+      }
+
+      if (loadingMessages.at(-1) === message) {
+        return;
+      }
+
+      loadingMessages.push(message);
+      if (terminal && !conversationReady) {
+        writeSystem(terminal, message);
+        renderedLoadingMessageCount = loadingMessages.length;
+      }
+    }
+
+    function renderLoadingMessages(term: TerminalApi) {
+      for (const message of loadingMessages.slice(renderedLoadingMessageCount)) {
+        writeSystem(term, message);
+      }
+      renderedLoadingMessageCount = loadingMessages.length;
+    }
+
+    function markConversationReady(term: TerminalApi) {
+      if (conversationReady) {
+        return;
+      }
+
+      renderLoadingMessages(term);
+      conversationReady = true;
+      writeAssistant(term, GREETING);
+      prompt(term);
+    }
+
     async function respondToUser(term: TerminalApi, userText: string) {
       messages.push({
         role: "user",
@@ -237,7 +331,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
         return;
       }
 
-      const engine = await ensureEngine(term);
+      const engine = await getEngine();
       if (!engine) {
         const fallback = buildFallbackAnswer(userText, cvMarkdown);
         writeAssistant(term, fallback);
@@ -278,7 +372,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
       }
     }
 
-    async function ensureEngine(term: TerminalApi) {
+    async function getEngine() {
       if (engineStatus === "fallback") {
         return null;
       }
@@ -287,49 +381,8 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
         return enginePromise;
       }
 
-      if (!("gpu" in navigator)) {
-        engineStatus = "fallback";
-        writeSystem(
-          term,
-          "WebGPU is not available here, so I will answer from the CV search fallback.",
-        );
-        return null;
-      }
-
-      engineStatus = "loading";
-      enginePromise = loadWebLlm((progress) => {
-        if (!terminal) {
-          return;
-        }
-
-        const percent =
-          typeof progress.progress === "number" ? Math.round(progress.progress * 100) : -1;
-
-        if (percent >= 0 && percent !== lastProgressPercent) {
-          lastProgressPercent = percent;
-          if (percent % 10 === 0 || percent >= 98) {
-            writeSystem(terminal, `Loading local model: ${percent}%`);
-          }
-          return;
-        }
-
-        if (progress.text) {
-          writeSystem(terminal, progress.text);
-        }
-      })
-        .then((engine) => {
-          engineStatus = "ready";
-          writeSystem(term, "Local in-browser model is ready.");
-          return engine;
-        })
-        .catch((error: unknown) => {
-          engineStatus = "fallback";
-          writeSystem(term, `Local model failed to initialize: ${getErrorMessage(error)}`);
-          writeSystem(term, "Continuing with CV search fallback.");
-          return null;
-        });
-
-      return enginePromise;
+      startEngineLoad();
+      return enginePromise ?? null;
     }
 
     void mountTerminal();
@@ -417,6 +470,10 @@ function shouldLoadWebLlm() {
 
   const params = new URLSearchParams(window.location.search);
   return !params.has("noai");
+}
+
+function hasWebGpu() {
+  return Boolean((navigator as Navigator & { gpu?: unknown }).gpu);
 }
 
 async function maybeRunLocalCommand(text: string, tools: Map<string, AssistantTool>) {

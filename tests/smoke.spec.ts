@@ -15,6 +15,26 @@ test("assistant terminal renders without loading the model in smoke mode", async
   await expect(page.locator(".xterm")).toBeVisible();
 });
 
+test("assistant does not show the prompt before model status resolves", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window.navigator, "gpu", {
+      configurable: true,
+      value: undefined,
+    });
+  });
+
+  await page.goto("/");
+  const rows = page.locator(".xterm-rows");
+  await expect(rows).toContainText("WebGPU is not available");
+  await expect(rows).toContainText("recruiter>");
+
+  const terminalText = await rows.innerText();
+  expect(terminalText.indexOf("WebGPU is not available")).toBeGreaterThan(-1);
+  expect(terminalText.indexOf("recruiter>")).toBeGreaterThan(
+    terminalText.indexOf("WebGPU is not available"),
+  );
+});
+
 test("send_email tool clicks a mailto link", async ({ page }) => {
   await page.addInitScript(() => {
     const originalClick = HTMLAnchorElement.prototype.click;
