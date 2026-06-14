@@ -124,108 +124,83 @@
     }
 
     html {
-        @apply font-mono;
-        color: var(--foreground);
-        background: var(--background);
-        text-rendering: optimizeLegibility;
+        @apply bg-background font-mono text-foreground antialiased;
     }
 
     body {
-        @apply bg-background text-foreground;
-        min-width: 320px;
-        margin: 0;
+        @apply m-0 min-w-80 bg-background text-foreground;
     }
 
     button:not(:disabled),
     [role="button"]:not(:disabled) {
-        cursor: pointer;
+        @apply cursor-pointer;
     }
 
     button,
     input,
     textarea,
     select {
-        font: inherit;
+        @apply font-mono;
     }
 }
 
 .xterm {
-    height: 100%;
-    padding: 16px;
-}
-
-.xterm-viewport {
-    scrollbar-color: #5f656f #101112;
+    @apply h-full p-4;
 }
 
 .cv-content {
-    max-width: 78ch;
-    color: var(--foreground);
-    font-size: 1rem;
-    line-height: 1.72;
+    @apply max-w-3xl text-base leading-7 text-foreground;
 }
 
 .cv-content h1,
 .cv-content h2,
 .cv-content h3 {
-    color: var(--foreground);
-    line-height: 1.15;
-    scroll-margin-top: 2rem;
+    @apply scroll-mt-8 text-foreground leading-tight;
 }
 
 .cv-content h1 {
-    margin: 0 0 0.65rem;
-    font-size: clamp(2rem, 8vw, 3.6rem);
-    font-weight: 720;
+    @apply mt-0 mb-2.5 text-4xl font-bold sm:text-6xl;
 }
 
 .cv-content h2 {
-    margin: 0.9rem 0;
-    font-size: 1.42rem;
-    font-weight: 680;
+    @apply my-3.5 text-2xl font-bold;
 }
 
 .cv-content h3 {
-    margin: 1.7rem 0 0.55rem;
-    font-size: 1.08rem;
-    font-weight: 680;
+    @apply mt-7 mb-2 text-lg font-bold;
 }
 
 .cv-content p,
 .cv-content ul {
-    margin: 0.85rem 0;
+    @apply my-3.5;
 }
 
 .cv-content ul {
-    padding-left: 1.25rem;
+    @apply pl-5;
 }
 
 .cv-content li {
-    margin: 0.35rem 0;
+    @apply my-1.5;
 }
 
 .cv-content strong {
-    font-weight: 680;
+    @apply font-bold;
 }
 
 .cv-content a {
-    color: var(--primary);
-    text-decoration: underline;
-    text-underline-offset: 0.18em;
+    @apply text-primary underline underline-offset-2;
 }
 
 .cv-content hr {
-    margin: 1.25rem 0;
-    border: 0;
-    border-top: 1px solid var(--border);
+    @apply my-5 border-t border-border;
 }
 
 @media (max-width: 640px) {
     .xterm {
-        padding: 12px;
+        @apply p-3;
     }
 
     .cv-content {
-        font-size: 0.96rem;
+        @apply text-base;
     }
 }
