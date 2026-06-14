@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlertTriangle, CheckCircle2, Clipboard, Play, Square, XCircle } from "lucide-react";
+import {
+  RiCheckboxCircleLine,
+  RiClipboardLine,
+  RiCloseCircleLine,
+  RiErrorWarningLine,
+  RiPlayLine,
+  RiStopLine,
+} from "@remixicon/react";
 import {
   ACTION_RESPONSE_SCHEMA,
   EVAL_CASES,
@@ -273,7 +280,7 @@ export function EvalRunner({ cvMarkdown, manual = false }: EvalRunnerProps) {
                 disabled={status === "running" || selectedModelIds.length === 0}
                 onClick={runEval}
               >
-                <Play aria-hidden="true" />
+                <RiPlayLine aria-hidden="true" />
                 Run Eval
               </Button>
               <Button
@@ -283,7 +290,7 @@ export function EvalRunner({ cvMarkdown, manual = false }: EvalRunnerProps) {
                 }}
                 variant="outline"
               >
-                <Square aria-hidden="true" />
+                <RiStopLine aria-hidden="true" />
                 Stop
               </Button>
             </div>
@@ -348,11 +355,11 @@ export function EvalRunner({ cvMarkdown, manual = false }: EvalRunnerProps) {
           <CardContent className="space-y-3">
             <div className="grid grid-cols-2 gap-2">
               <Button onClick={() => void copyReport("json")} variant="outline">
-                <Clipboard aria-hidden="true" />
+                <RiClipboardLine aria-hidden="true" />
                 {copied === "json" ? "Copied" : "JSON"}
               </Button>
               <Button onClick={() => void copyReport("markdown")} variant="outline">
-                <Clipboard aria-hidden="true" />
+                <RiClipboardLine aria-hidden="true" />
                 {copied === "markdown" ? "Copied" : "Markdown"}
               </Button>
             </div>
@@ -417,7 +424,7 @@ function ModelRunPanel({ modelRun }: Readonly<{ modelRun: ModelRun }>) {
 
         {modelRun.error ? (
           <div className="flex gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <RiErrorWarningLine className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
             <span>{modelRun.error}</span>
           </div>
         ) : null}
@@ -429,9 +436,9 @@ function ModelRunPanel({ modelRun }: Readonly<{ modelRun: ModelRun }>) {
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-sm font-medium">{result.title}</div>
                   {result.score.passed ? (
-                    <CheckCircle2 className="size-4 text-primary" aria-hidden="true" />
+                    <RiCheckboxCircleLine className="size-4 text-primary" aria-hidden="true" />
                   ) : (
-                    <XCircle className="size-4 text-destructive" aria-hidden="true" />
+                    <RiCloseCircleLine className="size-4 text-destructive" aria-hidden="true" />
                   )}
                 </div>
                 {result.score.failures.length > 0 ? (

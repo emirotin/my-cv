@@ -1,5 +1,5 @@
+import { RiArrowRightLine, RiFileTextLine, RiTerminalBoxLine } from "@remixicon/react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, FileText, TerminalSquare } from "lucide-react";
 import { ContactCopyButton } from "@/components/contact-copy-button";
 import { PageContent, PageHeader, PageHeaderTitle, PageShell } from "@/components/page-layout";
 import { RecruiterTerminal } from "@/components/recruiter-terminal";
@@ -35,7 +35,7 @@ function HomeRoute() {
         actions={
           <>
             <Button nativeButton={false} render={<Link to="/cv" />} size="sm" variant="outline">
-              <FileText aria-hidden="true" />
+              <RiFileTextLine aria-hidden="true" />
               CV
             </Button>
             <ContactCopyButton size="sm" />
@@ -44,7 +44,7 @@ function HomeRoute() {
         leading={
           <PageHeaderTitle
             eyebrow="Local recruiter console"
-            icon={<TerminalSquare className="size-4" aria-hidden="true" />}
+            icon={<RiTerminalBoxLine className="size-4" aria-hidden="true" />}
             title="Eugene Mirotin CV Assistant"
           />
         }
@@ -82,7 +82,7 @@ function HomeRoute() {
                 variant="outline"
               >
                 Read the CV
-                <ArrowRight aria-hidden="true" />
+                <RiArrowRightLine aria-hidden="true" />
               </Button>
             </CardContent>
           </Card>

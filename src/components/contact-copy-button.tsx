@@ -1,4 +1,4 @@
-import { Check, Copy } from "lucide-react";
+import { RiCheckLine, RiFileCopyLine } from "@remixicon/react";
 import type * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ export function ContactCopyButton({ ...props }: ContactCopyButtonProps) {
     timeoutRef.current = window.setTimeout(() => setCopied(false), 1600);
   }
 
-  const Icon = copied ? Check : Copy;
+  const Icon = copied ? RiCheckLine : RiFileCopyLine;
 
   return (
     <Button

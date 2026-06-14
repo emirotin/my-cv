@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { ThemeSwitcher } from "./theme-switcher";
 
 function PageShell({
   children,
@@ -24,7 +25,10 @@ function PageHeader({
     <header className="border-b bg-muted/30">
       <div className="mx-auto flex min-h-[5.5rem] max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
         {leading}
-        {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
+        <div className="flex flex-wrap items-center gap-2">
+          {actions}
+          <ThemeSwitcher />
+        </div>
       </div>
     </header>
   );

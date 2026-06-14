@@ -1,6 +1,7 @@
+import { RiArrowLeftLine } from "@remixicon/react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
 import { EvalRunner } from "@/components/eval-runner";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { getCvMarkdown } from "@/lib/cv";
 
@@ -39,10 +40,13 @@ function EvalRoute() {
               CV Assistant Model Evaluation
             </h1>
           </div>
-          <Button nativeButton={false} render={<Link to="/" />} variant="outline">
-            <ArrowLeft aria-hidden="true" />
-            Assistant
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button nativeButton={false} render={<Link to="/" />} variant="outline">
+              <RiArrowLeftLine aria-hidden="true" />
+              Assistant
+            </Button>
+            <ThemeSwitcher />
+          </div>
         </header>
 
         <EvalRunner cvMarkdown={cvMarkdown} manual={manual} />
