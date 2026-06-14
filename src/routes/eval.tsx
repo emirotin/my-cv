@@ -28,20 +28,20 @@ function EvalRoute() {
   const { manual } = Route.useSearch();
 
   return (
-    <main className="min-h-svh bg-[#f6f3ef] px-4 py-4 text-stone-950 sm:px-6 lg:px-8">
+    <main className="min-h-svh bg-background px-4 py-4 text-foreground sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-5">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="text-sm font-medium text-stone-600">Browser-local WebLLM eval</div>
+            <div className="text-sm font-medium text-muted-foreground">
+              Browser-local WebLLM eval
+            </div>
             <h1 className="mt-1 text-2xl font-semibold tracking-normal sm:text-3xl">
               CV Assistant Model Evaluation
             </h1>
           </div>
-          <Button asChild variant="outline">
-            <Link to="/">
-              <ArrowLeft aria-hidden="true" />
-              Assistant
-            </Link>
+          <Button nativeButton={false} render={<Link to="/" />} variant="outline">
+            <ArrowLeft aria-hidden="true" />
+            Assistant
           </Button>
         </header>
 

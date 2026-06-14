@@ -29,25 +29,23 @@ function HomeRoute() {
   const { cvMarkdown } = Route.useLoaderData();
 
   return (
-    <main className="min-h-svh bg-[#f6f3ef] text-stone-950">
+    <main className="min-h-svh bg-background text-foreground">
       <div className="grid min-h-svh gap-5 px-4 py-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-8">
         <section className="flex min-h-[calc(100svh-2rem)] flex-col">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0">
-              <div className="flex items-center gap-2 text-sm font-medium text-stone-600">
+              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <TerminalSquare className="size-4" aria-hidden="true" />
                 Local recruiter console
               </div>
-              <h1 className="mt-1 text-2xl font-semibold tracking-normal text-stone-950 sm:text-3xl">
+              <h1 className="mt-1 text-2xl font-semibold tracking-normal text-foreground sm:text-3xl">
                 Eugene Mirotin CV Assistant
               </h1>
             </div>
             <div className="flex items-center gap-2">
-              <Button asChild variant="outline">
-                <Link to="/cv">
-                  <FileText aria-hidden="true" />
-                  CV
-                </Link>
+              <Button nativeButton={false} render={<Link to="/cv" />} variant="outline">
+                <FileText aria-hidden="true" />
+                CV
               </Button>
               <ContactCopyButton />
             </div>
@@ -74,15 +72,18 @@ function HomeRoute() {
                 <Badge variant="secondary">AI workflows</Badge>
               </div>
               <Separator />
-              <p className="text-sm leading-6 text-stone-700">
+              <p className="text-sm leading-6 text-muted-foreground">
                 Full-stack engineer with 22 years in the software industry and 14+ years of hands-on
                 engineering experience, focused on ambiguous product and infrastructure problems.
               </p>
-              <Button asChild className="w-full justify-between" variant="outline">
-                <Link to="/cv">
-                  Read the server-rendered CV
-                  <ArrowRight aria-hidden="true" />
-                </Link>
+              <Button
+                className="w-full justify-between"
+                nativeButton={false}
+                render={<Link to="/cv" />}
+                variant="outline"
+              >
+                Read the server-rendered CV
+                <ArrowRight aria-hidden="true" />
               </Button>
             </CardContent>
           </Card>
@@ -95,7 +96,7 @@ function HomeRoute() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-3 text-sm leading-6 text-stone-700">
+              <ul className="space-y-3 text-sm leading-6 text-muted-foreground">
                 <li>
                   Streaming AI podcast generation across LLM, TTS, Redis URLs, and transcription.
                 </li>

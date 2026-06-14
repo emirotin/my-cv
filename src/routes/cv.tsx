@@ -23,21 +23,22 @@ function CvRoute() {
   const cv = Route.useLoaderData();
 
   return (
-    <main className="min-h-svh bg-[#fbfaf7] text-stone-950">
-      <header className="border-b bg-[#f6f3ef]">
+    <main className="min-h-svh bg-background text-foreground">
+      <header className="border-b bg-muted/30">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
-          <Button asChild variant="ghost">
-            <Link to="/">
-              <ArrowLeft aria-hidden="true" />
-              Assistant
-            </Link>
+          <Button nativeButton={false} render={<Link to="/" />} variant="ghost">
+            <ArrowLeft aria-hidden="true" />
+            Assistant
           </Button>
           <div className="flex flex-wrap items-center gap-2">
-            <Button asChild size="sm" variant="outline">
-              <a href="https://github.com/emirotin" rel="noreferrer" target="_blank">
-                <Code2 aria-hidden="true" />
-                GitHub
-              </a>
+            <Button
+              nativeButton={false}
+              render={<a href="https://github.com/emirotin" rel="noreferrer" target="_blank" />}
+              size="sm"
+              variant="outline"
+            >
+              <Code2 aria-hidden="true" />
+              GitHub
             </Button>
             <ContactCopyButton size="sm" />
           </div>
@@ -48,9 +49,9 @@ function CvRoute() {
         <article className="cv-content" dangerouslySetInnerHTML={{ __html: cv.markup }} />
 
         <aside className="order-first lg:order-last">
-          <div className="sticky top-6 space-y-4 rounded-lg border bg-white p-4 shadow-xs">
+          <div className="sticky top-6 space-y-4 rounded-xl bg-card p-4 text-card-foreground ring-1 ring-foreground/10">
             <div>
-              <div className="flex items-center gap-2 text-sm font-medium text-stone-600">
+              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <TerminalSquare className="size-4" aria-hidden="true" />
                 Server-rendered CV
               </div>
@@ -61,7 +62,7 @@ function CvRoute() {
                 .filter((heading) => heading.level <= 2)
                 .map((heading) => (
                   <a
-                    className="block rounded-md px-2 py-1 text-stone-700 hover:bg-stone-100 hover:text-stone-950"
+                    className="block rounded-md px-2 py-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                     href={`#${heading.id}`}
                     key={heading.id}
                   >

@@ -289,7 +289,7 @@ export function EvalRunner({ cvMarkdown, manual = false }: EvalRunnerProps) {
             </div>
 
             {environment ? (
-              <div className="grid gap-2 text-sm text-stone-700 sm:grid-cols-2">
+              <div className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
                 <div>WebGPU: {environment.hasWebGpu ? "available" : "missing"}</div>
                 <div>Adapter: {environment.hasAdapter ? "available" : "missing"}</div>
               </div>
@@ -305,7 +305,7 @@ export function EvalRunner({ cvMarkdown, manual = false }: EvalRunnerProps) {
           <CardContent className="space-y-3">
             {EVAL_MODELS.map((model) => (
               <label
-                className="grid cursor-pointer gap-2 rounded-md border p-3 transition-colors hover:bg-stone-50 sm:grid-cols-[20px_1fr_auto]"
+                className="grid cursor-pointer gap-2 rounded-md border p-3 transition-colors hover:bg-muted sm:grid-cols-[20px_1fr_auto]"
                 key={model.id}
               >
                 <input
@@ -316,8 +316,10 @@ export function EvalRunner({ cvMarkdown, manual = false }: EvalRunnerProps) {
                   type="checkbox"
                 />
                 <span>
-                  <span className="block text-sm font-medium text-stone-950">{model.label}</span>
-                  <span className="block text-xs leading-5 text-stone-600">{model.note}</span>
+                  <span className="block text-sm font-medium text-foreground">{model.label}</span>
+                  <span className="block text-xs leading-5 text-muted-foreground">
+                    {model.note}
+                  </span>
                 </span>
                 <span className="flex flex-wrap items-start justify-start gap-1 sm:justify-end">
                   <Badge variant="outline">{Math.round(model.vramMb)} MB</Badge>
@@ -355,7 +357,7 @@ export function EvalRunner({ cvMarkdown, manual = false }: EvalRunnerProps) {
               </Button>
             </div>
             <textarea
-              className="min-h-[320px] w-full resize-y rounded-md border bg-stone-950 p-3 font-mono text-xs leading-5 text-stone-50 outline-none focus:ring-2 focus:ring-ring"
+              className="min-h-[320px] w-full resize-y rounded-md border bg-foreground p-3 font-mono text-xs leading-5 text-background outline-none focus:ring-2 focus:ring-ring"
               readOnly
               value={markdownReport}
             />
@@ -366,7 +368,7 @@ export function EvalRunner({ cvMarkdown, manual = false }: EvalRunnerProps) {
           <CardHeader>
             <CardTitle>Protocol Notes</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm leading-6 text-stone-700">
+          <CardContent className="space-y-3 text-sm leading-6 text-muted-foreground">
             <p>
               Main eval path uses WebLLM JSON mode with a strict action object. The app executes
               tool actions from JSON instead of relying on natural-language instructions.
@@ -398,7 +400,7 @@ function ModelRunPanel({ modelRun }: Readonly<{ modelRun: ModelRun }>) {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-2 text-sm text-stone-700 sm:grid-cols-3">
+        <div className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-3">
           <div>VRAM: {Math.round(modelRun.vramMb)} MB</div>
           <div>Load: {formatMs(modelRun.loadMs)}</div>
           <div>
@@ -407,14 +409,14 @@ function ModelRunPanel({ modelRun }: Readonly<{ modelRun: ModelRun }>) {
         </div>
 
         {modelRun.progressText ? (
-          <div className="rounded-md bg-stone-100 px-3 py-2 text-sm text-stone-700">
+          <div className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
             {modelRun.progressPercent === null ? null : `${modelRun.progressPercent}% `}
             {modelRun.progressText}
           </div>
         ) : null}
 
         {modelRun.error ? (
-          <div className="flex gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+          <div className="flex gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
             <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
             <span>{modelRun.error}</span>
           </div>
@@ -427,17 +429,17 @@ function ModelRunPanel({ modelRun }: Readonly<{ modelRun: ModelRun }>) {
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-sm font-medium">{result.title}</div>
                   {result.score.passed ? (
-                    <CheckCircle2 className="size-4 text-green-700" aria-hidden="true" />
+                    <CheckCircle2 className="size-4 text-primary" aria-hidden="true" />
                   ) : (
-                    <XCircle className="size-4 text-red-700" aria-hidden="true" />
+                    <XCircle className="size-4 text-destructive" aria-hidden="true" />
                   )}
                 </div>
                 {result.score.failures.length > 0 ? (
-                  <div className="mt-2 text-xs leading-5 text-red-700">
+                  <div className="mt-2 text-xs leading-5 text-destructive">
                     {result.score.failures.join(" ")}
                   </div>
                 ) : null}
-                <pre className="mt-2 max-h-32 overflow-auto rounded bg-stone-950 p-2 text-xs leading-5 text-stone-50">
+                <pre className="mt-2 max-h-32 overflow-auto rounded bg-foreground p-2 text-xs leading-5 text-background">
                   {result.score.raw}
                 </pre>
               </div>
@@ -446,7 +448,7 @@ function ModelRunPanel({ modelRun }: Readonly<{ modelRun: ModelRun }>) {
         ) : null}
 
         <Separator />
-        <div className="text-sm leading-6 text-stone-700">
+        <div className="text-sm leading-6 text-muted-foreground">
           Native tools: {modelRun.nativeToolResult.status}
           {modelRun.nativeToolResult.reason ? ` - ${modelRun.nativeToolResult.reason}` : ""}
           {modelRun.nativeToolResult.toolName ? ` (${modelRun.nativeToolResult.toolName})` : ""}
@@ -462,7 +464,7 @@ function StatusBadge({ status }: Readonly<{ status: ModelRun["status"] }>) {
   }
 
   if (status === "failed") {
-    return <Badge variant="secondary">failed</Badge>;
+    return <Badge variant="destructive">failed</Badge>;
   }
 
   return <Badge variant="outline">{status}</Badge>;
