@@ -18,6 +18,13 @@ export default defineConfig({
       },
       pages: [
         {
+          path: "/",
+          prerender: {
+            enabled: true,
+            outputPath: "/index.html",
+          },
+        },
+        {
           path: "/cv",
           prerender: {
             enabled: true,
