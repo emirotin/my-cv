@@ -119,8 +119,8 @@ function renderDocument(content, fontCss) {
         color: #171717;
         background: #ffffff;
         font-family: "Geist Mono Variable", ui-monospace, "SFMono-Regular", Consolas, monospace;
-        font-size: 10.35pt;
-        line-height: 1.36;
+        font-size: 10pt;
+        line-height: 1.32;
       }
 
       main {
@@ -135,27 +135,27 @@ function renderDocument(content, fontCss) {
       }
 
       h1 {
-        margin: 0 0 4pt;
+        margin: 0;
         font-size: 24pt;
         font-weight: 750;
       }
 
       h2 {
-        margin: 12pt 0 4.5pt;
+        margin: 6pt 0;
         padding-bottom: 1.5pt;
         font-size: 12pt;
         font-weight: 750;
       }
 
       h3 {
-        margin: 8pt 0 2pt;
+        margin: 6pt 0;
         font-size: 10.7pt;
         font-weight: 750;
       }
 
       p,
       ul {
-        margin: 3.5pt 0;
+        margin: 2.5pt 0;
       }
 
       ul {
@@ -163,7 +163,7 @@ function renderDocument(content, fontCss) {
       }
 
       li {
-        margin: 2pt 0;
+        margin: 1.5pt 0;
         padding-left: 1pt;
       }
 
