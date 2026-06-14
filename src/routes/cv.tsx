@@ -52,7 +52,7 @@ function CvRoute() {
         <article className="cv-content" dangerouslySetInnerHTML={{ __html: cv.markup }} />
 
         <aside className="order-first lg:order-last">
-          <div className="sticky top-6 space-y-4 rounded-xl bg-card p-4 text-card-foreground ring-1 ring-foreground/10">
+          <div className="sticky top-6 space-y-4 rounded-lg bg-card p-4 text-card-foreground ring-1 ring-foreground/10">
             <div>
               <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <TerminalSquare className="size-4" aria-hidden="true" />
