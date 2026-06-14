@@ -19,6 +19,15 @@ test("cv route returns server-rendered html", async ({ page }) => {
   await expect(downloadLink).toHaveAttribute("href", /eugene_mirotin_cv.*\.pdf/);
 });
 
+test("client navigation to cv route renders cv contents @prod", async ({ page }) => {
+  await page.goto("/?noai=1");
+  await page.getByRole("button", { exact: true, name: "CV" }).click();
+
+  await expect(page).toHaveURL(/\/cv$/);
+  await expect(page.getByRole("heading", { exact: true, name: "Eugene Mirotin" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "CV sections" })).toContainText("Profile");
+});
+
 test("unknown route renders the app not found page", async ({ page }) => {
   await page.goto("/missing-route");
 
