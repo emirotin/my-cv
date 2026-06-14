@@ -1,4 +1,9 @@
 import { useEffect, useRef } from "react";
+import {
+  ACTION_RESPONSE_SCHEMA,
+  buildActionSystemPrompt,
+  parseActionResponse,
+} from "@/lib/eval-config";
 
 type ChatRole = "assistant" | "system" | "user";
 
@@ -32,6 +37,10 @@ type WebLlmEngine = {
         messages: Array<ChatMessage>;
         temperature?: number;
         max_tokens?: number;
+        response_format?: {
+          schema?: string;
+          type: "json_object";
+        };
       }) => Promise<{
         choices: Array<{
           message?: {
@@ -70,7 +79,7 @@ type RecruiterTerminalProps = {
 const GREETING =
   "I am the personal assistant for Eugene Mirotin, a Senior / Staff Software Engineer based in Tallinn. I can answer recruiter questions from Eugene's CV and help open an email draft when it is time to follow up.";
 
-const DEFAULT_MODEL_ID = "Qwen2.5-0.5B-Instruct-q4f32_1-MLC";
+const DEFAULT_MODEL_ID = "Qwen2.5-1.5B-Instruct-q4f32_1-MLC";
 
 const PREFERRED_MODELS = [
   DEFAULT_MODEL_ID,
@@ -97,11 +106,15 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
     const messages: Array<ChatMessage> = [
       {
         role: "system",
-        content: buildSystemPrompt(cvMarkdown),
+        content: buildActionSystemPrompt(cvMarkdown),
       },
       {
         role: "assistant",
-        content: GREETING,
+        content: JSON.stringify({
+          answer: GREETING,
+          kind: "answer",
+          tool: null,
+        }),
       },
     ];
     const tools = createAssistantTools();
@@ -326,7 +339,11 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
         writeSystem(term, commandResult);
         messages.push({
           role: "assistant",
-          content: commandResult,
+          content: JSON.stringify({
+            answer: null,
+            kind: "tool",
+            tool: "send_email",
+          }),
         });
         return;
       }
@@ -337,7 +354,11 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
         writeAssistant(term, fallback);
         messages.push({
           role: "assistant",
-          content: fallback,
+          content: JSON.stringify({
+            answer: fallback,
+            kind: "answer",
+            tool: null,
+          }),
         });
         return;
       }
@@ -346,30 +367,55 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
       const response = await engine.chat.completions.create({
         max_tokens: 520,
         messages,
-        temperature: 0.3,
+        response_format: {
+          schema: ACTION_RESPONSE_SCHEMA,
+          type: "json_object",
+        },
+        temperature: 0,
       });
       const rawReply =
         response.choices.at(0)?.message?.content?.trim() ??
         "I could not produce a useful answer from the local model.";
-      const { cleanReply, toolNames } = extractToolCalls(rawReply);
+      const action = parseActionResponse(rawReply);
 
-      if (cleanReply.length > 0) {
-        writeAssistant(term, cleanReply);
+      if (!action) {
+        const fallback =
+          "I could not parse the local model response, so I am falling back to CV search for this answer.";
+        writeSystem(term, fallback);
+        const answer = buildFallbackAnswer(userText, cvMarkdown);
+        writeAssistant(term, answer);
         messages.push({
           role: "assistant",
-          content: cleanReply,
+          content: JSON.stringify({
+            answer,
+            kind: "answer",
+            tool: null,
+          }),
         });
+        return;
       }
 
-      for (const toolName of toolNames) {
-        const tool = tools.get(toolName);
+      messages.push({
+        role: "assistant",
+        content: JSON.stringify(action),
+      });
+
+      if (action.kind === "tool") {
+        const toolName = action.tool;
+        const tool = toolName ? tools.get(toolName) : undefined;
         if (!tool) {
-          writeSystem(term, `Tool is not available: ${toolName}`);
-          continue;
+          writeSystem(term, `Tool is not available: ${toolName ?? "unknown"}`);
+          return;
         }
 
         writeSystem(term, await tool.run());
+        return;
       }
+
+      writeAssistant(
+        term,
+        action.answer ?? "I do not see a directly supported answer in Eugene's CV.",
+      );
     }
 
     async function getEngine() {
@@ -428,21 +474,6 @@ function createAssistantTools() {
   return tools;
 }
 
-function buildSystemPrompt(cvMarkdown: string) {
-  return [
-    "You are the personal assistant for Eugene Mirotin.",
-    "You are speaking with a recruiter or hiring manager.",
-    "Answer from the CV below. If the CV does not support an answer, say that clearly and keep it concise.",
-    "Do not invent employers, dates, technologies, locations, compensation, availability, or personal details.",
-    "When the user wants to contact Eugene or asks for an email draft, you may call the send_email tool by writing [[tool:send_email]] on its own line.",
-    "Available tools:",
-    "- send_email: opens mailto:emirotin@gmail.com?Subject=From+CV in the browser.",
-    "",
-    "CV:",
-    cvMarkdown,
-  ].join("\n");
-}
-
 async function loadWebLlm(onProgress: (progress: InitProgress) => void) {
   const webllm = (await import("@mlc-ai/web-llm")) as WebLlmModule;
   const modelId = selectModelId(webllm);
@@ -484,21 +515,6 @@ async function maybeRunLocalCommand(text: string, tools: Map<string, AssistantTo
 
   const tool = tools.get("send_email");
   return tool?.run() ?? null;
-}
-
-function extractToolCalls(reply: string) {
-  const toolNames = new Set<string>();
-  const cleanReply = reply
-    .replace(/\[\[tool:([a-z_]+)\]\]/gi, (_, toolName: string) => {
-      toolNames.add(toolName.toLowerCase());
-      return "";
-    })
-    .trim();
-
-  return {
-    cleanReply,
-    toolNames: Array.from(toolNames),
-  };
 }
 
 function buildFallbackAnswer(userText: string, cvMarkdown: string) {

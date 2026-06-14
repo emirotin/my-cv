@@ -321,7 +321,7 @@ export function scoreActionResponse(evalCase: EvalCase, raw: string): CaseScore 
   };
 }
 
-function parseActionResponse(raw: string): ActionResponse | null {
+export function parseActionResponse(raw: string): ActionResponse | null {
   const trimmed = raw.trim();
   const candidates = [trimmed, extractFirstJsonObject(trimmed)].filter(
     (candidate): candidate is string => Boolean(candidate),

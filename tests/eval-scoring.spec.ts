@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { EVAL_CASES, scoreActionResponse } from "../src/lib/eval-config";
+import { EVAL_CASES, parseActionResponse, scoreActionResponse } from "../src/lib/eval-config";
 
 const casesById = new Map(EVAL_CASES.map((evalCase) => [evalCase.id, evalCase]));
 
@@ -51,6 +51,16 @@ test("scoring still rejects answers that omit requested Python context", () => {
 
   expect(score.passed).toBe(false);
   expect(score.failures.join(" ")).toContain("buildsite");
+});
+
+test("action parser accepts a tool JSON object wrapped in model text", () => {
+  expect(
+    parseActionResponse('Here is the action:\n{"answer":null,"kind":"tool","tool":"send_email"}'),
+  ).toEqual({
+    answer: null,
+    kind: "tool",
+    tool: "send_email",
+  });
 });
 
 function mustGetCase(id: string) {
