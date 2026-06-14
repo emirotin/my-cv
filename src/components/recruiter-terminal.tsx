@@ -69,12 +69,14 @@ type FitAddonApi = {
 type AssistantTool = {
   name: string;
   description: string;
-  run: () => Promise<string>;
+  run: (options?: { source?: "direct" | "model" }) => Promise<string>;
 };
 
 type RecruiterTerminalProps = {
   cvMarkdown: string;
 };
+
+const MAILTO_HREF = "mailto:emirotin@gmail.com?Subject=From+CV";
 
 const GREETING =
   "I am the personal assistant for Eugene Mirotin, a Senior / Staff Software Engineer based in Tallinn. I can answer recruiter questions from Eugene's CV and help open an email draft when it is time to follow up.";
@@ -408,7 +410,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
           return;
         }
 
-        writeSystem(term, await tool.run());
+        writeSystem(term, await tool.run({ source: "model" }));
         return;
       }
 
@@ -458,16 +460,19 @@ function createAssistantTools() {
   tools.set("send_email", {
     name: "send_email",
     description: "Open a mail client draft addressed to Eugene with the subject From CV.",
-    run: async () => {
-      const href = "mailto:emirotin@gmail.com?Subject=From+CV";
+    run: async (options) => {
+      if (options?.source === "model" && !hasActiveUserGesture()) {
+        return `The browser did not allow opening the email draft after the local model finished. Direct mailto link: ${MAILTO_HREF}`;
+      }
+
       const link = document.createElement("a");
-      link.href = href;
+      link.href = MAILTO_HREF;
       link.rel = "noopener";
       link.style.display = "none";
       document.body.append(link);
       link.click();
       link.remove();
-      return "Opened an email draft to emirotin@gmail.com.";
+      return "Requested your mail app to open a draft to emirotin@gmail.com.";
     },
   });
 
@@ -508,13 +513,43 @@ function hasWebGpu() {
 }
 
 async function maybeRunLocalCommand(text: string, tools: Map<string, AssistantTool>) {
-  const normalized = text.trim().toLowerCase();
-  if (!["/email", "email", "send email", "contact"].includes(normalized)) {
+  if (!isEmailToolRequest(text)) {
     return null;
   }
 
   const tool = tools.get("send_email");
-  return tool?.run() ?? null;
+  return tool?.run({ source: "direct" }) ?? null;
+}
+
+function isEmailToolRequest(text: string) {
+  const normalized = text
+    .trim()
+    .toLowerCase()
+    .replace(/[?!.,:;]+/g, " ")
+    .replace(/\s+/g, " ");
+
+  if (["/email", "email", "send email", "contact"].includes(normalized)) {
+    return true;
+  }
+
+  const asksContact =
+    /\b(contact|email|message|reach|follow up|get in touch)\b/.test(normalized) ||
+    /\bhow can i (contact|email|message|reach)\b/.test(normalized);
+  const targetsEugene = /\b(eugene|mirotin|him)\b/.test(normalized);
+
+  return asksContact && targetsEugene;
+}
+
+function hasActiveUserGesture() {
+  const userActivation = (
+    navigator as Navigator & {
+      userActivation?: {
+        isActive?: boolean;
+      };
+    }
+  ).userActivation;
+
+  return userActivation?.isActive ?? true;
 }
 
 function buildFallbackAnswer(userText: string, cvMarkdown: string) {

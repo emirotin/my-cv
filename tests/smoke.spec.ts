@@ -63,6 +63,36 @@ test("send_email tool clicks a mailto link", async ({ page }) => {
     .toBe("mailto:emirotin@gmail.com?Subject=From+CV");
 });
 
+test("natural contact request clicks a mailto link without waiting for the model", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const originalClick = HTMLAnchorElement.prototype.click;
+    HTMLAnchorElement.prototype.click = function clickAnchor() {
+      const typedWindow = window as Window & { __clickedMailto?: string };
+
+      if (this.href.startsWith("mailto:")) {
+        typedWindow.__clickedMailto = this.href;
+        return;
+      }
+
+      originalClick.call(this);
+    };
+  });
+
+  await page.goto("/?noai=1");
+  await expect(page.locator(".xterm")).toBeVisible();
+  await page.getByTestId("recruiter-terminal").click();
+  await page.keyboard.type("how can I contact him?");
+  await page.keyboard.press("Enter");
+
+  await expect
+    .poll(() =>
+      page.evaluate(() => (window as Window & { __clickedMailto?: string }).__clickedMailto),
+    )
+    .toBe("mailto:emirotin@gmail.com?Subject=From+CV");
+});
+
 test("eval page renders copyable report without auto-running in manual mode", async ({ page }) => {
   await page.goto("/eval?manual=1");
   await expect(page.getByRole("heading", { name: "CV Assistant Model Evaluation" })).toBeVisible();
