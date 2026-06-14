@@ -16,6 +16,7 @@
     "prepare": "node scripts/setup-git-hooks.mjs",
     "test:e2e": "playwright test",
     "test:prerender": "node scripts/assert-prerender.mjs",
+    "export:pdf": "node scripts/export-cv-pdf.mjs",
     "test:e2e:prod": "pnpm run build && PLAYWRIGHT_SERVER=preview playwright test --grep @prod",
     "test": "pnpm run test:e2e && pnpm run test:prerender"
   },
