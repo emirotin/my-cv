@@ -12,7 +12,7 @@ export const Route = createFileRoute("/cv")({
       { title: "Eugene Mirotin - CV" },
       {
         name: "description",
-        content: "Server-rendered CV for Eugene Mirotin, Senior / Staff Software Engineer.",
+        content: "Eugene Mirotin, Staff Software Engineer, CV.",
       },
     ],
   }),
@@ -30,7 +30,13 @@ function CvRoute() {
           <>
             <Button
               nativeButton={false}
-              render={<a href="https://github.com/emirotin" rel="noreferrer" target="_blank" />}
+              render={
+                <a
+                  href="https://github.com/emirotin"
+                  rel="noreferrer"
+                  target="_blank"
+                />
+              }
               size="sm"
               variant="outline"
             >
@@ -49,14 +55,17 @@ function CvRoute() {
       />
 
       <PageContent className="grid gap-8 py-8 lg:grid-cols-[minmax(0,1fr)_260px]">
-        <article className="cv-content" dangerouslySetInnerHTML={{ __html: cv.markup }} />
+        <article
+          className="cv-content"
+          dangerouslySetInnerHTML={{ __html: cv.markup }}
+        />
 
         <aside className="order-first lg:order-last">
           <div className="sticky top-6 space-y-4 rounded-lg bg-card p-4 text-card-foreground ring-1 ring-foreground/10">
             <div>
               <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <TerminalSquare className="size-4" aria-hidden="true" />
-                Server-rendered CV
+                Read the CV
               </div>
               <h2 className="mt-1 text-lg font-semibold">Contents</h2>
             </div>
@@ -73,11 +82,6 @@ function CvRoute() {
                   </a>
                 ))}
             </nav>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">SSR</Badge>
-              <Badge variant="secondary">Prerendered</Badge>
-              <Badge variant="outline">Markdown</Badge>
-            </div>
           </div>
         </aside>
       </PageContent>

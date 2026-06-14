@@ -1,5 +1,10 @@
 import type { ReactNode } from "react";
-import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Outlet,
+  Scripts,
+  createRootRoute,
+} from "@tanstack/react-router";
 import appStyles from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -16,7 +21,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "An interactive in-browser AI assistant and server-rendered CV for Eugene Mirotin.",
+          "Eugene Mirotin CV with an interactive in-browser AI assistant.",
       },
     ],
     links: [

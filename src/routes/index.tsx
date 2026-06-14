@@ -1,11 +1,22 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowRight, FileText, TerminalSquare } from "lucide-react";
 import { ContactCopyButton } from "@/components/contact-copy-button";
-import { PageContent, PageHeader, PageHeaderTitle, PageShell } from "@/components/page-layout";
+import {
+  PageContent,
+  PageHeader,
+  PageHeaderTitle,
+  PageShell,
+} from "@/components/page-layout";
 import { RecruiterTerminal } from "@/components/recruiter-terminal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getCvMarkdown } from "@/lib/cv";
 
@@ -34,7 +45,12 @@ function HomeRoute() {
       <PageHeader
         actions={
           <>
-            <Button nativeButton={false} render={<Link to="/cv" />} size="sm" variant="outline">
+            <Button
+              nativeButton={false}
+              render={<Link to="/cv" />}
+              size="sm"
+              variant="outline"
+            >
               <FileText aria-hidden="true" />
               CV
             </Button>
@@ -59,7 +75,9 @@ function HomeRoute() {
           <Card>
             <CardHeader>
               <CardTitle>Eugene Mirotin</CardTitle>
-              <CardDescription>Senior / Staff Software Engineer, Tallinn, remote.</CardDescription>
+              <CardDescription>
+                Staff Software Engineer, Tallinn, remote.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-wrap gap-2">
@@ -72,8 +90,9 @@ function HomeRoute() {
               </div>
               <Separator />
               <p className="text-sm leading-6 text-muted-foreground">
-                Full-stack engineer with 22 years in the software industry and 14+ years of hands-on
-                engineering experience, focused on ambiguous product and infrastructure problems.
+                Full-stack engineer with 22 years in the software industry and
+                14+ years of hands-on engineering experience, focused on
+                ambiguous product and infrastructure problems.
               </p>
               <Button
                 className="w-full justify-between"
@@ -81,7 +100,7 @@ function HomeRoute() {
                 render={<Link to="/cv" />}
                 variant="outline"
               >
-                Read the server-rendered CV
+                Read the CV
                 <ArrowRight aria-hidden="true" />
               </Button>
             </CardContent>
@@ -97,11 +116,16 @@ function HomeRoute() {
             <CardContent>
               <ul className="space-y-3 text-sm leading-6 text-muted-foreground">
                 <li>
-                  Streaming AI podcast generation across LLM, TTS, Redis URLs, and transcription.
+                  Streaming AI podcast generation across LLM, TTS, Redis URLs,
+                  and transcription.
                 </li>
-                <li>Zero-downtime Firestore to PostgreSQL migration for 20M+ records.</li>
                 <li>
-                  In-browser timeline editor architecture for TTS, media, and export workflows.
+                  Zero-downtime Firestore to PostgreSQL migration for 20M+
+                  records.
+                </li>
+                <li>
+                  In-browser timeline editor architecture for TTS, media, and
+                  export workflows.
                 </li>
               </ul>
             </CardContent>

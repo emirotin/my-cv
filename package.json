@@ -12,7 +12,8 @@
     "format:check": "oxfmt --check package.json tsconfig.json components.json vite.config.ts playwright.config.ts scripts 'src/**/*.ts' 'src/**/*.tsx' '!src/routeTree.gen.ts' 'tests/**/*.ts'",
     "quality": "pnpm run format:check && pnpm run lint && pnpm run typecheck",
     "test:e2e": "playwright test",
-    "test:prerender": "node scripts/assert-prerender.mjs"
+    "test:prerender": "node scripts/assert-prerender.mjs",
+    "test": "pnpm run test:e2e && pnpm run test:prerender"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
