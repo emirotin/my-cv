@@ -101,13 +101,14 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
         convertEol: true,
         cursorBlink: true,
         cursorStyle: "bar",
-        fontFamily: "'SFMono-Regular', 'Cascadia Code', 'Liberation Mono', Menlo, monospace",
+        fontFamily:
+          "'Geist Mono Variable', 'SFMono-Regular', 'Cascadia Code', 'Liberation Mono', Menlo, monospace",
         fontSize: 14,
         letterSpacing: 0,
         lineHeight: 1.45,
         rows: 28,
         theme: {
-          background: "#101112",
+          background: "transparent",
           black: "#101112",
           blue: "#5b8def",
           brightBlack: "#5f656f",
