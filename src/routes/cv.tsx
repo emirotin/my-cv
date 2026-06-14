@@ -5,6 +5,9 @@ import { DownloadCvPdfButton } from "@/components/download-cv-pdf-button";
 import { PageContent, PageHeader, PageShell } from "@/components/page-layout";
 import { Button } from "@/components/ui/button";
 import { getCvHtml } from "@/lib/cv";
+import { SITE_IMAGE } from "@/lib/site-metadata";
+
+const CV_DESCRIPTION = "A CV of Eugene Mirotin, Staff Software Engineer.";
 
 export const Route = createFileRoute("/cv")({
   head: () => ({
@@ -12,7 +15,31 @@ export const Route = createFileRoute("/cv")({
       { title: "Eugene Mirotin - CV" },
       {
         name: "description",
-        content: "Eugene Mirotin, Staff Software Engineer, CV.",
+        content: CV_DESCRIPTION,
+      },
+      {
+        property: "og:title",
+        content: "Eugene Mirotin - CV",
+      },
+      {
+        property: "og:description",
+        content: CV_DESCRIPTION,
+      },
+      {
+        property: "og:image",
+        content: SITE_IMAGE,
+      },
+      {
+        name: "twitter:title",
+        content: "Eugene Mirotin - CV",
+      },
+      {
+        name: "twitter:description",
+        content: CV_DESCRIPTION,
+      },
+      {
+        name: "twitter:image",
+        content: SITE_IMAGE,
       },
     ],
   }),

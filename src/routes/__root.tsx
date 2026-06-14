@@ -4,6 +4,14 @@ import { HeadContent, Link, Outlet, Scripts, createRootRoute } from "@tanstack/r
 import { ColorThemeSync } from "@/components/color-theme-sync";
 import { PageContent, PageHeader, PageShell } from "@/components/page-layout";
 import { Button } from "@/components/ui/button";
+import {
+  GOOGLE_ANALYTICS_ID,
+  GOOGLE_ANALYTICS_SCRIPT,
+  GOOGLE_SITE_VERIFICATION,
+  SITE_DESCRIPTION,
+  SITE_IMAGE,
+  SITE_TITLE,
+} from "@/lib/site-metadata";
 import { COLOR_THEME_BOOTSTRAP_SCRIPT } from "@/state/color-theme-store";
 import appStyles from "../styles.css?url";
 
@@ -16,17 +24,76 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Eugene Mirotin - CV Assistant",
+        httpEquiv: "X-UA-Compatible",
+        content: "IE=edge",
+      },
+      {
+        title: SITE_TITLE,
       },
       {
         name: "description",
-        content: "Eugene Mirotin CV with an interactive in-browser AI assistant.",
+        content: SITE_DESCRIPTION,
+      },
+      {
+        name: "google-site-verification",
+        content: GOOGLE_SITE_VERIFICATION,
+      },
+      {
+        property: "og:title",
+        content: SITE_TITLE,
+      },
+      {
+        property: "og:description",
+        content: SITE_DESCRIPTION,
+      },
+      {
+        property: "og:image",
+        content: SITE_IMAGE,
+      },
+      {
+        property: "og:type",
+        content: "profile",
+      },
+      {
+        name: "twitter:card",
+        content: "summary_large_image",
+      },
+      {
+        name: "twitter:title",
+        content: SITE_TITLE,
+      },
+      {
+        name: "twitter:description",
+        content: SITE_DESCRIPTION,
+      },
+      {
+        name: "twitter:image",
+        content: SITE_IMAGE,
       },
     ],
     links: [
       {
+        rel: "shortcut icon",
+        href: "/fav.ico",
+        type: "image/x-icon",
+      },
+      {
+        rel: "icon",
+        href: "/fav.ico",
+        type: "image/x-icon",
+      },
+      {
         rel: "stylesheet",
         href: appStyles,
+      },
+    ],
+    scripts: [
+      {
+        async: true,
+        src: `https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_ID}`,
+      },
+      {
+        children: GOOGLE_ANALYTICS_SCRIPT,
       },
     ],
   }),

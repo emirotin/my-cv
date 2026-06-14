@@ -1,5 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 
+const analyticsId = "G-QJ225E7TQE";
+const googleSiteVerification = "1a7IQKDRhoR_F_NmvHr3Njs5uB2rXhYaBBpswdcnQO4";
+
 const cvCandidates = [
   "dist/client/cv/index.html",
   "dist/client/cv.html",
@@ -27,15 +30,31 @@ if (!cvMatch) {
 
 const rootHtml = readFileSync(rootMatch, "utf8");
 
-if (!rootHtml.includes("<h1") || !rootHtml.includes("Eugene Mirotin CV")) {
-  throw new Error(`${rootMatch} does not contain the expected prerendered root HTML.`);
-}
+assertIncludes(rootMatch, rootHtml, "<h1");
+assertIncludes(rootMatch, rootHtml, "Eugene Mirotin CV");
 
 const cvHtml = readFileSync(cvMatch, "utf8");
 
-if (!cvHtml.includes("<h1") || !cvHtml.includes("Eugene Mirotin")) {
-  throw new Error(`${cvMatch} does not contain the expected prerendered CV HTML.`);
+assertIncludes(cvMatch, cvHtml, "<h1");
+assertIncludes(cvMatch, cvHtml, "Eugene Mirotin");
+
+for (const [match, html] of [
+  [rootMatch, rootHtml],
+  [cvMatch, cvHtml],
+]) {
+  assertIncludes(match, html, `https://www.googletagmanager.com/gtag/js?id=${analyticsId}`);
+  assertIncludes(match, html, `gtag("config", "${analyticsId}")`);
+  assertIncludes(match, html, `content="${googleSiteVerification}"`);
+  assertIncludes(match, html, `href="/fav.ico"`);
+  assertIncludes(match, html, `property="og:image" content="/images/me.jpg"`);
+  assertIncludes(match, html, `name="twitter:image" content="/images/me.jpg"`);
 }
 
 console.log(`Verified prerendered root HTML at ${rootMatch}`);
 console.log(`Verified prerendered CV HTML at ${cvMatch}`);
+
+function assertIncludes(match, html, expected) {
+  if (!html.includes(expected)) {
+    throw new Error(`${match} does not contain expected HTML: ${expected}`);
+  }
+}

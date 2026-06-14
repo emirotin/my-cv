@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getCvMarkdown } from "@/lib/cv";
+import { SITE_DESCRIPTION } from "@/lib/site-metadata";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -16,8 +17,23 @@ export const Route = createFileRoute("/")({
       { title: "Eugene Mirotin - Interactive CV Assistant" },
       {
         name: "description",
-        content:
-          "A terminal-style recruiter assistant powered by a browser-local LLM and Eugene Mirotin's CV.",
+        content: SITE_DESCRIPTION,
+      },
+      {
+        property: "og:title",
+        content: "Eugene Mirotin - Interactive CV Assistant",
+      },
+      {
+        property: "og:description",
+        content: SITE_DESCRIPTION,
+      },
+      {
+        name: "twitter:title",
+        content: "Eugene Mirotin - Interactive CV Assistant",
+      },
+      {
+        name: "twitter:description",
+        content: SITE_DESCRIPTION,
       },
     ],
   }),
