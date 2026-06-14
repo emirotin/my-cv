@@ -62,3 +62,12 @@ test("send_email tool clicks a mailto link", async ({ page }) => {
     )
     .toBe("mailto:emirotin@gmail.com?Subject=From+CV");
 });
+
+test("eval page renders copyable report without auto-running in manual mode", async ({ page }) => {
+  await page.goto("/eval?manual=1");
+  await expect(page.getByRole("heading", { name: "CV Assistant Model Evaluation" })).toBeVisible();
+  await expect(
+    page.locator("label").filter({ hasText: "Current baseline: Qwen2.5 0.5B q4f32" }),
+  ).toBeVisible();
+  await expect(page.locator("textarea")).toContainText("WebLLM CV Assistant Eval");
+});
