@@ -118,6 +118,27 @@ test("assistant does not show the prompt before model status resolves", async ({
   );
 });
 
+test("assistant falls back when WebGPU storage-buffer limit is too low", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window.navigator, "gpu", {
+      configurable: true,
+      value: {
+        requestAdapter: async () => ({
+          limits: {
+            maxStorageBuffersPerShaderStage: 8,
+          },
+        }),
+      },
+    });
+  });
+
+  await page.goto("/");
+  const rows = page.locator(".xterm-rows");
+  await expect(rows).toContainText("storage buffers per shader stage");
+  await expect(rows).toContainText("Continuing with CV search fallback");
+  await expect(rows).toContainText("recruiter>");
+});
+
 test("send_email tool prints plain contact details", async ({ page }) => {
   await page.goto("/?noai=1");
   await expect(page.locator(".xterm")).toBeVisible();

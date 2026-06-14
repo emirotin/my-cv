@@ -54,6 +54,7 @@ const PREFERRED_MODELS = [
   "Llama-3.2-1B-Instruct-q4f32_1-MLC",
   "Phi-3.5-mini-instruct-q4f16_1-MLC",
 ];
+const MIN_WEBLLM_STORAGE_BUFFERS_PER_SHADER_STAGE = 10;
 
 export function RecruiterTerminal({ className, cvMarkdown }: RecruiterTerminalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -219,8 +220,8 @@ export function RecruiterTerminal({ className, cvMarkdown }: RecruiterTerminalPr
       }
 
       engineStatus = "loading";
-      queueLoadingMessage("Preparing the local in-browser model...");
-      enginePromise = loadWebLlm((progress) => {
+      queueLoadingMessage("Checking local WebGPU support...");
+      enginePromise = loadCompatibleWebLlm((progress) => {
         const percent =
           typeof progress.progress === "number" ? Math.round(progress.progress * 100) : -1;
 
@@ -440,7 +441,19 @@ function createAssistantTools() {
   return tools;
 }
 
-async function loadWebLlm(onProgress: (progress: InitProgress) => void) {
+async function loadCompatibleWebLlm(onProgress: (progress: InitProgress) => void) {
+  const compatibility = await getWebLlmGpuCompatibility();
+
+  if (compatibility.status === "missing-adapter") {
+    throw new Error("WebGPU adapter is not available here.");
+  }
+
+  if (compatibility.status === "insufficient-storage-buffers") {
+    throw new Error(
+      `This browser's WebGPU adapter exposes ${compatibility.limit} storage buffers per shader stage, but the WebLLM runtime needs ${MIN_WEBLLM_STORAGE_BUFFERS_PER_SHADER_STAGE}.`,
+    );
+  }
+
   return createWebLlmEngine({
     onProgress,
     preferredModelIds: PREFERRED_MODELS,
@@ -458,6 +471,29 @@ function shouldLoadWebLlm() {
 
 function hasWebGpu() {
   return Boolean((navigator as Navigator & { gpu?: unknown }).gpu);
+}
+
+async function getWebLlmGpuCompatibility() {
+  const adapter = await navigator.gpu.requestAdapter();
+
+  if (!adapter) {
+    return {
+      status: "missing-adapter" as const,
+    };
+  }
+
+  if (
+    adapter.limits.maxStorageBuffersPerShaderStage < MIN_WEBLLM_STORAGE_BUFFERS_PER_SHADER_STAGE
+  ) {
+    return {
+      limit: adapter.limits.maxStorageBuffersPerShaderStage,
+      status: "insufficient-storage-buffers" as const,
+    };
+  }
+
+  return {
+    status: "compatible" as const,
+  };
 }
 
 async function maybeRunLocalCommand(text: string, tools: Map<string, AssistantTool>) {
