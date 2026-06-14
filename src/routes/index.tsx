@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, FileText, Mail, TerminalSquare } from "lucide-react";
+import { ArrowRight, FileText, TerminalSquare } from "lucide-react";
+import { ContactCopyButton } from "@/components/contact-copy-button";
 import { RecruiterTerminal } from "@/components/recruiter-terminal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -48,12 +49,7 @@ function HomeRoute() {
                   CV
                 </Link>
               </Button>
-              <Button asChild>
-                <a href="mailto:emirotin@gmail.com?Subject=From+CV">
-                  <Mail aria-hidden="true" />
-                  Email
-                </a>
-              </Button>
+              <ContactCopyButton />
             </div>
           </div>
 

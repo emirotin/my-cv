@@ -191,7 +191,7 @@ export const EVAL_CASES: Array<EvalCase> = [
       tool: "send_email",
     },
     id: "send-email",
-    prompt: "Please open an email draft so I can contact Eugene.",
+    prompt: "Please provide Eugene's contact details so I can follow up.",
     title: "Tool action instead of advice",
   },
 ];
@@ -216,7 +216,7 @@ export const ACTION_RESPONSE_SCHEMA = JSON.stringify({
 
 export const SEND_EMAIL_TOOL = {
   function: {
-    description: "Open a mail client draft addressed to Eugene with the subject From CV.",
+    description: "Provide Eugene's email address and the suggested subject line.",
     name: "send_email",
     parameters: {
       additionalProperties: false,
@@ -235,7 +235,7 @@ export function buildActionSystemPrompt(cvMarkdown: string) {
     ACTION_RESPONSE_SCHEMA,
     'For normal answers, return {"kind":"answer","answer":"...","tool":null}.',
     'When the recruiter wants to email, contact, message, or follow up with Eugene, return {"kind":"tool","answer":null,"tool":"send_email"}.',
-    "Never tell the recruiter to call a tool or send an email themselves; choose the tool response instead.",
+    "Never tell the recruiter to call a tool or handle contact details themselves; choose the tool response instead.",
     "",
     "CV:",
     cvMarkdown,

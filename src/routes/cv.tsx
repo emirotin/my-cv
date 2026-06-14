@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Code2, Mail, TerminalSquare } from "lucide-react";
+import { ArrowLeft, Code2, TerminalSquare } from "lucide-react";
+import { ContactCopyButton } from "@/components/contact-copy-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getCvHtml } from "@/lib/cv";
@@ -38,12 +39,7 @@ function CvRoute() {
                 GitHub
               </a>
             </Button>
-            <Button asChild size="sm">
-              <a href="mailto:emirotin@gmail.com?Subject=From+CV">
-                <Mail aria-hidden="true" />
-                Email
-              </a>
-            </Button>
+            <ContactCopyButton size="sm" />
           </div>
         </div>
       </header>

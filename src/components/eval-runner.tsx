@@ -593,7 +593,7 @@ async function runNativeToolEval(
         {
           content: buildNativeToolUserPrompt(
             cvMarkdown,
-            "Please open an email draft so I can contact Eugene.",
+            "Please provide Eugene's contact details so I can follow up.",
           ),
           role: "user",
         },

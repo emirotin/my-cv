@@ -1,11 +1,14 @@
 import { expect, test } from "@playwright/test";
 
+const contactText = "Email: emirotin@gmail.com\nSubject: From CV";
+
 test("cv route returns server-rendered html", async ({ page }) => {
   const response = await page.goto("/cv");
   expect(response?.ok()).toBe(true);
   expect(await response?.text()).toContain("<h1");
   await expect(page.getByRole("heading", { name: "Eugene Mirotin" })).toBeVisible();
   await expect(page.getByText("Senior / Staff Software Engineer")).toBeVisible();
+  await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
 });
 
 test("assistant terminal renders without loading the model in smoke mode", async ({ page }) => {
@@ -13,6 +16,18 @@ test("assistant terminal renders without loading the model in smoke mode", async
   await expect(page.getByRole("heading", { name: "Eugene Mirotin CV Assistant" })).toBeVisible();
   await expect(page.getByTestId("recruiter-terminal")).toBeVisible();
   await expect(page.locator(".xterm")).toBeVisible();
+});
+
+test("contact button copies plain contact details", async ({ page }) => {
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+
+  await page.goto("/");
+  await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
+  await expect(page.locator(".xterm")).toBeVisible();
+  await page.getByRole("button", { name: "Copy email contact details" }).click();
+
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(contactText);
+  await expect(page.getByRole("button", { name: "Copied email contact details" })).toBeVisible();
 });
 
 test("assistant does not show the prompt before model status resolves", async ({ page }) => {
@@ -35,19 +50,20 @@ test("assistant does not show the prompt before model status resolves", async ({
   );
 });
 
-test("send_email tool prints a mailto link", async ({ page }) => {
+test("send_email tool prints plain contact details", async ({ page }) => {
   await page.goto("/?noai=1");
   await expect(page.locator(".xterm")).toBeVisible();
   await page.getByTestId("recruiter-terminal").click();
   await page.keyboard.type("email");
   await page.keyboard.press("Enter");
 
-  await expect(page.locator(".xterm-rows")).toContainText(
-    "Email Eugene: mailto:emirotin@gmail.com?Subject=From+CV",
-  );
+  const rows = page.locator(".xterm-rows");
+  await expect(rows).toContainText("Email Eugene:");
+  await expect(rows).toContainText("Email: emirotin@gmail.com");
+  await expect(rows).toContainText("Subject: From CV");
 });
 
-test("natural contact request prints a mailto link without waiting for the model", async ({
+test("natural contact request prints plain contact details without waiting for the model", async ({
   page,
 }) => {
   await page.goto("/?noai=1");
@@ -56,9 +72,10 @@ test("natural contact request prints a mailto link without waiting for the model
   await page.keyboard.type("how can I contact him?");
   await page.keyboard.press("Enter");
 
-  await expect(page.locator(".xterm-rows")).toContainText(
-    "Email Eugene: mailto:emirotin@gmail.com?Subject=From+CV",
-  );
+  const rows = page.locator(".xterm-rows");
+  await expect(rows).toContainText("Email Eugene:");
+  await expect(rows).toContainText("Email: emirotin@gmail.com");
+  await expect(rows).toContainText("Subject: From CV");
 });
 
 test("eval page renders copyable report without auto-running in manual mode", async ({ page }) => {

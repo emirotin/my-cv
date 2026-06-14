@@ -4,6 +4,7 @@ import {
   buildActionSystemPrompt,
   parseActionResponse,
 } from "@/lib/eval-config";
+import { CONTACT_TERMINAL_TEXT } from "@/lib/contact";
 
 type ChatRole = "assistant" | "system" | "user";
 
@@ -53,49 +54,13 @@ type WebLlmEngine = {
 };
 
 type TerminalApi = {
-  buffer: {
-    active: {
-      getLine: (lineIndex: number) =>
-        | {
-            translateToString: (trimRight?: boolean) => string;
-          }
-        | undefined;
-    };
-  };
   dispose: () => void;
   focus: () => void;
   loadAddon: (addon: unknown) => void;
   onData: (callback: (data: string) => void) => { dispose: () => void };
   open: (element: HTMLElement) => void;
-  registerLinkProvider: (linkProvider: LinkProvider) => { dispose: () => void };
   write: (data: string) => void;
   writeln: (data: string) => void;
-};
-
-type LinkProvider = {
-  provideLinks: (
-    bufferLineNumber: number,
-    callback: (links: Array<TerminalLink> | undefined) => void,
-  ) => void;
-};
-
-type TerminalLink = {
-  activate: (_event: MouseEvent, text: string) => void;
-  decorations: {
-    pointerCursor: boolean;
-    underline: boolean;
-  };
-  range: {
-    end: {
-      x: number;
-      y: number;
-    };
-    start: {
-      x: number;
-      y: number;
-    };
-  };
-  text: string;
 };
 
 type FitAddonApi = {
@@ -112,10 +77,8 @@ type RecruiterTerminalProps = {
   cvMarkdown: string;
 };
 
-const MAILTO_HREF = "mailto:emirotin@gmail.com?Subject=From+CV";
-
 const GREETING =
-  "I am the personal assistant for Eugene Mirotin, a Senior / Staff Software Engineer based in Tallinn. I can answer recruiter questions from Eugene's CV and help open an email draft when it is time to follow up.";
+  "I am the personal assistant for Eugene Mirotin, a Senior / Staff Software Engineer based in Tallinn. I can answer recruiter questions from Eugene's CV and provide Eugene's contact details when it is time to follow up.";
 
 const DEFAULT_MODEL_ID = "Qwen2.5-1.5B-Instruct-q4f32_1-MLC";
 
@@ -131,7 +94,6 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
   useEffect(() => {
     let disposed = false;
     let dataSubscription: { dispose: () => void } | undefined;
-    let linkProviderDisposable: { dispose: () => void } | undefined;
     let resizeObserver: ResizeObserver | undefined;
     let terminal: TerminalApi | undefined;
     let inputBuffer = "";
@@ -207,7 +169,6 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
       terminal = term;
       term.loadAddon(fitAddon);
       term.open(containerRef.current);
-      linkProviderDisposable = term.registerLinkProvider(createMailtoLinkProvider(term));
       fitAddon.fit();
       term.focus();
 
@@ -476,7 +437,6 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
     return () => {
       disposed = true;
       dataSubscription?.dispose();
-      linkProviderDisposable?.dispose();
       resizeObserver?.disconnect();
       terminal?.dispose();
     };
@@ -498,60 +458,11 @@ function createAssistantTools() {
 
   tools.set("send_email", {
     name: "send_email",
-    description: "Print a clickable mailto link addressed to Eugene with the subject From CV.",
-    run: async () => `Email Eugene: ${MAILTO_HREF}`,
+    description: "Print Eugene's email address and the suggested subject line.",
+    run: async () => CONTACT_TERMINAL_TEXT,
   });
 
   return tools;
-}
-
-function createMailtoLinkProvider(term: TerminalApi): LinkProvider {
-  return {
-    provideLinks: (bufferLineNumber, callback) => {
-      const lineText = term.buffer.active.getLine(bufferLineNumber - 1)?.translateToString(true);
-
-      if (!lineText) {
-        callback(undefined);
-        return;
-      }
-
-      const links = findMailtoLinks(lineText, bufferLineNumber);
-      callback(links.length > 0 ? links : undefined);
-    },
-  };
-}
-
-function findMailtoLinks(lineText: string, bufferLineNumber: number) {
-  const links: Array<TerminalLink> = [];
-  const mailtoPattern = /mailto:[^\s]+/g;
-
-  for (const match of lineText.matchAll(mailtoPattern)) {
-    const text = match[0];
-    const startIndex = match.index ?? 0;
-
-    links.push({
-      activate: (_event, linkText) => {
-        window.location.href = linkText;
-      },
-      decorations: {
-        pointerCursor: true,
-        underline: true,
-      },
-      range: {
-        end: {
-          x: startIndex + text.length + 1,
-          y: bufferLineNumber,
-        },
-        start: {
-          x: startIndex + 1,
-          y: bufferLineNumber,
-        },
-      },
-      text,
-    });
-  }
-
-  return links;
 }
 
 async function loadWebLlm(onProgress: (progress: InitProgress) => void) {
