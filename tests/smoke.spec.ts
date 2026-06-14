@@ -7,9 +7,16 @@ test("cv route returns server-rendered html", async ({ page }) => {
   const response = await page.goto("/cv");
   expect(response?.ok()).toBe(true);
   expect(await response?.text()).toContain("<h1");
-  await expect(page.getByRole("heading", { name: "Eugene Mirotin" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Eugene Mirotin" })).toBeVisible();
   await expect(page.getByText("Staff Software Engineer")).toBeVisible();
   await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
+
+  const downloadLink = page
+    .locator('a[download="eugene_mirotin_cv.pdf"]')
+    .filter({ hasText: "Download PDF" });
+  await expect(downloadLink).toBeVisible();
+  await expect(downloadLink).toHaveAttribute("download", "eugene_mirotin_cv.pdf");
+  await expect(downloadLink).toHaveAttribute("href", /eugene_mirotin_cv.*\.pdf/);
 });
 
 test("unknown route renders the app not found page", async ({ page }) => {
@@ -23,9 +30,16 @@ test("unknown route renders the app not found page", async ({ page }) => {
 
 test("assistant terminal renders without loading the model in smoke mode", async ({ page }) => {
   await page.goto("/?noai=1");
-  await expect(page.getByRole("heading", { name: "Eugene Mirotin CV Assistant" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Eugene Mirotin CV" })).toBeVisible();
   await expect(page.getByTestId("recruiter-terminal")).toBeVisible();
   await expect(page.locator(".xterm")).toBeVisible();
+
+  const downloadLink = page
+    .locator('a[download="eugene_mirotin_cv.pdf"]')
+    .filter({ hasText: "Download PDF" });
+  await expect(downloadLink).toBeVisible();
+  await expect(downloadLink).toHaveAttribute("download", "eugene_mirotin_cv.pdf");
+  await expect(downloadLink).toHaveAttribute("href", /eugene_mirotin_cv.*\.pdf/);
 });
 
 test("contact button copies plain contact details", async ({ page }) => {

@@ -1,6 +1,7 @@
 import { RiArrowLeftLine, RiCodeLine } from "@remixicon/react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ContactCopyButton } from "@/components/contact-copy-button";
+import { DownloadCvPdfButton } from "@/components/download-cv-pdf-button";
 import { PageContent, PageHeader, PageShell } from "@/components/page-layout";
 import { Button } from "@/components/ui/button";
 import { getCvHtml } from "@/lib/cv";
@@ -27,6 +28,7 @@ function CvRoute() {
       <PageHeader
         actions={
           <>
+            <DownloadCvPdfButton size="sm" />
             <Button
               nativeButton={false}
               render={<a href="https://github.com/emirotin" rel="noreferrer" target="_blank" />}

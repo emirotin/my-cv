@@ -1,6 +1,7 @@
 import { RiArrowRightLine, RiFileTextLine, RiTerminalBoxLine } from "@remixicon/react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ContactCopyButton } from "@/components/contact-copy-button";
+import { DownloadCvPdfButton } from "@/components/download-cv-pdf-button";
 import { PageContent, PageHeader, PageShell } from "@/components/page-layout";
 import { RecruiterTerminal } from "@/components/recruiter-terminal";
 import { Badge } from "@/components/ui/badge";
@@ -76,15 +77,18 @@ function HomeRoute() {
                 Full-stack engineer with 22 years in the software industry and 14+ years of hands-on
                 engineering experience, focused on ambiguous product and infrastructure problems.
               </p>
-              <Button
-                className="w-full justify-between"
-                nativeButton={false}
-                render={<Link to="/cv" />}
-                variant="outline"
-              >
-                Read the CV
-                <RiArrowRightLine aria-hidden="true" />
-              </Button>
+              <div className="grid gap-2">
+                <Button
+                  className="w-full justify-between"
+                  nativeButton={false}
+                  render={<Link to="/cv" />}
+                  variant="outline"
+                >
+                  Read the CV
+                  <RiArrowRightLine aria-hidden="true" />
+                </Button>
+                <DownloadCvPdfButton className="w-full" />
+              </div>
             </CardContent>
           </Card>
 
