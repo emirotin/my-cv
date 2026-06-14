@@ -9,9 +9,12 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const repoRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+);
 const inputPath = path.join(repoRoot, "cv", "cv_brief.md");
-const outputPath = path.join(repoRoot, "eugene_mirotin_cv.pdf");
+const outputPath = path.join(repoRoot, "cv", "eugene_mirotin_cv.pdf");
 
 const markdown = await readFile(inputPath, "utf8");
 const html = String(
@@ -46,7 +49,9 @@ try {
   await browser.close();
 }
 
-console.log(`Printed ${path.relative(repoRoot, inputPath)} to ${path.relative(repoRoot, outputPath)}`);
+console.log(
+  `Printed ${path.relative(repoRoot, inputPath)} to ${path.relative(repoRoot, outputPath)}`,
+);
 
 function renderDocument(content) {
   return `<!doctype html>
@@ -57,7 +62,7 @@ function renderDocument(content) {
     <style>
       @page {
         size: Letter;
-        margin: 0.55in 0.62in;
+        margin: 0.5in 0.25in 0.25in 0.5in;
       }
 
       :root {
@@ -98,8 +103,7 @@ function renderDocument(content) {
 
       h2 {
         margin: 12pt 0 4.5pt;
-        padding-bottom: 2.5pt;
-        border-bottom: 0.6pt solid #cbd5e1;
+        padding-bottom: 1.5pt;
         font-size: 12pt;
         font-weight: 750;
       }

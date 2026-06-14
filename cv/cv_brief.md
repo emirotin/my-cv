@@ -52,7 +52,7 @@ Full-stack software engineer with 22 years in the software industry and 14+ year
 *German construction-tech company digitizing standards compliance, bills of material, and procurement workflows.*
  
 - Replaced third-party PDF export service (€2–3K/mo) with in-house Headless Chromium solution — eliminated page-count limits, reduced export times from minutes to seconds.
-- Built a complex spreadsheet-like Bill of Materials component with nested groups, validations, formulas, and Excel/PDF exports as part of a six-engineer team.
+- Worked on complex spreadsheet-like Bill of Materials component with nested groups, validations, formulas, and Excel/PDF exports as part of a six-engineer team.
 ---
  
 ### Software Engineer · Play North · 2018 – 2022

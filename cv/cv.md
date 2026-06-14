@@ -56,7 +56,7 @@ Full-stack software engineer with 22 years in the software industry and 14+ year
  
 *Online entertainment platform. Owned the full technical stack end-to-end as the primary individual contributor and team lead (1–3 direct reports).*
  
-- Introduced Payload CMS and built the integration layer pulling content from CMS, external game catalogs, and SEO metadata into a Next.js frontend.
+- Introduced Payload CMS and built the integration layer pulling content from headless CMS, external game catalogs, and SEO metadata into a Next.js frontend.
 - Managed cross-functional coordination between marketing, SEO, and game catalog teams, designing systems that gave each group autonomous control over their domain.
 ---
  
