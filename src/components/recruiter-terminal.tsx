@@ -5,52 +5,17 @@ import {
   parseActionResponse,
 } from "@/lib/eval-config";
 import { CONTACT_TERMINAL_TEXT } from "@/lib/contact";
+import {
+  createWebLlmEngine,
+  type InitProgress,
+  type WebLlmEngine,
+} from "@/lib/webllm-worker-client";
 
 type ChatRole = "assistant" | "system" | "user";
 
 type ChatMessage = {
   role: ChatRole;
   content: string;
-};
-
-type InitProgress = {
-  progress?: number;
-  text?: string;
-};
-
-type WebLlmModule = {
-  CreateWebWorkerMLCEngine: (
-    worker: Worker,
-    modelId: string,
-    config: {
-      initProgressCallback?: (progress: InitProgress) => void;
-    },
-  ) => Promise<WebLlmEngine>;
-  prebuiltAppConfig?: {
-    model_list?: Array<{ model_id: string }>;
-  };
-};
-
-type WebLlmEngine = {
-  chat: {
-    completions: {
-      create: (request: {
-        messages: Array<ChatMessage>;
-        temperature?: number;
-        max_tokens?: number;
-        response_format?: {
-          schema?: string;
-          type: "json_object";
-        };
-      }) => Promise<{
-        choices: Array<{
-          message?: {
-            content?: string;
-          };
-        }>;
-      }>;
-    };
-  };
 };
 
 type TerminalApi = {
@@ -436,6 +401,10 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
 
     return () => {
       disposed = true;
+      void enginePromise?.then(async (engine) => {
+        await engine?.unload().catch(() => undefined);
+        engine?.terminate();
+      });
       dataSubscription?.dispose();
       resizeObserver?.disconnect();
       terminal?.dispose();
@@ -466,23 +435,10 @@ function createAssistantTools() {
 }
 
 async function loadWebLlm(onProgress: (progress: InitProgress) => void) {
-  const webllm = (await import("@mlc-ai/web-llm")) as WebLlmModule;
-  const modelId = selectModelId(webllm);
-  const worker = new Worker(new URL("../workers/webllm.worker.ts", import.meta.url), {
-    type: "module",
+  return createWebLlmEngine({
+    onProgress,
+    preferredModelIds: PREFERRED_MODELS,
   });
-
-  return webllm.CreateWebWorkerMLCEngine(worker, modelId, {
-    initProgressCallback: onProgress,
-  });
-}
-
-function selectModelId(webllm: WebLlmModule) {
-  const models = webllm.prebuiltAppConfig?.model_list ?? [];
-  const modelIds = new Set(models.map((model) => model.model_id));
-  const preferredModel = PREFERRED_MODELS.find((modelId) => modelIds.has(modelId));
-
-  return preferredModel ?? models.at(0)?.model_id ?? DEFAULT_MODEL_ID;
 }
 
 function shouldLoadWebLlm() {

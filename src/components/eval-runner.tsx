@@ -23,70 +23,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import {
+  createWebLlmEngine,
+  type ChatCompletionRequest,
+  type WebLlmEngine,
+} from "@/lib/webllm-worker-client";
 
 type EvalRunnerProps = {
   cvMarkdown: string;
   manual?: boolean;
-};
-
-type InitProgress = {
-  progress?: number;
-  text?: string;
-};
-
-type ChatMessage = {
-  role: "system" | "user";
-  content: string;
-};
-
-type ChatCompletionRequest = {
-  messages: Array<ChatMessage>;
-  temperature?: number;
-  max_tokens?: number;
-  seed?: number;
-  response_format?: {
-    type: "json_object";
-    schema?: string;
-  };
-  tools?: Array<typeof SEND_EMAIL_TOOL>;
-  tool_choice?: "auto" | "none";
-  extra_body?: {
-    enable_thinking?: boolean;
-  };
-};
-
-type WebLlmModule = {
-  CreateWebWorkerMLCEngine: (
-    worker: Worker,
-    modelId: string,
-    config: {
-      initProgressCallback?: (progress: InitProgress) => void;
-    },
-  ) => Promise<WebLlmEngine>;
-};
-
-type WebLlmEngine = {
-  chat: {
-    completions: {
-      create: (request: ChatCompletionRequest) => Promise<ChatCompletionResponse>;
-    };
-  };
-  unload?: () => Promise<void>;
-};
-
-type ChatCompletionResponse = {
-  choices: Array<{
-    finish_reason?: string;
-    message?: {
-      content?: string | null;
-      tool_calls?: Array<{
-        function?: {
-          name?: string;
-          arguments?: string;
-        };
-      }>;
-    };
-  }>;
 };
 
 type GpuEnvironment = {
@@ -484,7 +429,6 @@ async function runOneModel(
   stopRequestedRef: React.MutableRefObject<boolean>,
 ) {
   const startedAt = performance.now();
-  let worker: Worker | null = null;
   let engine: WebLlmEngine | null = null;
 
   updateModelRun(model.id, {
@@ -495,13 +439,10 @@ async function runOneModel(
   });
 
   try {
-    const webllm = (await import("@mlc-ai/web-llm")) as WebLlmModule;
-    worker = new Worker(new URL("../workers/webllm.worker.ts", import.meta.url), {
-      type: "module",
-    });
     const loadStartedAt = performance.now();
-    engine = await webllm.CreateWebWorkerMLCEngine(worker, model.id, {
-      initProgressCallback: (progress) => {
+    engine = await createWebLlmEngine({
+      modelId: model.id,
+      onProgress: (progress) => {
         const percent =
           typeof progress.progress === "number" ? Math.round(progress.progress * 100) : null;
         const text = progress.text ?? "Loading model";
@@ -577,8 +518,8 @@ async function runOneModel(
       totalMs: performance.now() - startedAt,
     });
   } finally {
-    await engine?.unload?.().catch(() => undefined);
-    worker?.terminate();
+    await engine?.unload().catch(() => undefined);
+    engine?.terminate();
   }
 }
 
