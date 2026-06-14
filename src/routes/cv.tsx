@@ -47,7 +47,7 @@ function CvRoute() {
         }
       />
 
-      <PageContent className="grid gap-8 py-8 lg:grid-cols-[minmax(0,1fr)_260px]">
+      <PageContent className="grid gap-5 py-8 lg:grid-cols-[minmax(0,1fr)_260px]">
         <article className="cv-content" dangerouslySetInnerHTML={{ __html: cv.markup }} />
 
         <aside className="order-first lg:order-last">
