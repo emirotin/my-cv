@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const contactText = "Email: emirotin@gmail.com\nSubject: From CV";
+const runsAgainstPreview = process.env.PLAYWRIGHT_SERVER === "preview";
 
 test("cv route returns server-rendered html", async ({ page }) => {
   const response = await page.goto("/cv");
@@ -79,10 +80,20 @@ test("natural contact request prints plain contact details without waiting for t
 });
 
 test("eval page renders copyable report without auto-running in manual mode", async ({ page }) => {
+  test.skip(runsAgainstPreview, "eval route is local dev only");
+
   await page.goto("/eval?manual=1");
   await expect(page.getByRole("heading", { name: "CV Assistant Model Evaluation" })).toBeVisible();
   await expect(
     page.locator("label").filter({ hasText: "Current baseline: Qwen2.5 0.5B q4f32" }),
   ).toBeVisible();
   await expect(page.locator("textarea")).toContainText("WebLLM CV Assistant Eval");
+});
+
+test("eval page is unavailable outside local dev @prod", async ({ page }) => {
+  test.skip(!runsAgainstPreview, "production preview only");
+
+  const response = await page.goto("/eval?manual=1");
+  expect(response?.status()).toBe(404);
+  await expect(page.getByRole("heading", { name: "CV Assistant Model Evaluation" })).toHaveCount(0);
 });

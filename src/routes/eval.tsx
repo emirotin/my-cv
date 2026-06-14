@@ -1,11 +1,16 @@
 import { RiArrowLeftLine } from "@remixicon/react";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import { EvalRunner } from "@/components/eval-runner";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { getCvMarkdown } from "@/lib/cv";
 
 export const Route = createFileRoute("/eval")({
+  beforeLoad: () => {
+    if (!import.meta.env.DEV) {
+      throw notFound();
+    }
+  },
   head: () => ({
     meta: [
       { title: "Eugene Mirotin - WebLLM Eval" },

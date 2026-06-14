@@ -97,7 +97,8 @@ function HomeRoute() {
             <CardContent>
               <ul className="space-y-3 text-sm leading-6 text-muted-foreground">
                 <li>
-                  Streaming AI podcast generation across LLM, TTS, Redis URLs, and transcription.
+                  Streaming AI podcast generation across LLM, TTS, live transcription, Redis
+                  Streams, and SSE.
                 </li>
                 <li>Zero-downtime Firestore to PostgreSQL migration for 20M+ records.</li>
                 <li>
