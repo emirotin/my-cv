@@ -445,7 +445,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
   return (
     <div
       aria-label="Recruiter assistant terminal"
-      className="h-full min-h-[460px] overflow-hidden rounded-lg border border-stone-800 bg-[#101112] shadow-2xl"
+      className="h-full min-h-[460px] overflow-hidden rounded-xl border border-stone-800 bg-[#101112] shadow-2xl"
       data-testid="recruiter-terminal"
       ref={containerRef}
       role="application"

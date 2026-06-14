@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowRight, FileText, TerminalSquare } from "lucide-react";
 import { ContactCopyButton } from "@/components/contact-copy-button";
+import { PageContent, PageHeader, PageHeaderTitle, PageShell } from "@/components/page-layout";
 import { RecruiterTerminal } from "@/components/recruiter-terminal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,34 +30,32 @@ function HomeRoute() {
   const { cvMarkdown } = Route.useLoaderData();
 
   return (
-    <main className="min-h-svh bg-background text-foreground">
-      <div className="grid min-h-svh gap-5 px-4 py-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-8">
-        <section className="flex min-h-[calc(100svh-2rem)] flex-col">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <TerminalSquare className="size-4" aria-hidden="true" />
-                Local recruiter console
-              </div>
-              <h1 className="mt-1 text-2xl font-semibold tracking-normal text-foreground sm:text-3xl">
-                Eugene Mirotin CV Assistant
-              </h1>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button nativeButton={false} render={<Link to="/cv" />} variant="outline">
-                <FileText aria-hidden="true" />
-                CV
-              </Button>
-              <ContactCopyButton />
-            </div>
-          </div>
+    <PageShell>
+      <PageHeader
+        actions={
+          <>
+            <Button nativeButton={false} render={<Link to="/cv" />} size="sm" variant="outline">
+              <FileText aria-hidden="true" />
+              CV
+            </Button>
+            <ContactCopyButton size="sm" />
+          </>
+        }
+        leading={
+          <PageHeaderTitle
+            eyebrow="Local recruiter console"
+            icon={<TerminalSquare className="size-4" aria-hidden="true" />}
+            title="Eugene Mirotin CV Assistant"
+          />
+        }
+      />
 
-          <div className="min-h-[460px] flex-1">
-            <RecruiterTerminal cvMarkdown={cvMarkdown} />
-          </div>
+      <PageContent className="grid gap-5 py-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <section className="min-h-[460px] lg:min-h-[calc(100svh-8.5rem)]">
+          <RecruiterTerminal cvMarkdown={cvMarkdown} />
         </section>
 
-        <aside className="space-y-4 lg:py-[4.25rem]">
+        <aside className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Eugene Mirotin</CardTitle>
@@ -108,7 +107,7 @@ function HomeRoute() {
             </CardContent>
           </Card>
         </aside>
-      </div>
-    </main>
+      </PageContent>
+    </PageShell>
   );
 }

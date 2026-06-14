@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, Code2, TerminalSquare } from "lucide-react";
 import { ContactCopyButton } from "@/components/contact-copy-button";
+import { PageContent, PageHeader, PageShell } from "@/components/page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getCvHtml } from "@/lib/cv";
@@ -23,14 +24,10 @@ function CvRoute() {
   const cv = Route.useLoaderData();
 
   return (
-    <main className="min-h-svh bg-background text-foreground">
-      <header className="border-b bg-muted/30">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
-          <Button nativeButton={false} render={<Link to="/" />} variant="ghost">
-            <ArrowLeft aria-hidden="true" />
-            Assistant
-          </Button>
-          <div className="flex flex-wrap items-center gap-2">
+    <PageShell>
+      <PageHeader
+        actions={
+          <>
             <Button
               nativeButton={false}
               render={<a href="https://github.com/emirotin" rel="noreferrer" target="_blank" />}
@@ -41,11 +38,17 @@ function CvRoute() {
               GitHub
             </Button>
             <ContactCopyButton size="sm" />
-          </div>
-        </div>
-      </header>
+          </>
+        }
+        leading={
+          <Button nativeButton={false} render={<Link to="/" />} variant="ghost">
+            <ArrowLeft aria-hidden="true" />
+            Assistant
+          </Button>
+        }
+      />
 
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_260px] lg:px-8">
+      <PageContent className="grid gap-8 py-8 lg:grid-cols-[minmax(0,1fr)_260px]">
         <article className="cv-content" dangerouslySetInnerHTML={{ __html: cv.markup }} />
 
         <aside className="order-first lg:order-last">
@@ -77,7 +80,7 @@ function CvRoute() {
             </div>
           </div>
         </aside>
-      </div>
-    </main>
+      </PageContent>
+    </PageShell>
   );
 }
