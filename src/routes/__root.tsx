@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
-import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import { RiArrowLeftLine, RiErrorWarningLine, RiFileTextLine } from "@remixicon/react";
+import { HeadContent, Link, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { ColorThemeSync } from "@/components/color-theme-sync";
+import { PageContent, PageHeader, PageShell } from "@/components/page-layout";
+import { Button } from "@/components/ui/button";
 import { COLOR_THEME_BOOTSTRAP_SCRIPT } from "@/state/color-theme-store";
 import appStyles from "../styles.css?url";
 
@@ -28,6 +31,7 @@ export const Route = createRootRoute({
     ],
   }),
   component: RootComponent,
+  notFoundComponent: NotFoundRoute,
 });
 
 function RootComponent() {
@@ -51,5 +55,40 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <Scripts />
       </body>
     </html>
+  );
+}
+
+function NotFoundRoute() {
+  return (
+    <PageShell>
+      <PageHeader
+        actions={
+          <Button nativeButton={false} render={<Link to="/cv" />} size="sm" variant="outline">
+            <RiFileTextLine aria-hidden="true" />
+            CV
+          </Button>
+        }
+        leading={
+          <div className="flex h-8 items-center gap-2 text-sm font-medium text-muted-foreground">
+            <RiErrorWarningLine className="size-4" aria-hidden="true" />
+            Page not found
+          </div>
+        }
+      />
+
+      <PageContent className="py-14">
+        <section className="max-w-xl space-y-4">
+          <div className="text-sm font-medium text-muted-foreground">404</div>
+          <h2 className="text-3xl font-semibold tracking-normal text-foreground">Page not found</h2>
+          <p className="text-sm leading-6 text-muted-foreground">
+            This CV assistant does not have a page at the requested address.
+          </p>
+          <Button nativeButton={false} render={<Link to="/" />}>
+            <RiArrowLeftLine aria-hidden="true" />
+            Assistant
+          </Button>
+        </section>
+      </PageContent>
+    </PageShell>
   );
 }

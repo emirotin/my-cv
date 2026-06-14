@@ -12,6 +12,15 @@ test("cv route returns server-rendered html", async ({ page }) => {
   await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
 });
 
+test("unknown route renders the app not found page", async ({ page }) => {
+  await page.goto("/missing-route");
+
+  await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
+  await expect(page.getByText("This CV assistant does not have a page")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Assistant" })).toBeVisible();
+  await expect(page.locator("p").filter({ hasText: "Not Found" })).toHaveCount(0);
+});
+
 test("assistant terminal renders without loading the model in smoke mode", async ({ page }) => {
   await page.goto("/?noai=1");
   await expect(page.getByRole("heading", { name: "Eugene Mirotin CV Assistant" })).toBeVisible();
@@ -95,5 +104,6 @@ test("eval page is unavailable outside local dev @prod", async ({ page }) => {
 
   const response = await page.goto("/eval?manual=1");
   expect(response?.status()).toBe(404);
+  await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "CV Assistant Model Evaluation" })).toHaveCount(0);
 });
