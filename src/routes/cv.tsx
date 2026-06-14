@@ -2,7 +2,6 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, Code2, TerminalSquare } from "lucide-react";
 import { ContactCopyButton } from "@/components/contact-copy-button";
 import { PageContent, PageHeader, PageShell } from "@/components/page-layout";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getCvHtml } from "@/lib/cv";
 
@@ -30,13 +29,7 @@ function CvRoute() {
           <>
             <Button
               nativeButton={false}
-              render={
-                <a
-                  href="https://github.com/emirotin"
-                  rel="noreferrer"
-                  target="_blank"
-                />
-              }
+              render={<a href="https://github.com/emirotin" rel="noreferrer" target="_blank" />}
               size="sm"
               variant="outline"
             >
@@ -55,10 +48,7 @@ function CvRoute() {
       />
 
       <PageContent className="grid gap-8 py-8 lg:grid-cols-[minmax(0,1fr)_260px]">
-        <article
-          className="cv-content"
-          dangerouslySetInnerHTML={{ __html: cv.markup }}
-        />
+        <article className="cv-content" dangerouslySetInnerHTML={{ __html: cv.markup }} />
 
         <aside className="order-first lg:order-last">
           <div className="sticky top-6 space-y-4 rounded-lg bg-card p-4 text-card-foreground ring-1 ring-foreground/10">

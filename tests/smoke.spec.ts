@@ -6,20 +6,14 @@ test("cv route returns server-rendered html", async ({ page }) => {
   const response = await page.goto("/cv");
   expect(response?.ok()).toBe(true);
   expect(await response?.text()).toContain("<h1");
-  await expect(
-    page.getByRole("heading", { name: "Eugene Mirotin" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Eugene Mirotin" })).toBeVisible();
   await expect(page.getByText("Staff Software Engineer")).toBeVisible();
   await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
 });
 
-test("assistant terminal renders without loading the model in smoke mode", async ({
-  page,
-}) => {
+test("assistant terminal renders without loading the model in smoke mode", async ({ page }) => {
   await page.goto("/?noai=1");
-  await expect(
-    page.getByRole("heading", { name: "Eugene Mirotin CV Assistant" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Eugene Mirotin CV Assistant" })).toBeVisible();
   await expect(page.getByTestId("recruiter-terminal")).toBeVisible();
   await expect(page.locator(".xterm")).toBeVisible();
 });
@@ -30,21 +24,13 @@ test("contact button copies plain contact details", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
   await expect(page.locator(".xterm")).toBeVisible();
-  await page
-    .getByRole("button", { name: "Copy email contact details" })
-    .click();
+  await page.getByRole("button", { name: "Copy email contact details" }).click();
 
-  await expect
-    .poll(() => page.evaluate(() => navigator.clipboard.readText()))
-    .toBe(contactText);
-  await expect(
-    page.getByRole("button", { name: "Copied email contact details" }),
-  ).toBeVisible();
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(contactText);
+  await expect(page.getByRole("button", { name: "Copied email contact details" })).toBeVisible();
 });
 
-test("assistant does not show the prompt before model status resolves", async ({
-  page,
-}) => {
+test("assistant does not show the prompt before model status resolves", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(window.navigator, "gpu", {
       configurable: true,
@@ -92,19 +78,11 @@ test("natural contact request prints plain contact details without waiting for t
   await expect(rows).toContainText("Subject: From CV");
 });
 
-test("eval page renders copyable report without auto-running in manual mode", async ({
-  page,
-}) => {
+test("eval page renders copyable report without auto-running in manual mode", async ({ page }) => {
   await page.goto("/eval?manual=1");
+  await expect(page.getByRole("heading", { name: "CV Assistant Model Evaluation" })).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "CV Assistant Model Evaluation" }),
+    page.locator("label").filter({ hasText: "Current baseline: Qwen2.5 0.5B q4f32" }),
   ).toBeVisible();
-  await expect(
-    page
-      .locator("label")
-      .filter({ hasText: "Current baseline: Qwen2.5 0.5B q4f32" }),
-  ).toBeVisible();
-  await expect(page.locator("textarea")).toContainText(
-    "WebLLM CV Assistant Eval",
-  );
+  await expect(page.locator("textarea")).toContainText("WebLLM CV Assistant Eval");
 });

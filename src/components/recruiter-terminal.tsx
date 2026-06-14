@@ -136,8 +136,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
         convertEol: true,
         cursorBlink: true,
         cursorStyle: "bar",
-        fontFamily:
-          "'SFMono-Regular', 'Cascadia Code', 'Liberation Mono', Menlo, monospace",
+        fontFamily: "'SFMono-Regular', 'Cascadia Code', 'Liberation Mono', Menlo, monospace",
         fontSize: 14,
         letterSpacing: 0,
         lineHeight: 1.45,
@@ -239,9 +238,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
     function startEngineLoad() {
       if (!shouldLoadWebLlm()) {
         engineStatus = "fallback";
-        queueLoadingMessage(
-          "Local model loading skipped; using CV search fallback.",
-        );
+        queueLoadingMessage("Local model loading skipped; using CV search fallback.");
         return;
       }
 
@@ -257,9 +254,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
       queueLoadingMessage("Preparing the local in-browser model...");
       enginePromise = loadWebLlm((progress) => {
         const percent =
-          typeof progress.progress === "number"
-            ? Math.round(progress.progress * 100)
-            : -1;
+          typeof progress.progress === "number" ? Math.round(progress.progress * 100) : -1;
 
         if (percent >= 0 && percent !== lastProgressPercent) {
           lastProgressPercent = percent;
@@ -291,9 +286,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
           }
 
           engineStatus = "fallback";
-          queueLoadingMessage(
-            `Local model failed to initialize: ${getErrorMessage(error)}`,
-          );
+          queueLoadingMessage(`Local model failed to initialize: ${getErrorMessage(error)}`);
           queueLoadingMessage("Continuing with CV search fallback.");
           if (terminal) {
             markConversationReady(terminal);
@@ -319,9 +312,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
     }
 
     function renderLoadingMessages(term: TerminalApi) {
-      for (const message of loadingMessages.slice(
-        renderedLoadingMessageCount,
-      )) {
+      for (const message of loadingMessages.slice(renderedLoadingMessageCount)) {
         writeSystem(term, message);
       }
       renderedLoadingMessageCount = loadingMessages.length;
@@ -424,8 +415,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
 
       writeAssistant(
         term,
-        action.answer ??
-          "I do not see a directly supported answer in Eugene's CV.",
+        action.answer ?? "I do not see a directly supported answer in Eugene's CV.",
       );
     }
 
@@ -478,12 +468,9 @@ function createAssistantTools() {
 async function loadWebLlm(onProgress: (progress: InitProgress) => void) {
   const webllm = (await import("@mlc-ai/web-llm")) as WebLlmModule;
   const modelId = selectModelId(webllm);
-  const worker = new Worker(
-    new URL("../workers/webllm.worker.ts", import.meta.url),
-    {
-      type: "module",
-    },
-  );
+  const worker = new Worker(new URL("../workers/webllm.worker.ts", import.meta.url), {
+    type: "module",
+  });
 
   return webllm.CreateWebWorkerMLCEngine(worker, modelId, {
     initProgressCallback: onProgress,
@@ -493,9 +480,7 @@ async function loadWebLlm(onProgress: (progress: InitProgress) => void) {
 function selectModelId(webllm: WebLlmModule) {
   const models = webllm.prebuiltAppConfig?.model_list ?? [];
   const modelIds = new Set(models.map((model) => model.model_id));
-  const preferredModel = PREFERRED_MODELS.find((modelId) =>
-    modelIds.has(modelId),
-  );
+  const preferredModel = PREFERRED_MODELS.find((modelId) => modelIds.has(modelId));
 
   return preferredModel ?? models.at(0)?.model_id ?? DEFAULT_MODEL_ID;
 }
@@ -513,10 +498,7 @@ function hasWebGpu() {
   return Boolean((navigator as Navigator & { gpu?: unknown }).gpu);
 }
 
-async function maybeRunLocalCommand(
-  text: string,
-  tools: Map<string, AssistantTool>,
-) {
+async function maybeRunLocalCommand(text: string, tools: Map<string, AssistantTool>) {
   if (!isEmailToolRequest(text)) {
     return null;
   }
@@ -537,9 +519,8 @@ function isEmailToolRequest(text: string) {
   }
 
   const asksContact =
-    /\b(contact|email|message|reach|follow up|get in touch)\b/.test(
-      normalized,
-    ) || /\bhow can i (contact|email|message|reach)\b/.test(normalized);
+    /\b(contact|email|message|reach|follow up|get in touch)\b/.test(normalized) ||
+    /\bhow can i (contact|email|message|reach)\b/.test(normalized);
   const targetsEugene = /\b(eugene|mirotin|him)\b/.test(normalized);
 
   return asksContact && targetsEugene;
@@ -553,9 +534,7 @@ function buildFallbackAnswer(userText: string, cvMarkdown: string) {
   const queryTokens = tokenize(userText);
   const scoredSections = sections
     .map((section) => ({
-      score: Array.from(tokenize(section)).filter((token) =>
-        queryTokens.has(token),
-      ).length,
+      score: Array.from(tokenize(section)).filter((token) => queryTokens.has(token)).length,
       section,
     }))
     .filter(({ score }) => score > 0)
@@ -605,10 +584,7 @@ function prompt(term: TerminalApi) {
 }
 
 function formatForTerminal(text: string) {
-  return stripControlCharacters(stripAnsiControlSequences(text)).replace(
-    /\n/g,
-    "\r\n",
-  );
+  return stripControlCharacters(stripAnsiControlSequences(text)).replace(/\n/g, "\r\n");
 }
 
 function isPrintable(char: string) {

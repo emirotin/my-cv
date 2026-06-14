@@ -8,9 +8,11 @@
     "preview": "vite preview --host 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint .",
-    "format": "oxfmt --write package.json tsconfig.json components.json vite.config.ts playwright.config.ts scripts 'src/**/*.ts' 'src/**/*.tsx' '!src/routeTree.gen.ts' 'tests/**/*.ts'",
-    "format:check": "oxfmt --check package.json tsconfig.json components.json vite.config.ts playwright.config.ts scripts 'src/**/*.ts' 'src/**/*.tsx' '!src/routeTree.gen.ts' 'tests/**/*.ts'",
+    "format": "oxfmt --write package.json .oxfmtrc.json tsconfig.json components.json vite.config.ts playwright.config.ts scripts 'src/**/*.ts' 'src/**/*.tsx' '!src/routeTree.gen.ts' 'tests/**/*.ts'",
+    "format:check": "oxfmt --check package.json .oxfmtrc.json tsconfig.json components.json vite.config.ts playwright.config.ts scripts 'src/**/*.ts' 'src/**/*.tsx' '!src/routeTree.gen.ts' 'tests/**/*.ts'",
     "quality": "pnpm run format:check && pnpm run lint && pnpm run typecheck",
+    "precommit": "pnpm run format:check && pnpm run lint",
+    "prepare": "node scripts/setup-git-hooks.mjs",
     "test:e2e": "playwright test",
     "test:prerender": "node scripts/assert-prerender.mjs",
     "test": "pnpm run test:e2e && pnpm run test:prerender"
