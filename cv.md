@@ -1,6 +1,6 @@
 # Eugene Mirotin
  
-**Senior / Staff Software Engineer**
+**Staff Software Engineer**
 Tallinn, Estonia · Remote · [github.com/emirotin](https://github.com/emirotin)
  
 ---
@@ -34,6 +34,7 @@ Full-stack software engineer with 22 years in the software industry and 14+ year
 - Optimized AI podcast generation pipeline from 60+ seconds to 15–25 seconds by orchestrating parallel streaming: Gemini script generation streams into TTS, which streams audio chunks through Redis-backed presigned URLs to the client, with concurrent Deepgram transcription for speech marks.
 - Migrated background jobs from Bull to Temporal, implementing dynamic worker provisioning to scale with demand and eliminate idle resource costs.
 - Built a persistent memory system for AI assistants that ingests user signals (reading history, events), extracts profile attributes and core memories, and serves them to the conversational agent via MCP — enabling context-aware, personalized interactions across sessions.
+
 **AI Studio Team (Oct 2024 – Oct 2025)**
  
 - Led the ground-up rebuild of Voice Over Studio v2, an in-browser timeline editor for mixing TTS audio, music, video, and images. Shipped to production with measurably better user satisfaction from UX research.
@@ -43,6 +44,7 @@ Full-stack software engineer with 22 years in the software industry and 14+ year
 - Introduced Temporal for export job orchestration, replacing Bull. Built an adapter layer that auto-discovers relevant NestJS service classes and binds their methods as Temporal activities, preserving the team's existing DI patterns.
 - Prototyped the AI Podcast feature end-to-end: deep research sourcing, speaker profile generation, voice casting from a directory, script generation, TTS synthesis, preview, and export.
 - Drove code review culture transformation by leading by example—personally reviewing ~30% of the team's pull requests to unblock delivery and raise quality standards.
+
 **AI API Team (Apr 2024 – Oct 2024)**
  
 - Designed and implemented OAuth token flow for client-side TTS integration, replacing long-lived API keys. Built the backend token issuance, a reference Node.js relay implementation for customers, and an automatic token refresh manager in the JavaScript SDK.
@@ -129,6 +131,7 @@ Full-stack software engineer with 22 years in the software industry and 14+ year
 ## Education
  
 **BSc in Applied Mathematics & Computer Science** — Belarusian State University, Minsk, 2007
+
 **MSc in Statistics** — Belarusian State University, Minsk, 2008
  
 ---
