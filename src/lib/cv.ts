@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import cvMarkdown from "../../cv.md?raw";
+import cvMarkdown from "../../cv/cv.md?raw";
 import { renderMarkdown } from "./markdown";
 
 export const getCvMarkdown = createServerFn({ method: "GET" }).handler(() => {
