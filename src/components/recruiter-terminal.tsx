@@ -53,13 +53,49 @@ type WebLlmEngine = {
 };
 
 type TerminalApi = {
+  buffer: {
+    active: {
+      getLine: (lineIndex: number) =>
+        | {
+            translateToString: (trimRight?: boolean) => string;
+          }
+        | undefined;
+    };
+  };
   dispose: () => void;
   focus: () => void;
   loadAddon: (addon: unknown) => void;
   onData: (callback: (data: string) => void) => { dispose: () => void };
   open: (element: HTMLElement) => void;
+  registerLinkProvider: (linkProvider: LinkProvider) => { dispose: () => void };
   write: (data: string) => void;
   writeln: (data: string) => void;
+};
+
+type LinkProvider = {
+  provideLinks: (
+    bufferLineNumber: number,
+    callback: (links: Array<TerminalLink> | undefined) => void,
+  ) => void;
+};
+
+type TerminalLink = {
+  activate: (_event: MouseEvent, text: string) => void;
+  decorations: {
+    pointerCursor: boolean;
+    underline: boolean;
+  };
+  range: {
+    end: {
+      x: number;
+      y: number;
+    };
+    start: {
+      x: number;
+      y: number;
+    };
+  };
+  text: string;
 };
 
 type FitAddonApi = {
@@ -69,7 +105,7 @@ type FitAddonApi = {
 type AssistantTool = {
   name: string;
   description: string;
-  run: (options?: { source?: "direct" | "model" }) => Promise<string>;
+  run: () => Promise<string>;
 };
 
 type RecruiterTerminalProps = {
@@ -95,6 +131,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
   useEffect(() => {
     let disposed = false;
     let dataSubscription: { dispose: () => void } | undefined;
+    let linkProviderDisposable: { dispose: () => void } | undefined;
     let resizeObserver: ResizeObserver | undefined;
     let terminal: TerminalApi | undefined;
     let inputBuffer = "";
@@ -170,6 +207,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
       terminal = term;
       term.loadAddon(fitAddon);
       term.open(containerRef.current);
+      linkProviderDisposable = term.registerLinkProvider(createMailtoLinkProvider(term));
       fitAddon.fit();
       term.focus();
 
@@ -410,7 +448,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
           return;
         }
 
-        writeSystem(term, await tool.run({ source: "model" }));
+        writeSystem(term, await tool.run());
         return;
       }
 
@@ -438,6 +476,7 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
     return () => {
       disposed = true;
       dataSubscription?.dispose();
+      linkProviderDisposable?.dispose();
       resizeObserver?.disconnect();
       terminal?.dispose();
     };
@@ -459,24 +498,60 @@ function createAssistantTools() {
 
   tools.set("send_email", {
     name: "send_email",
-    description: "Open a mail client draft addressed to Eugene with the subject From CV.",
-    run: async (options) => {
-      if (options?.source === "model" && !hasActiveUserGesture()) {
-        return `The browser did not allow opening the email draft after the local model finished. Direct mailto link: ${MAILTO_HREF}`;
-      }
-
-      const link = document.createElement("a");
-      link.href = MAILTO_HREF;
-      link.rel = "noopener";
-      link.style.display = "none";
-      document.body.append(link);
-      link.click();
-      link.remove();
-      return "Requested your mail app to open a draft to emirotin@gmail.com.";
-    },
+    description: "Print a clickable mailto link addressed to Eugene with the subject From CV.",
+    run: async () => `Email Eugene: ${MAILTO_HREF}`,
   });
 
   return tools;
+}
+
+function createMailtoLinkProvider(term: TerminalApi): LinkProvider {
+  return {
+    provideLinks: (bufferLineNumber, callback) => {
+      const lineText = term.buffer.active.getLine(bufferLineNumber - 1)?.translateToString(true);
+
+      if (!lineText) {
+        callback(undefined);
+        return;
+      }
+
+      const links = findMailtoLinks(lineText, bufferLineNumber);
+      callback(links.length > 0 ? links : undefined);
+    },
+  };
+}
+
+function findMailtoLinks(lineText: string, bufferLineNumber: number) {
+  const links: Array<TerminalLink> = [];
+  const mailtoPattern = /mailto:[^\s]+/g;
+
+  for (const match of lineText.matchAll(mailtoPattern)) {
+    const text = match[0];
+    const startIndex = match.index ?? 0;
+
+    links.push({
+      activate: (_event, linkText) => {
+        window.location.href = linkText;
+      },
+      decorations: {
+        pointerCursor: true,
+        underline: true,
+      },
+      range: {
+        end: {
+          x: startIndex + text.length + 1,
+          y: bufferLineNumber,
+        },
+        start: {
+          x: startIndex + 1,
+          y: bufferLineNumber,
+        },
+      },
+      text,
+    });
+  }
+
+  return links;
 }
 
 async function loadWebLlm(onProgress: (progress: InitProgress) => void) {
@@ -518,7 +593,7 @@ async function maybeRunLocalCommand(text: string, tools: Map<string, AssistantTo
   }
 
   const tool = tools.get("send_email");
-  return tool?.run({ source: "direct" }) ?? null;
+  return tool?.run() ?? null;
 }
 
 function isEmailToolRequest(text: string) {
@@ -538,18 +613,6 @@ function isEmailToolRequest(text: string) {
   const targetsEugene = /\b(eugene|mirotin|him)\b/.test(normalized);
 
   return asksContact && targetsEugene;
-}
-
-function hasActiveUserGesture() {
-  const userActivation = (
-    navigator as Navigator & {
-      userActivation?: {
-        isActive?: boolean;
-      };
-    }
-  ).userActivation;
-
-  return userActivation?.isActive ?? true;
 }
 
 function buildFallbackAnswer(userText: string, cvMarkdown: string) {

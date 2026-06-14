@@ -35,62 +35,30 @@ test("assistant does not show the prompt before model status resolves", async ({
   );
 });
 
-test("send_email tool clicks a mailto link", async ({ page }) => {
-  await page.addInitScript(() => {
-    const originalClick = HTMLAnchorElement.prototype.click;
-    HTMLAnchorElement.prototype.click = function clickAnchor() {
-      const typedWindow = window as Window & { __clickedMailto?: string };
-
-      if (this.href.startsWith("mailto:")) {
-        typedWindow.__clickedMailto = this.href;
-        return;
-      }
-
-      originalClick.call(this);
-    };
-  });
-
+test("send_email tool prints a mailto link", async ({ page }) => {
   await page.goto("/?noai=1");
   await expect(page.locator(".xterm")).toBeVisible();
   await page.getByTestId("recruiter-terminal").click();
   await page.keyboard.type("email");
   await page.keyboard.press("Enter");
 
-  await expect
-    .poll(() =>
-      page.evaluate(() => (window as Window & { __clickedMailto?: string }).__clickedMailto),
-    )
-    .toBe("mailto:emirotin@gmail.com?Subject=From+CV");
+  await expect(page.locator(".xterm-rows")).toContainText(
+    "Email Eugene: mailto:emirotin@gmail.com?Subject=From+CV",
+  );
 });
 
-test("natural contact request clicks a mailto link without waiting for the model", async ({
+test("natural contact request prints a mailto link without waiting for the model", async ({
   page,
 }) => {
-  await page.addInitScript(() => {
-    const originalClick = HTMLAnchorElement.prototype.click;
-    HTMLAnchorElement.prototype.click = function clickAnchor() {
-      const typedWindow = window as Window & { __clickedMailto?: string };
-
-      if (this.href.startsWith("mailto:")) {
-        typedWindow.__clickedMailto = this.href;
-        return;
-      }
-
-      originalClick.call(this);
-    };
-  });
-
   await page.goto("/?noai=1");
   await expect(page.locator(".xterm")).toBeVisible();
   await page.getByTestId("recruiter-terminal").click();
   await page.keyboard.type("how can I contact him?");
   await page.keyboard.press("Enter");
 
-  await expect
-    .poll(() =>
-      page.evaluate(() => (window as Window & { __clickedMailto?: string }).__clickedMailto),
-    )
-    .toBe("mailto:emirotin@gmail.com?Subject=From+CV");
+  await expect(page.locator(".xterm-rows")).toContainText(
+    "Email Eugene: mailto:emirotin@gmail.com?Subject=From+CV",
+  );
 });
 
 test("eval page renders copyable report without auto-running in manual mode", async ({ page }) => {
