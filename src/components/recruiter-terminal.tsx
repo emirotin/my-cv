@@ -5,6 +5,7 @@ import {
   parseActionResponse,
 } from "@/lib/eval-config";
 import { CONTACT_TERMINAL_TEXT } from "@/lib/contact";
+import { cn } from "@/lib/utils";
 import {
   createWebLlmEngine,
   type InitProgress,
@@ -39,6 +40,7 @@ type AssistantTool = {
 };
 
 type RecruiterTerminalProps = {
+  className?: string;
   cvMarkdown: string;
 };
 
@@ -53,7 +55,7 @@ const PREFERRED_MODELS = [
   "Phi-3.5-mini-instruct-q4f16_1-MLC",
 ];
 
-export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
+export function RecruiterTerminal({ className, cvMarkdown }: RecruiterTerminalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -415,7 +417,10 @@ export function RecruiterTerminal({ cvMarkdown }: RecruiterTerminalProps) {
   return (
     <div
       aria-label="Recruiter assistant terminal"
-      className="h-full min-h-[460px] overflow-hidden rounded-lg border border-stone-800 bg-[#101112] shadow-2xl"
+      className={cn(
+        "h-full min-h-115 overflow-hidden rounded-lg border border-stone-800 bg-[#101112] shadow-2xl",
+        className,
+      )}
       data-testid="recruiter-terminal"
       ref={containerRef}
       role="application"

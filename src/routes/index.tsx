@@ -52,9 +52,9 @@ function HomeRoute() {
         }
       />
 
-      <PageContent className="grid gap-5 py-5 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <section className="min-h-115 lg:min-h-[calc(100svh-8.5rem)]">
-          <RecruiterTerminal cvMarkdown={cvMarkdown} />
+      <PageContent className="grid gap-5 py-5 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-stretch">
+        <section className="home-terminal-column min-h-115">
+          <RecruiterTerminal className="home-terminal-frame" cvMarkdown={cvMarkdown} />
         </section>
 
         <aside className="space-y-4">
@@ -82,7 +82,7 @@ function HomeRoute() {
                   className="w-full justify-between"
                   nativeButton={false}
                   render={<Link to="/cv" />}
-                  variant="outline"
+                  variant="secondary"
                 >
                   Read the CV
                   <RiArrowRightLine aria-hidden="true" />
@@ -96,7 +96,7 @@ function HomeRoute() {
             <CardHeader>
               <CardTitle>Recent Focus</CardTitle>
               <CardDescription>
-                AI product infrastructure, migrations, and interactive tools.
+                AI product infrastructure, assistants, and memory systems.
               </CardDescription>
             </CardHeader>
             <CardContent>

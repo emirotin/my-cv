@@ -8,12 +8,12 @@ type DownloadCvPdfButtonProps = Omit<
   "children" | "nativeButton" | "render"
 >;
 
-export function DownloadCvPdfButton({ variant = "outline", ...props }: DownloadCvPdfButtonProps) {
+export function DownloadCvPdfButton(props: DownloadCvPdfButtonProps) {
   return (
     <Button
       nativeButton={false}
       render={<a download="eugene_mirotin_cv.pdf" href={cvPdfUrl} />}
-      variant={variant}
+      variant="default"
       {...props}
     >
       <RiFileDownloadLine aria-hidden="true" />

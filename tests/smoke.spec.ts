@@ -42,6 +42,41 @@ test("assistant terminal renders without loading the model in smoke mode", async
   await expect(downloadLink).toHaveAttribute("href", /eugene_mirotin_cv.*\.pdf/);
 });
 
+test("desktop assistant terminal follows the right column height", async ({ page }) => {
+  await page.setViewportSize({ height: 900, width: 1280 });
+  await page.goto("/?noai=1");
+  await expect(page.locator(".xterm")).toBeVisible();
+
+  const heights = await page.evaluate(() => {
+    const terminal = document.querySelector<HTMLElement>('[data-testid="recruiter-terminal"]');
+    const sidebar = document.querySelector<HTMLElement>("aside");
+    const sidebarCards = Array.from(
+      document.querySelectorAll<HTMLElement>('aside > [data-slot="card"]'),
+    );
+
+    const firstCard = sidebarCards[0];
+    const lastCard = sidebarCards.at(-1) ?? firstCard;
+
+    if (!terminal || !sidebar || !firstCard || !lastCard) {
+      throw new Error("Home layout elements were not rendered.");
+    }
+
+    const terminalBox = terminal.getBoundingClientRect();
+    const sidebarBox = sidebar.getBoundingClientRect();
+    const firstCardBox = firstCard.getBoundingClientRect();
+    const lastCardBox = lastCard.getBoundingClientRect();
+
+    return {
+      sidebar: sidebarBox.height,
+      sidebarContent: lastCardBox.bottom - firstCardBox.top,
+      terminal: terminalBox.height,
+    };
+  });
+
+  expect(Math.abs(heights.terminal - heights.sidebarContent)).toBeLessThanOrEqual(2);
+  expect(Math.abs(heights.sidebar - heights.sidebarContent)).toBeLessThanOrEqual(2);
+});
+
 test("contact button copies plain contact details", async ({ page }) => {
   await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
 

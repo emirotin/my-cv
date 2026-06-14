@@ -148,6 +148,20 @@
     @apply h-full p-4;
 }
 
+@media (min-width: 1024px) {
+    .home-terminal-column {
+        min-height: 0;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .home-terminal-frame {
+        inset: 0;
+        min-height: 0;
+        position: absolute;
+    }
+}
+
 .cv-content {
     @apply max-w-3xl text-base leading-7 text-foreground;
 }

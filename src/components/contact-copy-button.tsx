@@ -39,6 +39,7 @@ export function ContactCopyButton({ ...props }: ContactCopyButtonProps) {
       aria-label={copied ? "Copied email contact details" : "Copy email contact details"}
       onClick={() => void handleClick()}
       type="button"
+      variant="outline"
       {...props}
     >
       <Icon aria-hidden="true" />
