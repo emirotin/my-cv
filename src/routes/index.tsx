@@ -1,7 +1,7 @@
 import { RiArrowRightLine, RiFileTextLine, RiTerminalBoxLine } from "@remixicon/react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ContactCopyButton } from "@/components/contact-copy-button";
-import { PageContent, PageHeader, PageHeaderTitle, PageShell } from "@/components/page-layout";
+import { PageContent, PageHeader, PageShell } from "@/components/page-layout";
 import { RecruiterTerminal } from "@/components/recruiter-terminal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -42,16 +42,17 @@ function HomeRoute() {
           </>
         }
         leading={
-          <PageHeaderTitle
-            eyebrow="Local recruiter console"
-            icon={<RiTerminalBoxLine className="size-4" aria-hidden="true" />}
-            title="Eugene Mirotin CV Assistant"
-          />
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground h-8">
+              <RiTerminalBoxLine className="size-4" aria-hidden="true" />
+              Recruiter console
+            </div>
+          </div>
         }
       />
 
       <PageContent className="grid gap-5 py-5 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <section className="min-h-[460px] lg:min-h-[calc(100svh-8.5rem)]">
+        <section className="min-h-115 lg:min-h-[calc(100svh-8.5rem)]">
           <RecruiterTerminal cvMarkdown={cvMarkdown} />
         </section>
 

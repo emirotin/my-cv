@@ -40,7 +40,12 @@ function CvRoute() {
           </>
         }
         leading={
-          <Button nativeButton={false} render={<Link to="/" />} variant="ghost">
+          <Button
+            nativeButton={false}
+            render={<Link to="/" />}
+            variant="ghost"
+            className="w-fit -ml-2.5"
+          >
             <RiArrowLeftLine aria-hidden="true" />
             Assistant
           </Button>
