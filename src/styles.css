@@ -146,8 +146,16 @@
 
 .xterm {
     @apply h-full p-4;
-    font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
-        monospace;
+    font-family: var(
+        --terminal-font-family,
+        "SFMono-Regular",
+        Menlo,
+        Monaco,
+        Consolas,
+        "Liberation Mono",
+        "Courier New",
+        monospace
+    );
     font-variant-ligatures: none;
 }
 

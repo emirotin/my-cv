@@ -1,13 +1,23 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
 const MIN_SIZE = 10;
 const MAX_SIZE = 160;
-const DEFAULT_SIZE = 120;
-const DEFAULT_CHARSET = " .:-=+*#%@";
+const DENSITY_CHARSET = " .:-=+*#%@";
 const DEFAULT_INPUT = "public/images/me.jpg";
 const DEFAULT_OUTPUT = "src/lib/ascii-portrait.ts";
+const TERMINAL_PORTRAIT_CONFIG = "src/lib/terminal-portrait-config.json";
+const terminalConfig = await readTerminalPortraitConfig();
+const DEFAULT_CHARSET_NAME = terminalConfig.portraitCharset;
+const DEFAULT_CELL_WIDTH = terminalConfig.glyphCellWidth;
+const DEFAULT_CELL_HEIGHT = terminalConfig.glyphCellHeight;
+const DEFAULT_FONT_FAMILY = terminalConfig.fontFamily;
+const DEFAULT_FONT_SIZE = terminalConfig.fontSize;
+const DEFAULT_HEIGHT = terminalConfig.portraitHeight;
+const DEFAULT_RENDERER = terminalConfig.portraitRenderer;
+const DEFAULT_WIDTH = terminalConfig.portraitWidth;
+const MATCHER = "glyph";
 
 const options = parseArgs(process.argv.slice(2));
 const ascii = await imageToAscii(options);
@@ -21,9 +31,11 @@ if (options.output === "-") {
   );
 }
 
-async function imageToAscii({ charset, height, input, width }) {
+async function imageToAscii(options) {
+  const { cellHeight, cellWidth, height, input, width } = options;
+  const glyphTemplates = await renderGlyphTemplates(options);
   const { data, info } = await sharp(input)
-    .resize(width, height, {
+    .resize(width * cellWidth, height * cellHeight, {
       fit: "fill",
       kernel: sharp.kernel.lanczos3,
     })
@@ -33,12 +45,20 @@ async function imageToAscii({ charset, height, input, width }) {
 
   const lines = [];
 
-  for (let y = 0; y < info.height; y += 1) {
+  for (let y = 0; y < height; y += 1) {
     let line = "";
 
-    for (let x = 0; x < info.width; x += 1) {
-      const offset = (y * info.width + x) * info.channels;
-      line += findClosestAsciiChar(data[offset] ?? 0, charset);
+    for (let x = 0; x < width; x += 1) {
+      line += findClosestGlyph({
+        cellHeight,
+        cellWidth,
+        glyphTemplates,
+        image: data,
+        imageChannels: info.channels,
+        imageWidth: info.width,
+        x: x * cellWidth,
+        y: y * cellHeight,
+      });
     }
 
     lines.push(line);
@@ -47,14 +67,158 @@ async function imageToAscii({ charset, height, input, width }) {
   return lines.join("\n");
 }
 
-function findClosestAsciiChar(luminance, charset) {
-  const targetDensity = 1 - clamp(luminance / 255, 0, 1);
-  const closestIndex = Math.round(targetDensity * (charset.length - 1));
+async function renderGlyphTemplates(options) {
+  if (options.renderer === "browser") {
+    return renderBrowserGlyphTemplates(options);
+  }
 
-  return charset[closestIndex] ?? charset.at(-1);
+  return renderSvgGlyphTemplates(options);
 }
 
-async function writePortraitModule(output, ascii, { charset, height, input, width }) {
+async function renderBrowserGlyphTemplates({ cellHeight, cellWidth, charset, fontFamily, fontSize }) {
+  const { chromium } = await import("@playwright/test");
+  const browser = await chromium.launch();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: {
+        height: cellHeight,
+        width: cellWidth,
+      },
+    });
+
+    const rendered = await page.evaluate(
+      ({ cellHeight, cellWidth, chars, fontFamily, fontSize }) => {
+        const canvas = document.createElement("canvas");
+        canvas.height = cellHeight;
+        canvas.width = cellWidth;
+
+        const context = canvas.getContext("2d", {
+          willReadFrequently: true,
+        });
+
+        if (!context) {
+          throw new Error("Could not create a 2D canvas context.");
+        }
+
+        return chars.map((char) => {
+          context.clearRect(0, 0, cellWidth, cellHeight);
+          context.fillStyle = "#000";
+          context.fillRect(0, 0, cellWidth, cellHeight);
+          context.fillStyle = "#fff";
+          context.font = `${fontSize}px ${fontFamily}`;
+          context.textAlign = "center";
+          context.textBaseline = "middle";
+          context.fillText(char, cellWidth / 2, cellHeight / 2);
+
+          const rgba = context.getImageData(0, 0, cellWidth, cellHeight).data;
+          const grayscale = [];
+
+          for (let index = 0; index < rgba.length; index += 4) {
+            grayscale.push(
+              Math.round(
+                0.2126 * rgba[index] + 0.7152 * rgba[index + 1] + 0.0722 * rgba[index + 2],
+              ),
+            );
+          }
+
+          return {
+            char,
+            data: grayscale,
+          };
+        });
+      },
+      {
+        cellHeight,
+        cellWidth,
+        chars: Array.from(charset),
+        fontFamily,
+        fontSize,
+      },
+    );
+
+    return rendered.map(({ char, data }) => ({
+      char,
+      data: Uint8Array.from(data),
+    }));
+  } finally {
+    await browser.close();
+  }
+}
+
+async function renderSvgGlyphTemplates({ cellHeight, cellWidth, charset, fontFamily, fontSize }) {
+  const templates = [];
+
+  for (const char of charset) {
+    templates.push({
+      char,
+      data: await renderGlyphBitmap({
+        cellHeight,
+        cellWidth,
+        char,
+        fontFamily,
+        fontSize,
+      }),
+    });
+  }
+
+  return templates;
+}
+
+async function renderGlyphBitmap({ cellHeight, cellWidth, char, fontFamily, fontSize }) {
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${cellWidth}" height="${cellHeight}" viewBox="0 0 ${cellWidth} ${cellHeight}">`,
+    '<rect width="100%" height="100%" fill="#000"/>',
+    `<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="${escapeXml(fontFamily)}" font-size="${fontSize}" fill="#fff">${escapeXml(char)}</text>`,
+    "</svg>",
+  ].join("");
+
+  const { data } = await sharp(Buffer.from(svg)).grayscale().raw().toBuffer({
+    resolveWithObject: true,
+  });
+
+  return data;
+}
+
+function findClosestGlyph({
+  cellHeight,
+  cellWidth,
+  glyphTemplates,
+  image,
+  imageChannels,
+  imageWidth,
+  x,
+  y,
+}) {
+  let bestChar = " ";
+  let bestError = Number.POSITIVE_INFINITY;
+
+  for (const { char, data } of glyphTemplates) {
+    let error = 0;
+
+    for (let row = 0; row < cellHeight; row += 1) {
+      for (let col = 0; col < cellWidth; col += 1) {
+        const imageOffset = ((y + row) * imageWidth + x + col) * imageChannels;
+        const templateOffset = row * cellWidth + col;
+        const targetInk = 255 - (image[imageOffset] ?? 255);
+        const difference = targetInk - (data[templateOffset] ?? 0);
+
+        error += difference * difference;
+      }
+    }
+
+    if (error < bestError) {
+      bestChar = char;
+      bestError = error;
+    }
+  }
+
+  return bestChar;
+}
+
+async function writePortraitModule(output, ascii, options) {
+  const { charset, charsetName, height, input, renderer, width } = options;
   const outputPath = path.resolve(output);
   const source = [
     "// Generated by scripts/generate-ascii-portrait.mjs.",
@@ -62,6 +226,9 @@ async function writePortraitModule(output, ascii, { charset, height, input, widt
     `export const ASCII_PORTRAIT_SOURCE = ${JSON.stringify(toPosixPath(input))};`,
     `export const ASCII_PORTRAIT_WIDTH = ${width};`,
     `export const ASCII_PORTRAIT_HEIGHT = ${height};`,
+    `export const ASCII_PORTRAIT_MATCHER = ${JSON.stringify(MATCHER)};`,
+    `export const ASCII_PORTRAIT_RENDERER = ${JSON.stringify(renderer)};`,
+    `export const ASCII_PORTRAIT_CHARSET_NAME = ${JSON.stringify(charsetName)};`,
     `export const ASCII_PORTRAIT_CHARSET = ${JSON.stringify(charset)};`,
     `export const ASCII_PORTRAIT = ${JSON.stringify(ascii)};`,
     "",
@@ -73,11 +240,17 @@ async function writePortraitModule(output, ascii, { charset, height, input, widt
 
 function parseArgs(argv) {
   const parsed = {
-    charset: DEFAULT_CHARSET,
-    height: DEFAULT_SIZE,
+    cellHeight: DEFAULT_CELL_HEIGHT,
+    cellWidth: DEFAULT_CELL_WIDTH,
+    charset: buildCharset(DEFAULT_CHARSET_NAME),
+    charsetName: DEFAULT_CHARSET_NAME,
+    fontFamily: DEFAULT_FONT_FAMILY,
+    fontSize: DEFAULT_FONT_SIZE,
+    height: DEFAULT_HEIGHT,
     input: DEFAULT_INPUT,
     output: DEFAULT_OUTPUT,
-    width: DEFAULT_SIZE,
+    renderer: DEFAULT_RENDERER,
+    width: DEFAULT_WIDTH,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -88,9 +261,27 @@ function parseArgs(argv) {
     }
 
     switch (name) {
+      case "cell-height":
+      case "glyph-height":
+        parsed.cellHeight = parsePositiveInteger(value.text, name);
+        break;
+      case "cell-width":
+      case "glyph-width":
+        parsed.cellWidth = parsePositiveInteger(value.text, name);
+        break;
       case "charset":
+        parsed.charset = buildCharset(value.text);
+        parsed.charsetName = value.text;
+        break;
       case "chars":
         parsed.charset = value.text;
+        parsed.charsetName = "custom";
+        break;
+      case "font-family":
+        parsed.fontFamily = value.text;
+        break;
+      case "font-size":
+        parsed.fontSize = parsePositiveInteger(value.text, "font-size");
         break;
       case "height":
         parsed.height = parseSize(value.text, "height");
@@ -98,8 +289,17 @@ function parseArgs(argv) {
       case "input":
         parsed.input = value.text;
         break;
+      case "matrix": {
+        const { height, width } = parseMatrix(value.text);
+        parsed.height = height;
+        parsed.width = width;
+        break;
+      }
       case "output":
         parsed.output = value.text;
+        break;
+      case "renderer":
+        parsed.renderer = parseRenderer(value.text);
         break;
       case "size": {
         const size = parseSize(value.text, "size");
@@ -116,10 +316,72 @@ function parseArgs(argv) {
   }
 
   if (parsed.charset.length < 2) {
-    throw new Error("The ASCII charset must contain at least two characters.");
+    throw new Error("The glyph charset must contain at least two characters.");
   }
 
   return parsed;
+}
+
+async function readTerminalPortraitConfig() {
+  const rawConfig = await readFile(path.resolve(TERMINAL_PORTRAIT_CONFIG), "utf8");
+  const parsed = JSON.parse(rawConfig);
+
+  return {
+    fontFamily: readStringProperty(parsed, "fontFamily"),
+    fontSize: parsePositiveInteger(String(parsed.fontSize), "terminal config fontSize"),
+    glyphCellHeight: parsePositiveInteger(
+      String(parsed.glyphCellHeight),
+      "terminal config glyphCellHeight",
+    ),
+    glyphCellWidth: parsePositiveInteger(
+      String(parsed.glyphCellWidth),
+      "terminal config glyphCellWidth",
+    ),
+    portraitCharset: readStringProperty(parsed, "portraitCharset"),
+    portraitHeight: parseSize(String(parsed.portraitHeight), "terminal config portraitHeight"),
+    portraitRenderer: parseRenderer(readStringProperty(parsed, "portraitRenderer")),
+    portraitWidth: parseSize(String(parsed.portraitWidth), "terminal config portraitWidth"),
+  };
+}
+
+function readStringProperty(value, key) {
+  const property = value?.[key];
+
+  if (typeof property !== "string" || property.trim().length === 0) {
+    throw new Error(`${TERMINAL_PORTRAIT_CONFIG} must define a non-empty ${key} string.`);
+  }
+
+  return property;
+}
+
+function buildCharset(name) {
+  switch (name) {
+    case "density":
+      return DENSITY_CHARSET;
+    case "latin1":
+    case DEFAULT_CHARSET_NAME:
+      return buildPrintableLatin1Charset();
+    default:
+      throw new Error(
+        `Unknown charset: ${name}. Use "latin1", "${DEFAULT_CHARSET_NAME}", "density", or --chars for a custom set.`,
+      );
+  }
+}
+
+function buildPrintableLatin1Charset() {
+  const chars = [" "];
+
+  for (let codePoint = 0x21; codePoint <= 0x7e; codePoint += 1) {
+    chars.push(String.fromCodePoint(codePoint));
+  }
+
+  for (let codePoint = 0xa1; codePoint <= 0xff; codePoint += 1) {
+    if (codePoint !== 0xad) {
+      chars.push(String.fromCodePoint(codePoint));
+    }
+  }
+
+  return chars.join("");
 }
 
 function readOption(argv, index) {
@@ -166,10 +428,45 @@ function parseSize(value, name) {
   return size;
 }
 
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
+function parsePositiveInteger(value, name) {
+  const number = Number(value);
+
+  if (!Number.isInteger(number) || number <= 0) {
+    throw new Error(`--${name} must be a positive integer.`);
+  }
+
+  return number;
+}
+
+function parseRenderer(value) {
+  if (value === "browser" || value === "svg") {
+    return value;
+  }
+
+  throw new Error('--renderer must be "browser" or "svg".');
+}
+
+function parseMatrix(value) {
+  const match = /^(?<width>\d+)x(?<height>\d+)$/i.exec(value);
+
+  if (!match?.groups) {
+    throw new Error("--matrix must use WIDTHxHEIGHT format.");
+  }
+
+  return {
+    height: parseSize(match.groups.height, "matrix height"),
+    width: parseSize(match.groups.width, "matrix width"),
+  };
 }
 
 function toPosixPath(value) {
   return value.split(path.sep).join("/");
+}
+
+function escapeXml(value) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }

@@ -1,10 +1,13 @@
-import { useEffect, useRef } from "react";
+import { type CSSProperties, useEffect, useRef } from "react";
 import {
   ASCII_PORTRAIT,
+  ASCII_PORTRAIT_CHARSET_NAME,
   ASCII_PORTRAIT_HEIGHT,
+  ASCII_PORTRAIT_MATCHER,
   ASCII_PORTRAIT_SOURCE,
   ASCII_PORTRAIT_WIDTH,
 } from "@/lib/ascii-portrait";
+import terminalPortraitConfig from "@/lib/terminal-portrait-config.json";
 import { cn } from "@/lib/utils";
 
 type TerminalApi = {
@@ -22,6 +25,10 @@ type RecruiterTerminalProps = {
   className?: string;
   cvMarkdown: string;
 };
+
+const terminalStyle = {
+  "--terminal-font-family": terminalPortraitConfig.fontFamily,
+} as CSSProperties;
 
 export function RecruiterTerminal({ className }: RecruiterTerminalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -46,12 +53,11 @@ export function RecruiterTerminal({ className }: RecruiterTerminalProps) {
         allowProposedApi: false,
         convertEol: true,
         cursorBlink: false,
-        fontFamily:
-          "'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-        fontSize: 14,
+        fontFamily: terminalPortraitConfig.fontFamily,
+        fontSize: terminalPortraitConfig.fontSize,
         letterSpacing: 0,
-        lineHeight: 1.25,
-        rows: ASCII_PORTRAIT_HEIGHT + 4,
+        lineHeight: terminalPortraitConfig.lineHeight,
+        rows: ASCII_PORTRAIT_HEIGHT + 5,
         scrollback: 160,
         theme: {
           background: "transparent",
@@ -109,14 +115,16 @@ export function RecruiterTerminal({ className }: RecruiterTerminalProps) {
       data-testid="recruiter-terminal"
       ref={containerRef}
       role="application"
+      style={terminalStyle}
     />
   );
 }
 
 function runStartupProgram(term: TerminalApi) {
   term.writeln(
-    `\x1b[32m$ ascii-portrait --source ${ASCII_PORTRAIT_SOURCE} --width ${ASCII_PORTRAIT_WIDTH} --height ${ASCII_PORTRAIT_HEIGHT}\x1b[0m`,
+    `\x1b[32m$ ascii-portrait --matrix ${ASCII_PORTRAIT_WIDTH}x${ASCII_PORTRAIT_HEIGHT} --charset ${ASCII_PORTRAIT_CHARSET_NAME} --fit ${ASCII_PORTRAIT_MATCHER}\x1b[0m`,
   );
+  term.writeln(`\x1b[33msource:\x1b[0m ${ASCII_PORTRAIT_SOURCE}`);
   term.writeln("");
 
   for (const line of ASCII_PORTRAIT.split("\n")) {

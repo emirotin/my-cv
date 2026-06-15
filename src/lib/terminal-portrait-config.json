@@ -1,0 +1,11 @@
+{
+  "fontFamily": "\"SFMono-Regular\", Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace",
+  "fontSize": 14,
+  "glyphCellHeight": 20,
+  "glyphCellWidth": 10,
+  "lineHeight": 1.25,
+  "portraitCharset": "latin1",
+  "portraitHeight": 28,
+  "portraitRenderer": "browser",
+  "portraitWidth": 64
+}
