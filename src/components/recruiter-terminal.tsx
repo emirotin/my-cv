@@ -47,10 +47,10 @@ export function RecruiterTerminal({ className }: RecruiterTerminalProps) {
         convertEol: true,
         cursorBlink: false,
         fontFamily:
-          "'Geist Mono Variable', 'SFMono-Regular', 'Cascadia Code', 'Liberation Mono', Menlo, monospace",
-        fontSize: 8,
+          "'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+        fontSize: 14,
         letterSpacing: 0,
-        lineHeight: 1,
+        lineHeight: 1.25,
         rows: ASCII_PORTRAIT_HEIGHT + 4,
         scrollback: 160,
         theme: {
@@ -115,7 +115,7 @@ export function RecruiterTerminal({ className }: RecruiterTerminalProps) {
 
 function runStartupProgram(term: TerminalApi) {
   term.writeln(
-    `\x1b[32m$ ascii-portrait --source ${ASCII_PORTRAIT_SOURCE} --size ${ASCII_PORTRAIT_WIDTH}\x1b[0m`,
+    `\x1b[32m$ ascii-portrait --source ${ASCII_PORTRAIT_SOURCE} --width ${ASCII_PORTRAIT_WIDTH} --height ${ASCII_PORTRAIT_HEIGHT}\x1b[0m`,
   );
   term.writeln("");
 

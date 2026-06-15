@@ -43,7 +43,7 @@ test("terminal runs the ASCII portrait startup program", async ({ page }) => {
   await expect(page.getByTestId("recruiter-terminal")).toBeVisible();
   await expect(page.locator(".xterm")).toBeVisible();
   await expect(page.locator(".xterm-rows")).toContainText("ascii-portrait");
-  await expect(page.locator(".xterm-rows")).toContainText("program exited 0 (40x40)");
+  await expect(page.locator(".xterm-rows")).toContainText("program exited 0 (48x24)");
 
   const downloadLink = page
     .locator('a[download="eugene_mirotin_cv.pdf"]')
