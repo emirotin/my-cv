@@ -17,6 +17,15 @@ const DEFAULT_FONT_SIZE = terminalConfig.fontSize;
 const DEFAULT_HEIGHT = terminalConfig.portraitHeight;
 const DEFAULT_RENDERER = terminalConfig.portraitRenderer;
 const DEFAULT_WIDTH = terminalConfig.portraitWidth;
+const DEFAULT_CONTRAST_WEIGHT = terminalConfig.portraitContrastWeight;
+const DEFAULT_INK_SCALE = terminalConfig.portraitInkScale;
+const DEFAULT_SHAPE_WEIGHT = terminalConfig.portraitShapeWeight;
+const DEFAULT_SHIMMER_DARK_THRESHOLD = terminalConfig.portraitShimmerDarkThreshold;
+const DEFAULT_SHIMMER_STRENGTH = terminalConfig.portraitShimmerStrength;
+const DEFAULT_TONE_GAMMA = terminalConfig.portraitToneGamma;
+const DEFAULT_TONE_HIGH_PERCENTILE = terminalConfig.portraitToneHighPercentile;
+const DEFAULT_TONE_LOW_PERCENTILE = terminalConfig.portraitToneLowPercentile;
+const DEFAULT_TONE_WEIGHT = terminalConfig.portraitToneWeight;
 const MATCHER = "glyph";
 
 const options = parseArgs(process.argv.slice(2));
@@ -42,6 +51,7 @@ async function imageToAscii(options) {
     .grayscale()
     .raw()
     .toBuffer({ resolveWithObject: true });
+  const targetInk = buildTargetInkBuffer(data, info, options);
 
   const lines = [];
 
@@ -53,9 +63,9 @@ async function imageToAscii(options) {
         cellHeight,
         cellWidth,
         glyphTemplates,
-        image: data,
-        imageChannels: info.channels,
+        targetInk,
         imageWidth: info.width,
+        options,
         x: x * cellWidth,
         y: y * cellHeight,
       });
@@ -138,10 +148,7 @@ async function renderBrowserGlyphTemplates({ cellHeight, cellWidth, charset, fon
       },
     );
 
-    return rendered.map(({ char, data }) => ({
-      char,
-      data: Uint8Array.from(data),
-    }));
+    return rendered.map(({ char, data }) => buildGlyphTemplate(char, Uint8Array.from(data)));
   } finally {
     await browser.close();
   }
@@ -151,16 +158,15 @@ async function renderSvgGlyphTemplates({ cellHeight, cellWidth, charset, fontFam
   const templates = [];
 
   for (const char of charset) {
-    templates.push({
+    const data = await renderGlyphBitmap({
+      cellHeight,
+      cellWidth,
       char,
-      data: await renderGlyphBitmap({
-        cellHeight,
-        cellWidth,
-        char,
-        fontFamily,
-        fontSize,
-      }),
+      fontFamily,
+      fontSize,
     });
+
+    templates.push(buildGlyphTemplate(char, data));
   }
 
   return templates;
@@ -185,36 +191,131 @@ function findClosestGlyph({
   cellHeight,
   cellWidth,
   glyphTemplates,
-  image,
-  imageChannels,
   imageWidth,
+  options,
+  targetInk,
   x,
   y,
 }) {
+  const targetStats = readCellStats({
+    cellHeight,
+    cellWidth,
+    imageWidth,
+    targetInk,
+    x,
+    y,
+  });
   let bestChar = " ";
   let bestError = Number.POSITIVE_INFINITY;
 
-  for (const { char, data } of glyphTemplates) {
+  for (const { char, data, meanInk, stdevInk } of glyphTemplates) {
     let error = 0;
 
     for (let row = 0; row < cellHeight; row += 1) {
       for (let col = 0; col < cellWidth; col += 1) {
-        const imageOffset = ((y + row) * imageWidth + x + col) * imageChannels;
+        const imageOffset = (y + row) * imageWidth + x + col;
         const templateOffset = row * cellWidth + col;
-        const targetInk = 255 - (image[imageOffset] ?? 255);
-        const difference = targetInk - (data[templateOffset] ?? 0);
+        const difference = (targetInk[imageOffset] ?? 0) - (data[templateOffset] ?? 0);
 
         error += difference * difference;
       }
     }
 
-    if (error < bestError) {
+    const shapeError = error / (cellWidth * cellHeight);
+    const toneError = (targetStats.mean - meanInk) ** 2;
+    const contrastError = (targetStats.stdev - stdevInk) ** 2;
+    const totalError =
+      options.shapeWeight * shapeError +
+      options.toneWeight * toneError +
+      options.contrastWeight * contrastError;
+
+    if (totalError < bestError) {
       bestChar = char;
-      bestError = error;
+      bestError = totalError;
     }
   }
 
   return bestChar;
+}
+
+function buildTargetInkBuffer(data, info, options) {
+  const luminance = new Float32Array(info.width * info.height);
+
+  for (let pixel = 0; pixel < luminance.length; pixel += 1) {
+    const offset = pixel * info.channels;
+    luminance[pixel] = data[offset] ?? 255;
+  }
+
+  const sorted = Array.from(luminance).sort((left, right) => left - right);
+  const blackPoint = readPercentile(sorted, options.toneLowPercentile);
+  const whitePoint = readPercentile(sorted, options.toneHighPercentile);
+  const span = Math.max(1, whitePoint - blackPoint);
+  const targetInk = new Float32Array(luminance.length);
+
+  for (let pixel = 0; pixel < luminance.length; pixel += 1) {
+    const x = pixel % info.width;
+    const y = Math.floor(pixel / info.width);
+    const normalized = clamp((luminance[pixel] - blackPoint) / span, 0, 1);
+    const baseInk = Math.pow(1 - normalized, options.toneGamma) * 255 * options.inkScale;
+    const darkness = smoothstep(options.shimmerDarkThreshold, 1, baseInk / 255);
+    const cellX = Math.floor(x / options.cellWidth);
+    const cellY = Math.floor(y / options.cellHeight);
+    const shimmer = (hashToUnit(cellX, cellY) * 2 - 1) * options.shimmerStrength * darkness;
+
+    targetInk[pixel] = clamp(baseInk + shimmer, 0, 255);
+  }
+
+  return targetInk;
+}
+
+function buildGlyphTemplate(char, data) {
+  const { mean, stdev } = readStats(data);
+
+  return {
+    char,
+    data,
+    meanInk: mean,
+    stdevInk: stdev,
+  };
+}
+
+function readCellStats({ cellHeight, cellWidth, imageWidth, targetInk, x, y }) {
+  let count = 0;
+  let sum = 0;
+  let sumSquares = 0;
+
+  for (let row = 0; row < cellHeight; row += 1) {
+    for (let col = 0; col < cellWidth; col += 1) {
+      const value = targetInk[(y + row) * imageWidth + x + col] ?? 0;
+      count += 1;
+      sum += value;
+      sumSquares += value * value;
+    }
+  }
+
+  return statsFromSums(sum, sumSquares, count);
+}
+
+function readStats(data) {
+  let sum = 0;
+  let sumSquares = 0;
+
+  for (const value of data) {
+    sum += value;
+    sumSquares += value * value;
+  }
+
+  return statsFromSums(sum, sumSquares, data.length);
+}
+
+function statsFromSums(sum, sumSquares, count) {
+  const mean = count === 0 ? 0 : sum / count;
+  const variance = count === 0 ? 0 : Math.max(0, sumSquares / count - mean * mean);
+
+  return {
+    mean,
+    stdev: Math.sqrt(variance),
+  };
 }
 
 async function writePortraitModule(output, ascii, options) {
@@ -244,12 +345,21 @@ function parseArgs(argv) {
     cellWidth: DEFAULT_CELL_WIDTH,
     charset: buildCharset(DEFAULT_CHARSET_NAME),
     charsetName: DEFAULT_CHARSET_NAME,
+    contrastWeight: DEFAULT_CONTRAST_WEIGHT,
     fontFamily: DEFAULT_FONT_FAMILY,
     fontSize: DEFAULT_FONT_SIZE,
     height: DEFAULT_HEIGHT,
+    inkScale: DEFAULT_INK_SCALE,
     input: DEFAULT_INPUT,
     output: DEFAULT_OUTPUT,
     renderer: DEFAULT_RENDERER,
+    shapeWeight: DEFAULT_SHAPE_WEIGHT,
+    shimmerDarkThreshold: DEFAULT_SHIMMER_DARK_THRESHOLD,
+    shimmerStrength: DEFAULT_SHIMMER_STRENGTH,
+    toneGamma: DEFAULT_TONE_GAMMA,
+    toneHighPercentile: DEFAULT_TONE_HIGH_PERCENTILE,
+    toneLowPercentile: DEFAULT_TONE_LOW_PERCENTILE,
+    toneWeight: DEFAULT_TONE_WEIGHT,
     width: DEFAULT_WIDTH,
   };
 
@@ -277,6 +387,9 @@ function parseArgs(argv) {
         parsed.charset = value.text;
         parsed.charsetName = "custom";
         break;
+      case "contrast-weight":
+        parsed.contrastWeight = parseNonNegativeNumber(value.text, "contrast-weight");
+        break;
       case "font-family":
         parsed.fontFamily = value.text;
         break;
@@ -285,6 +398,9 @@ function parseArgs(argv) {
         break;
       case "height":
         parsed.height = parseSize(value.text, "height");
+        break;
+      case "ink-scale":
+        parsed.inkScale = parseUnitInterval(value.text, "ink-scale");
         break;
       case "input":
         parsed.input = value.text;
@@ -301,12 +417,33 @@ function parseArgs(argv) {
       case "renderer":
         parsed.renderer = parseRenderer(value.text);
         break;
+      case "shape-weight":
+        parsed.shapeWeight = parseNonNegativeNumber(value.text, "shape-weight");
+        break;
+      case "shimmer-dark-threshold":
+        parsed.shimmerDarkThreshold = parseUnitInterval(value.text, "shimmer-dark-threshold");
+        break;
+      case "shimmer-strength":
+        parsed.shimmerStrength = parseNonNegativeNumber(value.text, "shimmer-strength");
+        break;
       case "size": {
         const size = parseSize(value.text, "size");
         parsed.height = size;
         parsed.width = size;
         break;
       }
+      case "tone-gamma":
+        parsed.toneGamma = parsePositiveNumber(value.text, "tone-gamma");
+        break;
+      case "tone-high-percentile":
+        parsed.toneHighPercentile = parseUnitInterval(value.text, "tone-high-percentile");
+        break;
+      case "tone-low-percentile":
+        parsed.toneLowPercentile = parseUnitInterval(value.text, "tone-low-percentile");
+        break;
+      case "tone-weight":
+        parsed.toneWeight = parseNonNegativeNumber(value.text, "tone-weight");
+        break;
       case "width":
         parsed.width = parseSize(value.text, "width");
         break;
@@ -317,6 +454,10 @@ function parseArgs(argv) {
 
   if (parsed.charset.length < 2) {
     throw new Error("The glyph charset must contain at least two characters.");
+  }
+
+  if (parsed.toneLowPercentile >= parsed.toneHighPercentile) {
+    throw new Error("--tone-low-percentile must be lower than --tone-high-percentile.");
   }
 
   return parsed;
@@ -338,8 +479,17 @@ async function readTerminalPortraitConfig() {
       "terminal config glyphCellWidth",
     ),
     portraitCharset: readStringProperty(parsed, "portraitCharset"),
+    portraitContrastWeight: readNonNegativeNumberProperty(parsed, "portraitContrastWeight"),
     portraitHeight: parseSize(String(parsed.portraitHeight), "terminal config portraitHeight"),
+    portraitInkScale: readUnitIntervalProperty(parsed, "portraitInkScale"),
     portraitRenderer: parseRenderer(readStringProperty(parsed, "portraitRenderer")),
+    portraitShapeWeight: readNonNegativeNumberProperty(parsed, "portraitShapeWeight"),
+    portraitShimmerDarkThreshold: readUnitIntervalProperty(parsed, "portraitShimmerDarkThreshold"),
+    portraitShimmerStrength: readNonNegativeNumberProperty(parsed, "portraitShimmerStrength"),
+    portraitToneGamma: readPositiveNumberProperty(parsed, "portraitToneGamma"),
+    portraitToneHighPercentile: readUnitIntervalProperty(parsed, "portraitToneHighPercentile"),
+    portraitToneLowPercentile: readUnitIntervalProperty(parsed, "portraitToneLowPercentile"),
+    portraitToneWeight: readNonNegativeNumberProperty(parsed, "portraitToneWeight"),
     portraitWidth: parseSize(String(parsed.portraitWidth), "terminal config portraitWidth"),
   };
 }
@@ -352,6 +502,18 @@ function readStringProperty(value, key) {
   }
 
   return property;
+}
+
+function readNonNegativeNumberProperty(value, key) {
+  return parseNonNegativeNumber(String(value?.[key]), `terminal config ${key}`);
+}
+
+function readPositiveNumberProperty(value, key) {
+  return parsePositiveNumber(String(value?.[key]), `terminal config ${key}`);
+}
+
+function readUnitIntervalProperty(value, key) {
+  return parseUnitInterval(String(value?.[key]), `terminal config ${key}`);
 }
 
 function buildCharset(name) {
@@ -438,6 +600,36 @@ function parsePositiveInteger(value, name) {
   return number;
 }
 
+function parsePositiveNumber(value, name) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number) || number <= 0) {
+    throw new Error(`--${name} must be a positive number.`);
+  }
+
+  return number;
+}
+
+function parseNonNegativeNumber(value, name) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number) || number < 0) {
+    throw new Error(`--${name} must be a non-negative number.`);
+  }
+
+  return number;
+}
+
+function parseUnitInterval(value, name) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number) || number < 0 || number > 1) {
+    throw new Error(`--${name} must be a number between 0 and 1.`);
+  }
+
+  return number;
+}
+
 function parseRenderer(value) {
   if (value === "browser" || value === "svg") {
     return value;
@@ -461,6 +653,33 @@ function parseMatrix(value) {
 
 function toPosixPath(value) {
   return value.split(path.sep).join("/");
+}
+
+function readPercentile(sortedValues, percentile) {
+  const index = Math.round((sortedValues.length - 1) * percentile);
+
+  return sortedValues[index] ?? 0;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function smoothstep(edge0, edge1, value) {
+  const normalized = clamp((value - edge0) / Math.max(Number.EPSILON, edge1 - edge0), 0, 1);
+
+  return normalized * normalized * (3 - 2 * normalized);
+}
+
+function hashToUnit(x, y) {
+  let value = Math.imul(x + 0x9e3779b9, 0x85ebca6b) ^ Math.imul(y + 0xc2b2ae35, 0x27d4eb2f);
+  value ^= value >>> 15;
+  value = Math.imul(value, 0x2c1b3c6d);
+  value ^= value >>> 12;
+  value = Math.imul(value, 0x297a2d39);
+  value ^= value >>> 15;
+
+  return (value >>> 0) / 0x100000000;
 }
 
 function escapeXml(value) {

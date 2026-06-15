@@ -5,7 +5,16 @@
   "glyphCellWidth": 10,
   "lineHeight": 1.25,
   "portraitCharset": "latin1",
+  "portraitContrastWeight": 0.45,
   "portraitHeight": 28,
+  "portraitInkScale": 0.72,
   "portraitRenderer": "browser",
+  "portraitShapeWeight": 1,
+  "portraitShimmerDarkThreshold": 0.45,
+  "portraitShimmerStrength": 18,
+  "portraitToneGamma": 1.45,
+  "portraitToneHighPercentile": 0.985,
+  "portraitToneLowPercentile": 0.015,
+  "portraitToneWeight": 2.2,
   "portraitWidth": 64
 }
