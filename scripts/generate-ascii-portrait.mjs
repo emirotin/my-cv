@@ -18,7 +18,11 @@ const DEFAULT_HEIGHT = terminalConfig.portraitHeight;
 const DEFAULT_RENDERER = terminalConfig.portraitRenderer;
 const DEFAULT_WIDTH = terminalConfig.portraitWidth;
 const DEFAULT_CONTRAST_WEIGHT = terminalConfig.portraitContrastWeight;
+const DEFAULT_INK_CEILING = terminalConfig.portraitInkCeiling;
+const DEFAULT_INK_FLOOR = terminalConfig.portraitInkFloor;
 const DEFAULT_INK_SCALE = terminalConfig.portraitInkScale;
+const DEFAULT_NEIGHBOR_REPEAT_PENALTY = terminalConfig.portraitNeighborRepeatPenalty;
+const DEFAULT_NEIGHBOR_SIMILARITY_THRESHOLD = terminalConfig.portraitNeighborSimilarityThreshold;
 const DEFAULT_SHAPE_WEIGHT = terminalConfig.portraitShapeWeight;
 const DEFAULT_SHIMMER_DARK_THRESHOLD = terminalConfig.portraitShimmerDarkThreshold;
 const DEFAULT_SHIMMER_STRENGTH = terminalConfig.portraitShimmerStrength;
@@ -43,6 +47,7 @@ if (options.output === "-") {
 async function imageToAscii(options) {
   const { cellHeight, cellWidth, height, input, width } = options;
   const glyphTemplates = await renderGlyphTemplates(options);
+  const glyphSimilarity = buildGlyphSimilarity(glyphTemplates);
   const { data, info } = await sharp(input)
     .resize(width * cellWidth, height * cellHeight, {
       fit: "fill",
@@ -59,16 +64,22 @@ async function imageToAscii(options) {
     let line = "";
 
     for (let x = 0; x < width; x += 1) {
-      line += findClosestGlyph({
+      const char = findClosestGlyph({
         cellHeight,
         cellWidth,
         glyphTemplates,
+        glyphSimilarity,
         targetInk,
         imageWidth: info.width,
+        leftChar: line.at(-1),
         options,
+        previousLine: lines.at(-1),
+        previousLineIndex: x,
         x: x * cellWidth,
         y: y * cellHeight,
       });
+
+      line += char;
     }
 
     lines.push(line);
@@ -190,9 +201,13 @@ async function renderGlyphBitmap({ cellHeight, cellWidth, char, fontFamily, font
 function findClosestGlyph({
   cellHeight,
   cellWidth,
+  glyphSimilarity,
   glyphTemplates,
   imageWidth,
+  leftChar,
   options,
+  previousLine,
+  previousLineIndex,
   targetInk,
   x,
   y,
@@ -227,7 +242,16 @@ function findClosestGlyph({
     const totalError =
       options.shapeWeight * shapeError +
       options.toneWeight * toneError +
-      options.contrastWeight * contrastError;
+      options.contrastWeight * contrastError +
+      readNeighborSimilarityPenalty({
+        char,
+        glyphSimilarity,
+        leftChar,
+        options,
+        previousLine,
+        previousLineIndex,
+        targetMean: targetStats.mean,
+      });
 
     if (totalError < bestError) {
       bestChar = char;
@@ -256,16 +280,113 @@ function buildTargetInkBuffer(data, info, options) {
     const x = pixel % info.width;
     const y = Math.floor(pixel / info.width);
     const normalized = clamp((luminance[pixel] - blackPoint) / span, 0, 1);
-    const baseInk = Math.pow(1 - normalized, options.toneGamma) * 255 * options.inkScale;
-    const darkness = smoothstep(options.shimmerDarkThreshold, 1, baseInk / 255);
+    const curve = Math.pow(1 - normalized, options.toneGamma);
+    const scaledCurve = clamp(curve * options.inkScale, 0, 1);
+    const baseInk =
+      options.inkFloor + scaledCurve * (options.inkCeiling - options.inkFloor);
+    const darkness = smoothstep(options.shimmerDarkThreshold, 1, curve);
     const cellX = Math.floor(x / options.cellWidth);
     const cellY = Math.floor(y / options.cellHeight);
     const shimmer = (hashToUnit(cellX, cellY) * 2 - 1) * options.shimmerStrength * darkness;
 
-    targetInk[pixel] = clamp(baseInk + shimmer, 0, 255);
+    targetInk[pixel] = clamp(baseInk + shimmer, options.inkFloor, options.inkCeiling);
   }
 
   return targetInk;
+}
+
+function readNeighborSimilarityPenalty({
+  char,
+  glyphSimilarity,
+  leftChar,
+  options,
+  previousLine,
+  previousLineIndex,
+  targetMean,
+}) {
+  if (options.neighborRepeatPenalty === 0 || targetMean < options.inkFloor + 6) {
+    return 0;
+  }
+
+  let penalty = 0;
+
+  penalty += readGlyphSimilarityPenalty({
+    char,
+    glyphSimilarity,
+    neighborChar: leftChar,
+    options,
+    weight: 1,
+  });
+  penalty += readGlyphSimilarityPenalty({
+    char,
+    glyphSimilarity,
+    neighborChar: previousLine?.[previousLineIndex],
+    options,
+    weight: 1,
+  });
+  penalty += readGlyphSimilarityPenalty({
+    char,
+    glyphSimilarity,
+    neighborChar: previousLineIndex > 0 ? previousLine?.[previousLineIndex - 1] : undefined,
+    options,
+    weight: 0.5,
+  });
+  penalty += readGlyphSimilarityPenalty({
+    char,
+    glyphSimilarity,
+    neighborChar: previousLine?.[previousLineIndex + 1],
+    options,
+    weight: 0.5,
+  });
+
+  return penalty;
+}
+
+function readGlyphSimilarityPenalty({ char, glyphSimilarity, neighborChar, options, weight }) {
+  if (!neighborChar) {
+    return 0;
+  }
+
+  const distance = glyphSimilarity.get(char)?.get(neighborChar);
+
+  if (!Number.isFinite(distance)) {
+    return 0;
+  }
+
+  const similarity = clamp(1 - distance / options.neighborSimilarityThreshold, 0, 1);
+
+  return similarity * weight * options.neighborRepeatPenalty;
+}
+
+function buildGlyphSimilarity(glyphTemplates) {
+  const similarity = new Map();
+
+  for (const left of glyphTemplates) {
+    const distances = new Map();
+
+    for (const right of glyphTemplates) {
+      distances.set(
+        right.char,
+        left.char === right.char ? 0 : readMeanSquaredDifference(left.data, right.data),
+      );
+    }
+
+    similarity.set(left.char, distances);
+  }
+
+  return similarity;
+}
+
+function readMeanSquaredDifference(left, right) {
+  let error = 0;
+
+  for (let index = 0; index < left.length; index += 1) {
+    const difference = (left[index] ?? 0) - (right[index] ?? 0);
+
+    error += difference * difference;
+  }
+
+  return error / left.length;
 }
 
 function buildGlyphTemplate(char, data) {
@@ -349,8 +470,12 @@ function parseArgs(argv) {
     fontFamily: DEFAULT_FONT_FAMILY,
     fontSize: DEFAULT_FONT_SIZE,
     height: DEFAULT_HEIGHT,
+    inkCeiling: DEFAULT_INK_CEILING,
+    inkFloor: DEFAULT_INK_FLOOR,
     inkScale: DEFAULT_INK_SCALE,
     input: DEFAULT_INPUT,
+    neighborRepeatPenalty: DEFAULT_NEIGHBOR_REPEAT_PENALTY,
+    neighborSimilarityThreshold: DEFAULT_NEIGHBOR_SIMILARITY_THRESHOLD,
     output: DEFAULT_OUTPUT,
     renderer: DEFAULT_RENDERER,
     shapeWeight: DEFAULT_SHAPE_WEIGHT,
@@ -399,11 +524,24 @@ function parseArgs(argv) {
       case "height":
         parsed.height = parseSize(value.text, "height");
         break;
+      case "ink-ceiling":
+        parsed.inkCeiling = parseInkLimit(value.text, "ink-ceiling");
+        break;
+      case "ink-floor":
+        parsed.inkFloor = parseInkLimit(value.text, "ink-floor");
+        break;
       case "ink-scale":
-        parsed.inkScale = parseUnitInterval(value.text, "ink-scale");
+        parsed.inkScale = parsePositiveNumber(value.text, "ink-scale");
         break;
       case "input":
         parsed.input = value.text;
+        break;
+      case "neighbor-repeat-penalty":
+      case "repeat-penalty":
+        parsed.neighborRepeatPenalty = parseNonNegativeNumber(value.text, name);
+        break;
+      case "neighbor-similarity-threshold":
+        parsed.neighborSimilarityThreshold = parsePositiveNumber(value.text, name);
         break;
       case "matrix": {
         const { height, width } = parseMatrix(value.text);
@@ -460,6 +598,10 @@ function parseArgs(argv) {
     throw new Error("--tone-low-percentile must be lower than --tone-high-percentile.");
   }
 
+  if (parsed.inkFloor >= parsed.inkCeiling) {
+    throw new Error("--ink-floor must be lower than --ink-ceiling.");
+  }
+
   return parsed;
 }
 
@@ -481,7 +623,17 @@ async function readTerminalPortraitConfig() {
     portraitCharset: readStringProperty(parsed, "portraitCharset"),
     portraitContrastWeight: readNonNegativeNumberProperty(parsed, "portraitContrastWeight"),
     portraitHeight: parseSize(String(parsed.portraitHeight), "terminal config portraitHeight"),
-    portraitInkScale: readUnitIntervalProperty(parsed, "portraitInkScale"),
+    portraitInkCeiling: readInkLimitProperty(parsed, "portraitInkCeiling"),
+    portraitInkFloor: readInkLimitProperty(parsed, "portraitInkFloor"),
+    portraitInkScale: readPositiveNumberProperty(parsed, "portraitInkScale"),
+    portraitNeighborRepeatPenalty: readNonNegativeNumberProperty(
+      parsed,
+      "portraitNeighborRepeatPenalty",
+    ),
+    portraitNeighborSimilarityThreshold: readPositiveNumberProperty(
+      parsed,
+      "portraitNeighborSimilarityThreshold",
+    ),
     portraitRenderer: parseRenderer(readStringProperty(parsed, "portraitRenderer")),
     portraitShapeWeight: readNonNegativeNumberProperty(parsed, "portraitShapeWeight"),
     portraitShimmerDarkThreshold: readUnitIntervalProperty(parsed, "portraitShimmerDarkThreshold"),
@@ -514,6 +666,10 @@ function readPositiveNumberProperty(value, key) {
 
 function readUnitIntervalProperty(value, key) {
   return parseUnitInterval(String(value?.[key]), `terminal config ${key}`);
+}
+
+function readInkLimitProperty(value, key) {
+  return parseInkLimit(String(value?.[key]), `terminal config ${key}`);
 }
 
 function buildCharset(name) {
@@ -625,6 +781,16 @@ function parseUnitInterval(value, name) {
 
   if (!Number.isFinite(number) || number < 0 || number > 1) {
     throw new Error(`--${name} must be a number between 0 and 1.`);
+  }
+
+  return number;
+}
+
+function parseInkLimit(value, name) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number) || number < 0 || number > 255) {
+    throw new Error(`--${name} must be a number between 0 and 255.`);
   }
 
   return number;
