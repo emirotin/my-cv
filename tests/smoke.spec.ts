@@ -37,11 +37,12 @@ test("unknown route renders the app not found page", async ({ page }) => {
   await expect(page.locator("p").filter({ hasText: "Not Found" })).toHaveCount(0);
 });
 
-test("assistant terminal renders without loading the model in smoke mode", async ({ page }) => {
-  await page.goto("/?noai=1");
+test("terminal renders the temporary hello line", async ({ page }) => {
+  await page.goto("/");
   await expect(page.getByRole("heading", { name: "Eugene Mirotin CV" })).toBeVisible();
   await expect(page.getByTestId("recruiter-terminal")).toBeVisible();
   await expect(page.locator(".xterm")).toBeVisible();
+  await expect(page.locator(".xterm-rows")).toContainText("Hello!");
 
   const downloadLink = page
     .locator('a[download="eugene_mirotin_cv.pdf"]')
@@ -98,73 +99,77 @@ test("contact button copies plain contact details", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Copied email contact details" })).toBeVisible();
 });
 
-test("assistant does not show the prompt before model status resolves", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(window.navigator, "gpu", {
-      configurable: true,
-      value: undefined,
+test.describe("assistant terminal integration", () => {
+  test.skip(true, "Assistant terminal is temporarily replaced by the Hello! stub.");
+
+  test("assistant does not show the prompt before model status resolves", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window.navigator, "gpu", {
+        configurable: true,
+        value: undefined,
+      });
     });
+
+    await page.goto("/");
+    const rows = page.locator(".xterm-rows");
+    await expect(rows).toContainText("WebGPU is not available");
+    await expect(rows).toContainText("recruiter>");
+
+    const terminalText = await rows.innerText();
+    expect(terminalText.indexOf("WebGPU is not available")).toBeGreaterThan(-1);
+    expect(terminalText.indexOf("recruiter>")).toBeGreaterThan(
+      terminalText.indexOf("WebGPU is not available"),
+    );
   });
 
-  await page.goto("/");
-  const rows = page.locator(".xterm-rows");
-  await expect(rows).toContainText("WebGPU is not available");
-  await expect(rows).toContainText("recruiter>");
-
-  const terminalText = await rows.innerText();
-  expect(terminalText.indexOf("WebGPU is not available")).toBeGreaterThan(-1);
-  expect(terminalText.indexOf("recruiter>")).toBeGreaterThan(
-    terminalText.indexOf("WebGPU is not available"),
-  );
-});
-
-test("assistant falls back when WebGPU storage-buffer limit is too low", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(window.navigator, "gpu", {
-      configurable: true,
-      value: {
-        requestAdapter: async () => ({
-          limits: {
-            maxStorageBuffersPerShaderStage: 8,
-          },
-        }),
-      },
+  test("assistant falls back when WebGPU storage-buffer limit is too low", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window.navigator, "gpu", {
+        configurable: true,
+        value: {
+          requestAdapter: async () => ({
+            limits: {
+              maxStorageBuffersPerShaderStage: 8,
+            },
+          }),
+        },
+      });
     });
+
+    await page.goto("/");
+    const rows = page.locator(".xterm-rows");
+    await expect(rows).toContainText("storage buffers per shader stage");
+    await expect(rows).toContainText("Continuing with CV search fallback");
+    await expect(rows).toContainText("recruiter>");
   });
 
-  await page.goto("/");
-  const rows = page.locator(".xterm-rows");
-  await expect(rows).toContainText("storage buffers per shader stage");
-  await expect(rows).toContainText("Continuing with CV search fallback");
-  await expect(rows).toContainText("recruiter>");
-});
+  test("send_email tool prints plain contact details", async ({ page }) => {
+    await page.goto("/?noai=1");
+    await expect(page.locator(".xterm")).toBeVisible();
+    await page.getByTestId("recruiter-terminal").click();
+    await page.keyboard.type("email");
+    await page.keyboard.press("Enter");
 
-test("send_email tool prints plain contact details", async ({ page }) => {
-  await page.goto("/?noai=1");
-  await expect(page.locator(".xterm")).toBeVisible();
-  await page.getByTestId("recruiter-terminal").click();
-  await page.keyboard.type("email");
-  await page.keyboard.press("Enter");
+    const rows = page.locator(".xterm-rows");
+    await expect(rows).toContainText("Email Eugene:");
+    await expect(rows).toContainText("Email: emirotin@gmail.com");
+    await expect(rows).toContainText("Subject: From CV");
+  });
 
-  const rows = page.locator(".xterm-rows");
-  await expect(rows).toContainText("Email Eugene:");
-  await expect(rows).toContainText("Email: emirotin@gmail.com");
-  await expect(rows).toContainText("Subject: From CV");
-});
+  test("natural contact request prints plain contact details without waiting for the model", async ({
+    page,
+  }) => {
+    await page.goto("/?noai=1");
+    await expect(page.locator(".xterm")).toBeVisible();
+    await page.getByTestId("recruiter-terminal").click();
+    await page.keyboard.type("how can I contact him?");
+    await page.keyboard.press("Enter");
 
-test("natural contact request prints plain contact details without waiting for the model", async ({
-  page,
-}) => {
-  await page.goto("/?noai=1");
-  await expect(page.locator(".xterm")).toBeVisible();
-  await page.getByTestId("recruiter-terminal").click();
-  await page.keyboard.type("how can I contact him?");
-  await page.keyboard.press("Enter");
-
-  const rows = page.locator(".xterm-rows");
-  await expect(rows).toContainText("Email Eugene:");
-  await expect(rows).toContainText("Email: emirotin@gmail.com");
-  await expect(rows).toContainText("Subject: From CV");
+    const rows = page.locator(".xterm-rows");
+    await expect(rows).toContainText("Email Eugene:");
+    await expect(rows).toContainText("Email: emirotin@gmail.com");
+    await expect(rows).toContainText("Subject: From CV");
+  });
 });
 
 test("eval page renders copyable report without auto-running in manual mode", async ({ page }) => {
