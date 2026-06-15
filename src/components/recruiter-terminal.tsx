@@ -1,4 +1,10 @@
 import { useEffect, useRef } from "react";
+import {
+  ASCII_PORTRAIT,
+  ASCII_PORTRAIT_HEIGHT,
+  ASCII_PORTRAIT_SOURCE,
+  ASCII_PORTRAIT_WIDTH,
+} from "@/lib/ascii-portrait";
 import { cn } from "@/lib/utils";
 
 type TerminalApi = {
@@ -42,10 +48,11 @@ export function RecruiterTerminal({ className }: RecruiterTerminalProps) {
         cursorBlink: false,
         fontFamily:
           "'Geist Mono Variable', 'SFMono-Regular', 'Cascadia Code', 'Liberation Mono', Menlo, monospace",
-        fontSize: 14,
+        fontSize: 8,
         letterSpacing: 0,
-        lineHeight: 1.45,
-        rows: 28,
+        lineHeight: 1,
+        rows: ASCII_PORTRAIT_HEIGHT + 4,
+        scrollback: 160,
         theme: {
           background: "transparent",
           black: "#101112",
@@ -75,7 +82,7 @@ export function RecruiterTerminal({ className }: RecruiterTerminalProps) {
       term.loadAddon(fitAddon);
       term.open(containerRef.current);
       fitAddon.fit();
-      term.writeln("Hello!");
+      runStartupProgram(term);
 
       resizeObserver = new ResizeObserver(() => {
         fitAddon.fit();
@@ -103,5 +110,21 @@ export function RecruiterTerminal({ className }: RecruiterTerminalProps) {
       ref={containerRef}
       role="application"
     />
+  );
+}
+
+function runStartupProgram(term: TerminalApi) {
+  term.writeln(
+    `\x1b[32m$ ascii-portrait --source ${ASCII_PORTRAIT_SOURCE} --size ${ASCII_PORTRAIT_WIDTH}\x1b[0m`,
+  );
+  term.writeln("");
+
+  for (const line of ASCII_PORTRAIT.split("\n")) {
+    term.writeln(line);
+  }
+
+  term.writeln("");
+  term.writeln(
+    `\x1b[32mprogram exited 0 (${ASCII_PORTRAIT_WIDTH}x${ASCII_PORTRAIT_HEIGHT})\x1b[0m`,
   );
 }

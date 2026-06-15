@@ -17,6 +17,7 @@
     "test:e2e": "playwright test",
     "test:prerender": "node scripts/assert-prerender.mjs",
     "export:pdf": "node scripts/export-cv-pdf.mjs",
+    "generate:portrait": "node scripts/generate-ascii-portrait.mjs --input public/images/me.jpg --output src/lib/ascii-portrait.ts --size 40",
     "test:e2e:prod": "pnpm run build && PLAYWRIGHT_SERVER=preview playwright test --grep @prod",
     "test": "pnpm run test:e2e && pnpm run test:prerender"
   },
@@ -55,6 +56,7 @@
     "@vitejs/plugin-react": "^6.0.2",
     "oxfmt": "^0.54.0",
     "oxlint": "^1.69.0",
+    "sharp": "^0.35.1",
     "tailwindcss": "^4.3.1",
     "typescript": "^6.0.3",
     "vite": "^8.0.16"

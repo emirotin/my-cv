@@ -37,12 +37,13 @@ test("unknown route renders the app not found page", async ({ page }) => {
   await expect(page.locator("p").filter({ hasText: "Not Found" })).toHaveCount(0);
 });
 
-test("terminal renders the temporary hello line", async ({ page }) => {
+test("terminal runs the ASCII portrait startup program", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Eugene Mirotin CV" })).toBeVisible();
   await expect(page.getByTestId("recruiter-terminal")).toBeVisible();
   await expect(page.locator(".xterm")).toBeVisible();
-  await expect(page.locator(".xterm-rows")).toContainText("Hello!");
+  await expect(page.locator(".xterm-rows")).toContainText("ascii-portrait");
+  await expect(page.locator(".xterm-rows")).toContainText("program exited 0 (40x40)");
 
   const downloadLink = page
     .locator('a[download="eugene_mirotin_cv.pdf"]')
