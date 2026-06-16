@@ -1,0 +1,27 @@
+{
+  "name": "Eugene Mirotin - CV Assistant",
+  "short_name": "Eugene CV",
+  "description": "Eugene Mirotin CV with an interactive in-browser AI assistant.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#edf1f0",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-mask.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
