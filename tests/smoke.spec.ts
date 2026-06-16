@@ -47,7 +47,7 @@ test("terminal runs the ASCII portrait startup program and shows the assistant m
   await expect(page.locator(".xterm-rows")).toContainText(
     "Welcome to Eugene Mirotin's interactive CV terminal.",
   );
-  await expect(page.locator(".xterm-rows")).toContainText("program exited 0 (64x28)");
+  await expect(page.locator(".xterm-rows")).not.toContainText("program exited 0");
   await expect(page.locator(".xterm-rows")).toContainText("> 1. See CV");
   await expect(page.locator(".xterm-rows")).toContainText("2. Send email");
   await expect(page.locator(".xterm-rows")).toContainText("3. Launch interactive LLM assistant");
@@ -102,7 +102,8 @@ test("mobile assistant terminal uses a portrait that fits the narrow xterm surfa
   await page.goto("/?noai=1");
 
   const rows = page.locator(".xterm-rows");
-  await expect(rows).toContainText("program exited 0 (37x16)");
+  await expect(rows).toContainText("$ ascii-portrait --matrix 37x16");
+  await expect(rows).not.toContainText("program exited 0");
 
   const metrics = await page.evaluate(() => {
     const xterm = document.querySelector<HTMLElement>(".xterm");

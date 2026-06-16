@@ -418,8 +418,6 @@ async function runStartupProgram(term: TerminalApi, terminalContainer: HTMLEleme
       "",
       ...portrait.ascii.split("\n"),
       "",
-      `\x1b[32mprogram exited 0 (${portrait.width}x${portrait.height})\x1b[0m`,
-      "",
     ].join("\r\n") + "\r\n",
   );
 }
