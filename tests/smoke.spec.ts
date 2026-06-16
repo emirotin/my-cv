@@ -146,6 +146,28 @@ test("mobile assistant terminal uses a portrait that fits the narrow xterm surfa
 }) => {
   await page.setViewportSize({ height: 800, width: 375 });
   await page.goto("/?noai=1");
+  await page.waitForSelector(".xterm");
+
+  const initialMetrics = await page.evaluate(() => {
+    const terminal = document
+      .querySelector<HTMLElement>('[data-testid="recruiter-terminal"]')
+      ?.getBoundingClientRect();
+    const xterm = document.querySelector<HTMLElement>(".xterm")?.getBoundingClientRect();
+    const screen = document.querySelector<HTMLElement>(".xterm-screen")?.getBoundingClientRect();
+
+    return {
+      clientWidth: document.documentElement.clientWidth,
+      screenRight: screen?.right ?? 0,
+      scrollWidth: document.documentElement.scrollWidth,
+      terminalRight: terminal?.right ?? 0,
+      xtermRight: xterm?.right ?? 0,
+    };
+  });
+
+  expect(initialMetrics.scrollWidth).toBe(initialMetrics.clientWidth);
+  expect(initialMetrics.terminalRight).toBeLessThanOrEqual(initialMetrics.clientWidth);
+  expect(initialMetrics.xtermRight).toBeLessThanOrEqual(initialMetrics.clientWidth);
+  expect(initialMetrics.screenRight).toBeLessThanOrEqual(initialMetrics.clientWidth);
 
   const rows = page.locator(".xterm-rows");
   await expectTerminalMenuReady(page);

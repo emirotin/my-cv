@@ -148,6 +148,7 @@
 
 .xterm {
     @apply h-full p-4;
+    box-sizing: border-box;
     font-family: var(
         --terminal-font-family,
         "SFMono-Regular",
@@ -159,6 +160,19 @@
         monospace
     );
     font-variant-ligatures: none;
+    max-width: 100%;
+    overflow: hidden;
+    width: 100%;
+}
+
+.home-terminal-column,
+.home-terminal-frame {
+    max-width: 100%;
+    min-width: 0;
+}
+
+.home-terminal-frame {
+    width: 100%;
 }
 
 @media (min-width: 1024px) {
