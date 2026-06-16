@@ -15,9 +15,17 @@ const DEFAULT_CELL_HEIGHT = terminalConfig.glyphCellHeight;
 const DEFAULT_FONT_FAMILY = terminalConfig.fontFamily;
 const DEFAULT_FONT_SIZE = terminalConfig.fontSize;
 const DEFAULT_HEIGHT = terminalConfig.portraitHeight;
+const DEFAULT_FIT = terminalConfig.portraitFit;
+const DEFAULT_FOCUS_X = terminalConfig.portraitFocusX;
+const DEFAULT_FOCUS_Y = terminalConfig.portraitFocusY;
+const DEFAULT_POSITION = terminalConfig.portraitPosition;
 const DEFAULT_RENDERER = terminalConfig.portraitRenderer;
 const DEFAULT_WIDTH = terminalConfig.portraitWidth;
+const DEFAULT_ZOOM = terminalConfig.portraitZoom;
 const DEFAULT_CONTRAST_WEIGHT = terminalConfig.portraitContrastWeight;
+const DEFAULT_DETAIL_HIGH_PERCENTILE = terminalConfig.portraitDetailHighPercentile;
+const DEFAULT_DETAIL_WEIGHT = terminalConfig.portraitDetailWeight;
+const DEFAULT_FACE_DETAIL_BOOST = terminalConfig.portraitFaceDetailBoost;
 const DEFAULT_INK_CEILING = terminalConfig.portraitInkCeiling;
 const DEFAULT_INK_FLOOR = terminalConfig.portraitInkFloor;
 const DEFAULT_INK_SCALE = terminalConfig.portraitInkScale;
@@ -48,10 +56,13 @@ async function imageToAscii(options) {
   const { cellHeight, cellWidth, height, input, width } = options;
   const glyphTemplates = await renderGlyphTemplates(options);
   const glyphSimilarity = buildGlyphSimilarity(glyphTemplates);
-  const { data, info } = await sharp(input)
+  const image = await buildFocusedImage(input, options);
+  const { data, info } = await image
     .resize(width * cellWidth, height * cellHeight, {
-      fit: "fill",
+      background: "#fff",
+      fit: options.fit,
       kernel: sharp.kernel.lanczos3,
+      position: parseSharpPosition(options.position),
     })
     .grayscale()
     .raw()
@@ -86,6 +97,40 @@ async function imageToAscii(options) {
   }
 
   return lines.join("\n");
+}
+
+async function buildFocusedImage(input, options) {
+  const image = sharp(input);
+
+  if (options.zoom <= 1) {
+    return image;
+  }
+
+  const metadata = await sharp(input).metadata();
+
+  if (!metadata.width || !metadata.height) {
+    return image;
+  }
+
+  const width = Math.max(1, Math.round(metadata.width / options.zoom));
+  const height = Math.max(1, Math.round(metadata.height / options.zoom));
+  const left = clamp(
+    Math.round(metadata.width * options.focusX - width / 2),
+    0,
+    metadata.width - width,
+  );
+  const top = clamp(
+    Math.round(metadata.height * options.focusY - height / 2),
+    0,
+    metadata.height - height,
+  );
+
+  return image.extract({
+    height,
+    left,
+    top,
+    width,
+  });
 }
 
 async function renderGlyphTemplates(options) {
@@ -274,6 +319,7 @@ function buildTargetInkBuffer(data, info, options) {
   const blackPoint = readPercentile(sorted, options.toneLowPercentile);
   const whitePoint = readPercentile(sorted, options.toneHighPercentile);
   const span = Math.max(1, whitePoint - blackPoint);
+  const detailInk = buildDetailInkBuffer(luminance, info, options);
   const targetInk = new Float32Array(luminance.length);
 
   for (let pixel = 0; pixel < luminance.length; pixel += 1) {
@@ -289,10 +335,68 @@ function buildTargetInkBuffer(data, info, options) {
     const cellY = Math.floor(y / options.cellHeight);
     const shimmer = (hashToUnit(cellX, cellY) * 2 - 1) * options.shimmerStrength * darkness;
 
-    targetInk[pixel] = clamp(baseInk + shimmer, options.inkFloor, options.inkCeiling);
+    targetInk[pixel] = clamp(
+      baseInk + detailInk[pixel] + shimmer,
+      options.inkFloor,
+      options.inkCeiling,
+    );
   }
 
   return targetInk;
+}
+
+function buildDetailInkBuffer(luminance, info, options) {
+  const edge = new Float32Array(luminance.length);
+
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const topLeft = readLuminance(luminance, info, x - 1, y - 1);
+      const top = readLuminance(luminance, info, x, y - 1);
+      const topRight = readLuminance(luminance, info, x + 1, y - 1);
+      const left = readLuminance(luminance, info, x - 1, y);
+      const right = readLuminance(luminance, info, x + 1, y);
+      const bottomLeft = readLuminance(luminance, info, x - 1, y + 1);
+      const bottom = readLuminance(luminance, info, x, y + 1);
+      const bottomRight = readLuminance(luminance, info, x + 1, y + 1);
+      const gradientX = -topLeft - 2 * left - bottomLeft + topRight + 2 * right + bottomRight;
+      const gradientY = -topLeft - 2 * top - topRight + bottomLeft + 2 * bottom + bottomRight;
+
+      edge[y * info.width + x] = Math.hypot(gradientX, gradientY);
+    }
+  }
+
+  const sorted = Array.from(edge).sort((left, right) => left - right);
+  const detailPoint = Math.max(1, readPercentile(sorted, options.detailHighPercentile));
+  const detailInk = new Float32Array(edge.length);
+
+  for (let pixel = 0; pixel < edge.length; pixel += 1) {
+    const x = pixel % info.width;
+    const y = Math.floor(pixel / info.width);
+    const normalized = clamp(edge[pixel] / detailPoint, 0, 1);
+    const focus = readFaceDetailFocus(x, y, info);
+
+    detailInk[pixel] =
+      Math.pow(normalized, 0.72) * options.detailWeight * (1 + focus * options.faceDetailBoost);
+  }
+
+  return detailInk;
+}
+
+function readLuminance(luminance, info, x, y) {
+  const clampedX = clamp(Math.round(x), 0, info.width - 1);
+  const clampedY = clamp(Math.round(y), 0, info.height - 1);
+
+  return luminance[clampedY * info.width + clampedX] ?? 255;
+}
+
+function readFaceDetailFocus(x, y, info) {
+  const normalizedX = (x + 0.5) / info.width;
+  const normalizedY = (y + 0.5) / info.height;
+  const radiusX = (normalizedX - 0.5) / 0.33;
+  const radiusY = (normalizedY - 0.43) / 0.36;
+  const distance = Math.hypot(radiusX, radiusY);
+
+  return 1 - smoothstep(0.55, 1, distance);
 }
 
 function readNeighborSimilarityPenalty({
@@ -467,6 +571,12 @@ function parseArgs(argv) {
     charset: buildCharset(DEFAULT_CHARSET_NAME),
     charsetName: DEFAULT_CHARSET_NAME,
     contrastWeight: DEFAULT_CONTRAST_WEIGHT,
+    detailHighPercentile: DEFAULT_DETAIL_HIGH_PERCENTILE,
+    detailWeight: DEFAULT_DETAIL_WEIGHT,
+    faceDetailBoost: DEFAULT_FACE_DETAIL_BOOST,
+    fit: DEFAULT_FIT,
+    focusX: DEFAULT_FOCUS_X,
+    focusY: DEFAULT_FOCUS_Y,
     fontFamily: DEFAULT_FONT_FAMILY,
     fontSize: DEFAULT_FONT_SIZE,
     height: DEFAULT_HEIGHT,
@@ -477,6 +587,7 @@ function parseArgs(argv) {
     neighborRepeatPenalty: DEFAULT_NEIGHBOR_REPEAT_PENALTY,
     neighborSimilarityThreshold: DEFAULT_NEIGHBOR_SIMILARITY_THRESHOLD,
     output: DEFAULT_OUTPUT,
+    position: DEFAULT_POSITION,
     renderer: DEFAULT_RENDERER,
     shapeWeight: DEFAULT_SHAPE_WEIGHT,
     shimmerDarkThreshold: DEFAULT_SHIMMER_DARK_THRESHOLD,
@@ -486,6 +597,7 @@ function parseArgs(argv) {
     toneLowPercentile: DEFAULT_TONE_LOW_PERCENTILE,
     toneWeight: DEFAULT_TONE_WEIGHT,
     width: DEFAULT_WIDTH,
+    zoom: DEFAULT_ZOOM,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -514,6 +626,27 @@ function parseArgs(argv) {
         break;
       case "contrast-weight":
         parsed.contrastWeight = parseNonNegativeNumber(value.text, "contrast-weight");
+        break;
+      case "detail-high-percentile":
+        parsed.detailHighPercentile = parseUnitInterval(
+          value.text,
+          "detail-high-percentile",
+        );
+        break;
+      case "detail-weight":
+        parsed.detailWeight = parseNonNegativeNumber(value.text, "detail-weight");
+        break;
+      case "face-detail-boost":
+        parsed.faceDetailBoost = parseNonNegativeNumber(value.text, "face-detail-boost");
+        break;
+      case "fit":
+        parsed.fit = parseFit(value.text);
+        break;
+      case "focus-x":
+        parsed.focusX = parseUnitInterval(value.text, "focus-x");
+        break;
+      case "focus-y":
+        parsed.focusY = parseUnitInterval(value.text, "focus-y");
         break;
       case "font-family":
         parsed.fontFamily = value.text;
@@ -552,6 +685,9 @@ function parseArgs(argv) {
       case "output":
         parsed.output = value.text;
         break;
+      case "position":
+        parsed.position = parsePosition(value.text);
+        break;
       case "renderer":
         parsed.renderer = parseRenderer(value.text);
         break;
@@ -584,6 +720,9 @@ function parseArgs(argv) {
         break;
       case "width":
         parsed.width = parseSize(value.text, "width");
+        break;
+      case "zoom":
+        parsed.zoom = parseZoom(value.text);
         break;
       default:
         throw new Error(`Unknown option: --${name}`);
@@ -622,6 +761,15 @@ async function readTerminalPortraitConfig() {
     ),
     portraitCharset: readStringProperty(parsed, "portraitCharset"),
     portraitContrastWeight: readNonNegativeNumberProperty(parsed, "portraitContrastWeight"),
+    portraitDetailHighPercentile: readUnitIntervalProperty(
+      parsed,
+      "portraitDetailHighPercentile",
+    ),
+    portraitDetailWeight: readNonNegativeNumberProperty(parsed, "portraitDetailWeight"),
+    portraitFaceDetailBoost: readNonNegativeNumberProperty(parsed, "portraitFaceDetailBoost"),
+    portraitFit: parseFit(readStringProperty(parsed, "portraitFit")),
+    portraitFocusX: readUnitIntervalProperty(parsed, "portraitFocusX"),
+    portraitFocusY: readUnitIntervalProperty(parsed, "portraitFocusY"),
     portraitHeight: parseSize(String(parsed.portraitHeight), "terminal config portraitHeight"),
     portraitInkCeiling: readInkLimitProperty(parsed, "portraitInkCeiling"),
     portraitInkFloor: readInkLimitProperty(parsed, "portraitInkFloor"),
@@ -634,6 +782,7 @@ async function readTerminalPortraitConfig() {
       parsed,
       "portraitNeighborSimilarityThreshold",
     ),
+    portraitPosition: parsePosition(readStringProperty(parsed, "portraitPosition")),
     portraitRenderer: parseRenderer(readStringProperty(parsed, "portraitRenderer")),
     portraitShapeWeight: readNonNegativeNumberProperty(parsed, "portraitShapeWeight"),
     portraitShimmerDarkThreshold: readUnitIntervalProperty(parsed, "portraitShimmerDarkThreshold"),
@@ -643,6 +792,7 @@ async function readTerminalPortraitConfig() {
     portraitToneLowPercentile: readUnitIntervalProperty(parsed, "portraitToneLowPercentile"),
     portraitToneWeight: readNonNegativeNumberProperty(parsed, "portraitToneWeight"),
     portraitWidth: parseSize(String(parsed.portraitWidth), "terminal config portraitWidth"),
+    portraitZoom: parseZoom(String(parsed.portraitZoom), "terminal config portraitZoom"),
   };
 }
 
@@ -766,6 +916,16 @@ function parsePositiveNumber(value, name) {
   return number;
 }
 
+function parseZoom(value, name = "zoom") {
+  const number = Number(value);
+
+  if (!Number.isFinite(number) || number < 1) {
+    throw new Error(`--${name} must be a number greater than or equal to 1.`);
+  }
+
+  return number;
+}
+
 function parseNonNegativeNumber(value, name) {
   const number = Number(value);
 
@@ -802,6 +962,45 @@ function parseRenderer(value) {
   }
 
   throw new Error('--renderer must be "browser" or "svg".');
+}
+
+function parseFit(value) {
+  if (value === "contain" || value === "cover" || value === "fill") {
+    return value;
+  }
+
+  throw new Error('--fit must be "contain", "cover", or "fill".');
+}
+
+function parsePosition(value) {
+  if (
+    value === "attention" ||
+    value === "center" ||
+    value === "centre" ||
+    value === "entropy" ||
+    value === "north" ||
+    value === "northeast" ||
+    value === "east" ||
+    value === "southeast" ||
+    value === "south" ||
+    value === "southwest" ||
+    value === "west" ||
+    value === "northwest"
+  ) {
+    return value;
+  }
+
+  throw new Error(
+    '--position must be "attention", "entropy", "center", or a cardinal crop position.',
+  );
+}
+
+function parseSharpPosition(value) {
+  if (value === "attention" || value === "entropy") {
+    return sharp.strategy[value];
+  }
+
+  return sharp.gravity[value] ?? value;
 }
 
 function parseMatrix(value) {

@@ -429,14 +429,14 @@ async function runStartupProgram(term: TerminalApi, terminalContainer: HTMLEleme
   await writeAsync(
     term,
     [
-      `\x1b[32m$ ascii-portrait --matrix ${portrait.width}x${portrait.height} --charset ${portrait.charsetName} --fit ${portrait.matcher}\x1b[0m`,
+      `\x1b[32m$ ascii-portrait --matrix ${portrait.width}x${portrait.height} --charset ${portrait.charsetName} --matcher ${portrait.matcher}\x1b[0m`,
       `\x1b[33msource:\x1b[0m ${portrait.source}`,
       "",
     ].join("\r\n") + "\r\n",
   );
 
   await animateStartupPortrait(term, portrait);
-  await writeAsync(term, "\r\n\r\n");
+  await writeAsync(term, "\r\n");
 }
 
 async function animateStartupPortrait(term: TerminalApi, portrait: StartupPortrait) {
