@@ -125,6 +125,8 @@
 
     html {
         @apply bg-background font-mono text-foreground antialiased;
+        overflow-y: auto;
+        scrollbar-gutter: stable;
     }
 
     body {

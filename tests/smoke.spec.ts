@@ -66,6 +66,46 @@ test("terminal runs the ASCII portrait startup program and shows the assistant m
   await expect(downloadLink).toHaveAttribute("href", /eugene_mirotin_cv.*\.pdf/);
 });
 
+test("home page reserves the scrollbar gutter while the terminal fills", async ({ page }) => {
+  await page.setViewportSize({ height: 900, width: 1280 });
+  await page.goto("/");
+
+  const initialWidth = await page.evaluate(() => document.documentElement.clientWidth);
+  await page.evaluate(() => {
+    const widths: Array<number> = [];
+    let sampleCount = 0;
+
+    function sampleClientWidth() {
+      widths.push(document.documentElement.clientWidth);
+      sampleCount += 1;
+
+      if (sampleCount < 120) {
+        window.requestAnimationFrame(sampleClientWidth);
+      }
+    }
+
+    Object.assign(window, { __documentClientWidths: widths });
+    window.requestAnimationFrame(sampleClientWidth);
+  });
+
+  await expect(page.locator(".xterm")).toBeVisible();
+  await expectTerminalMenuReady(page);
+
+  const metrics = await page.evaluate(() => ({
+    finalWidth: document.documentElement.clientWidth,
+    scrollbarGutter: window
+      .getComputedStyle(document.documentElement)
+      .getPropertyValue("scrollbar-gutter"),
+    sampledWidths: (
+      (window as Window & { __documentClientWidths?: Array<number> }).__documentClientWidths ?? []
+    ).filter((width) => width > 0),
+  }));
+
+  expect(metrics.scrollbarGutter).toBe("stable");
+  expect(metrics.finalWidth).toBe(initialWidth);
+  expect(new Set(metrics.sampledWidths).size).toBe(1);
+});
+
 test("desktop assistant terminal follows the right column height", async ({ page }) => {
   await page.setViewportSize({ height: 900, width: 1280 });
   await page.goto("/?noai=1");
