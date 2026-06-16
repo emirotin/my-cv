@@ -177,6 +177,7 @@ export function RecruiterTerminal({ className, cvMarkdown }: RecruiterTerminalPr
     let menuActive = false;
     let menuBusy = false;
     let menuRendered = false;
+    let menuRenderedRowCount = 0;
     let menuLinks: Array<MenuLink> = [];
     let selectedOptionIndex = 0;
     let menuRenderQueue = Promise.resolve();
@@ -363,6 +364,7 @@ export function RecruiterTerminal({ className, cvMarkdown }: RecruiterTerminalPr
 
       menuActive = false;
       menuLinks = [];
+      menuRenderedRowCount = 0;
       menuDataSubscription?.dispose();
       menuDataSubscription = undefined;
       await writeAsync(term, "\r\nLaunching interactive LLM assistant...\r\n\r\n");
@@ -379,15 +381,17 @@ export function RecruiterTerminal({ className, cvMarkdown }: RecruiterTerminalPr
 
     async function renderMenu(term: TerminalApi, { replace }: { replace: boolean }) {
       const lines = buildMenuLines(selectedOptionIndex);
+      const renderedRowCount = countWrappedTerminalRows(lines, term.cols);
 
       if (replace && menuRendered) {
-        await writeAsync(term, `\x1b[${lines.length}F`);
+        await writeAsync(term, `\x1b[${menuRenderedRowCount}F\x1b[J`);
       }
 
       const firstLineNumber = getCurrentBufferLineNumber(term);
       menuLinks = buildMenuLinks(lines, firstLineNumber);
       await writeAsync(term, `${lines.map(({ text }) => `\x1b[2K\r${text}`).join("\r\n")}\r\n`);
       menuRendered = true;
+      menuRenderedRowCount = renderedRowCount;
     }
 
     void mountTerminal();
@@ -569,6 +573,15 @@ function buildMenuLines(selectedOptionIndex: number): Array<MenuLine> {
       text: `\x1b[2m${MENU_HELP_TEXT}\x1b[0m`,
     },
   ];
+}
+
+function countWrappedTerminalRows(lines: Array<MenuLine>, cols: number) {
+  const safeCols = Math.max(cols, 1);
+
+  return lines.reduce((rowCount, { text }) => {
+    const visibleLength = Array.from(stripAnsiControlSequences(text)).length;
+    return rowCount + Math.max(1, Math.ceil(visibleLength / safeCols));
+  }, 0);
 }
 
 function formatMenuOption(option: MenuOption, selected: boolean) {

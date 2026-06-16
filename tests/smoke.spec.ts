@@ -251,6 +251,24 @@ test("terminal menu arrow selection can print contact details", async ({ page })
   await expect(rows).toContainText("Subject: From CV");
 });
 
+test("mobile terminal arrow selection does not duplicate the menu heading", async ({ page }) => {
+  await page.setViewportSize({ height: 800, width: 375 });
+  await page.goto("/?noai=1");
+  await expect(page.locator(".xterm")).toBeVisible();
+  await expectTerminalMenuReady(page);
+  await page.getByTestId("recruiter-terminal").click();
+
+  await page.keyboard.press("ArrowDown");
+  await expect(page.locator(".xterm-rows")).toContainText("> 2. Send email");
+  await page.keyboard.press("ArrowDown");
+  await expect(page.locator(".xterm-rows")).toContainText("> 3. Launch interactive LLM assistant");
+  await page.keyboard.press("ArrowUp");
+  await expect(page.locator(".xterm-rows")).toContainText("> 2. Send email");
+
+  const terminalText = await page.locator(".xterm-rows").innerText();
+  expect(terminalText.match(/Choose an option:/g) ?? []).toHaveLength(1);
+});
+
 test("terminal menu mouse click can print contact details", async ({ page }) => {
   await page.setViewportSize({ height: 900, width: 1280 });
   await page.goto("/");
