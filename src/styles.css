@@ -222,7 +222,7 @@
 
 @media (max-width: 640px) {
     .xterm {
-        @apply p-3;
+        padding: 0.75rem 0 0.75rem 0.75rem;
     }
 
     .cv-content {

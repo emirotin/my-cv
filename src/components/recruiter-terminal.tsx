@@ -13,6 +13,14 @@ import {
   ASCII_PORTRAIT_SOURCE,
   ASCII_PORTRAIT_WIDTH,
 } from "@/lib/ascii-portrait";
+import {
+  ASCII_PORTRAIT as MOBILE_ASCII_PORTRAIT,
+  ASCII_PORTRAIT_CHARSET_NAME as MOBILE_ASCII_PORTRAIT_CHARSET_NAME,
+  ASCII_PORTRAIT_HEIGHT as MOBILE_ASCII_PORTRAIT_HEIGHT,
+  ASCII_PORTRAIT_MATCHER as MOBILE_ASCII_PORTRAIT_MATCHER,
+  ASCII_PORTRAIT_SOURCE as MOBILE_ASCII_PORTRAIT_SOURCE,
+  ASCII_PORTRAIT_WIDTH as MOBILE_ASCII_PORTRAIT_WIDTH,
+} from "@/lib/ascii-portrait-mobile";
 import terminalPortraitConfig from "@/lib/terminal-portrait-config.json";
 import { cn } from "@/lib/utils";
 
@@ -90,6 +98,15 @@ type MenuLink = {
   text: string;
 };
 
+type StartupPortrait = {
+  ascii: string;
+  charsetName: string;
+  height: number;
+  matcher: string;
+  source: string;
+  width: number;
+};
+
 const MENU_OPTIONS: Array<MenuOption> = [
   {
     id: 1,
@@ -106,6 +123,30 @@ const MENU_OPTIONS: Array<MenuOption> = [
 ];
 
 const MENU_HELP_TEXT = "Use Up/Down + Enter, press 1/2/3, or click an option.";
+const MOBILE_TERMINAL_MEDIA_QUERY = "(max-width: 640px)";
+
+const DESKTOP_STARTUP_PORTRAIT: StartupPortrait = {
+  ascii: ASCII_PORTRAIT,
+  charsetName: ASCII_PORTRAIT_CHARSET_NAME,
+  height: ASCII_PORTRAIT_HEIGHT,
+  matcher: ASCII_PORTRAIT_MATCHER,
+  source: ASCII_PORTRAIT_SOURCE,
+  width: ASCII_PORTRAIT_WIDTH,
+};
+
+const MOBILE_STARTUP_PORTRAIT: StartupPortrait = {
+  ascii: MOBILE_ASCII_PORTRAIT,
+  charsetName: MOBILE_ASCII_PORTRAIT_CHARSET_NAME,
+  height: MOBILE_ASCII_PORTRAIT_HEIGHT,
+  matcher: MOBILE_ASCII_PORTRAIT_MATCHER,
+  source: MOBILE_ASCII_PORTRAIT_SOURCE,
+  width: MOBILE_ASCII_PORTRAIT_WIDTH,
+};
+
+const STARTUP_PORTRAITS: Array<StartupPortrait> = [
+  DESKTOP_STARTUP_PORTRAIT,
+  MOBILE_STARTUP_PORTRAIT,
+];
 
 const terminalStyle = {
   "--terminal-font-family": terminalPortraitConfig.fontFamily,
@@ -179,6 +220,11 @@ export function RecruiterTerminal({ className, cvMarkdown }: RecruiterTerminalPr
       term.loadAddon(fitAddon);
       term.open(containerRef.current);
       fitAddon.fit();
+      await waitForAnimationFrame();
+      if (disposed) {
+        return;
+      }
+      fitAddon.fit();
       term.focus();
 
       menuLinkSubscription = term.registerLinkProvider({
@@ -211,7 +257,7 @@ export function RecruiterTerminal({ className, cvMarkdown }: RecruiterTerminalPr
       terminalClickElement = containerRef.current;
       terminalClickElement?.addEventListener("mousedown", handleTerminalClick, true);
 
-      await runStartupProgram(term);
+      await runStartupProgram(term, containerRef.current);
       await writeAsync(term, "Welcome to Eugene Mirotin's interactive CV terminal.\r\n");
       menuActive = true;
       await renderMenu(term, { replace: false });
@@ -361,19 +407,49 @@ export function RecruiterTerminal({ className, cvMarkdown }: RecruiterTerminalPr
   );
 }
 
-async function runStartupProgram(term: TerminalApi) {
+async function runStartupProgram(term: TerminalApi, terminalContainer: HTMLElement) {
+  const portrait = selectStartupPortrait(readStartupPortraitCols(term, terminalContainer));
+
   await writeAsync(
     term,
     [
-      `\x1b[32m$ ascii-portrait --matrix ${ASCII_PORTRAIT_WIDTH}x${ASCII_PORTRAIT_HEIGHT} --charset ${ASCII_PORTRAIT_CHARSET_NAME} --fit ${ASCII_PORTRAIT_MATCHER}\x1b[0m`,
-      `\x1b[33msource:\x1b[0m ${ASCII_PORTRAIT_SOURCE}`,
+      `\x1b[32m$ ascii-portrait --matrix ${portrait.width}x${portrait.height} --charset ${portrait.charsetName} --fit ${portrait.matcher}\x1b[0m`,
+      `\x1b[33msource:\x1b[0m ${portrait.source}`,
       "",
-      ...ASCII_PORTRAIT.split("\n"),
+      ...portrait.ascii.split("\n"),
       "",
-      `\x1b[32mprogram exited 0 (${ASCII_PORTRAIT_WIDTH}x${ASCII_PORTRAIT_HEIGHT})\x1b[0m`,
+      `\x1b[32mprogram exited 0 (${portrait.width}x${portrait.height})\x1b[0m`,
       "",
     ].join("\r\n") + "\r\n",
   );
+}
+
+function readFittedTerminalCols(term: TerminalApi, terminalContainer: HTMLElement) {
+  const terminalRoot = term.element ?? terminalContainer;
+  const screen = terminalRoot.querySelector<HTMLElement>(".xterm-screen");
+  const textarea = terminalRoot.querySelector<HTMLElement>(".xterm-helper-textarea");
+  const cellWidth = textarea?.getBoundingClientRect().width ?? 0;
+  const screenWidth = screen?.getBoundingClientRect().width ?? 0;
+
+  if (cellWidth > 0 && screenWidth > 0) {
+    return Math.floor(screenWidth / cellWidth);
+  }
+
+  return term.cols;
+}
+
+function readStartupPortraitCols(term: TerminalApi, terminalContainer: HTMLElement) {
+  const fittedCols = readFittedTerminalCols(term, terminalContainer);
+
+  if (window.matchMedia(MOBILE_TERMINAL_MEDIA_QUERY).matches) {
+    return Math.min(fittedCols, MOBILE_ASCII_PORTRAIT_WIDTH);
+  }
+
+  return fittedCols;
+}
+
+function selectStartupPortrait(cols: number): StartupPortrait {
+  return STARTUP_PORTRAITS.find((portrait) => portrait.width <= cols) ?? MOBILE_STARTUP_PORTRAIT;
 }
 
 function buildMenuLines(selectedOptionIndex: number): Array<MenuLine> {
@@ -455,6 +531,12 @@ function getCurrentBufferLineNumber(term: TerminalApi) {
 function writeAsync(term: TerminalApi, data: string) {
   return new Promise<void>((resolve) => {
     term.write(data, resolve);
+  });
+}
+
+function waitForAnimationFrame() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve());
   });
 }
 

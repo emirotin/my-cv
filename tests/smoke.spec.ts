@@ -95,6 +95,41 @@ test("desktop assistant terminal follows the right column height", async ({ page
   expect(Math.abs(heights.sidebar - heights.sidebarContent)).toBeLessThanOrEqual(2);
 });
 
+test("mobile assistant terminal uses a portrait that fits the narrow xterm surface", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 800, width: 375 });
+  await page.goto("/?noai=1");
+
+  const rows = page.locator(".xterm-rows");
+  await expect(rows).toContainText("program exited 0 (37x16)");
+
+  const metrics = await page.evaluate(() => {
+    const xterm = document.querySelector<HTMLElement>(".xterm");
+    const screen = document.querySelector<HTMLElement>(".xterm-screen");
+    const textarea = document.querySelector<HTMLElement>(".xterm-helper-textarea");
+
+    if (!xterm || !screen || !textarea) {
+      throw new Error("Terminal measurement elements were not rendered.");
+    }
+
+    const cellWidth = textarea.getBoundingClientRect().width;
+    const screenWidth = screen.getBoundingClientRect().width;
+
+    return {
+      cellWidth,
+      cols: Math.floor(screenWidth / cellWidth),
+      paddingRight: window.getComputedStyle(xterm).paddingRight,
+      portraitPixelWidth: 37 * cellWidth,
+      screenWidth,
+    };
+  });
+
+  expect(metrics.paddingRight).toBe("0px");
+  expect(metrics.cols).toBeGreaterThanOrEqual(37);
+  expect(metrics.portraitPixelWidth).toBeLessThanOrEqual(metrics.screenWidth + 0.5);
+});
+
 test("contact button copies plain contact details", async ({ page }) => {
   await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
 

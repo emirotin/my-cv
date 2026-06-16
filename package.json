@@ -17,7 +17,9 @@
     "test:e2e": "playwright test",
     "test:prerender": "node scripts/assert-prerender.mjs",
     "export:pdf": "node scripts/export-cv-pdf.mjs",
-    "generate:portrait": "node scripts/generate-ascii-portrait.mjs --input public/images/me.jpg --output src/lib/ascii-portrait.ts",
+    "generate:portrait": "pnpm run generate:portrait:desktop && pnpm run generate:portrait:mobile",
+    "generate:portrait:desktop": "node scripts/generate-ascii-portrait.mjs --input public/images/me.jpg --output src/lib/ascii-portrait.ts",
+    "generate:portrait:mobile": "node scripts/generate-ascii-portrait.mjs --input public/images/me.jpg --matrix 37x16 --output src/lib/ascii-portrait-mobile.ts",
     "test:e2e:prod": "pnpm run build && PLAYWRIGHT_SERVER=preview playwright test --grep @prod",
     "test": "pnpm run test:e2e && pnpm run test:prerender"
   },
