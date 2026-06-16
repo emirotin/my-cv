@@ -7,6 +7,7 @@ import {
 } from "@/components/recruiter-terminal-assistant";
 import {
   ASCII_PORTRAIT,
+  ASCII_PORTRAIT_CHARSET,
   ASCII_PORTRAIT_CHARSET_NAME,
   ASCII_PORTRAIT_HEIGHT,
   ASCII_PORTRAIT_MATCHER,
@@ -15,6 +16,7 @@ import {
 } from "@/lib/ascii-portrait";
 import {
   ASCII_PORTRAIT as MOBILE_ASCII_PORTRAIT,
+  ASCII_PORTRAIT_CHARSET as MOBILE_ASCII_PORTRAIT_CHARSET,
   ASCII_PORTRAIT_CHARSET_NAME as MOBILE_ASCII_PORTRAIT_CHARSET_NAME,
   ASCII_PORTRAIT_HEIGHT as MOBILE_ASCII_PORTRAIT_HEIGHT,
   ASCII_PORTRAIT_MATCHER as MOBILE_ASCII_PORTRAIT_MATCHER,
@@ -100,6 +102,7 @@ type MenuLink = {
 
 type StartupPortrait = {
   ascii: string;
+  charset: string;
   charsetName: string;
   height: number;
   matcher: string;
@@ -124,9 +127,16 @@ const MENU_OPTIONS: Array<MenuOption> = [
 
 const MENU_HELP_TEXT = "Use Up/Down + Enter, press 1/2/3, or click an option.";
 const MOBILE_TERMINAL_MEDIA_QUERY = "(max-width: 640px)";
+const REDUCED_MOTION_MEDIA_QUERY = "(prefers-reduced-motion: reduce)";
+const STARTUP_ANIMATION_FRAME_COUNT = 28;
+const STARTUP_ANIMATION_DELAY_MS = 18;
+const STARTUP_ANIMATION_STAGGER_FRAMES = 18;
+const STARTUP_ANIMATION_MIN_SCRAMBLES = 5;
+const STARTUP_ANIMATION_EXTRA_SCRAMBLES = 4;
 
 const DESKTOP_STARTUP_PORTRAIT: StartupPortrait = {
   ascii: ASCII_PORTRAIT,
+  charset: ASCII_PORTRAIT_CHARSET,
   charsetName: ASCII_PORTRAIT_CHARSET_NAME,
   height: ASCII_PORTRAIT_HEIGHT,
   matcher: ASCII_PORTRAIT_MATCHER,
@@ -136,6 +146,7 @@ const DESKTOP_STARTUP_PORTRAIT: StartupPortrait = {
 
 const MOBILE_STARTUP_PORTRAIT: StartupPortrait = {
   ascii: MOBILE_ASCII_PORTRAIT,
+  charset: MOBILE_ASCII_PORTRAIT_CHARSET,
   charsetName: MOBILE_ASCII_PORTRAIT_CHARSET_NAME,
   height: MOBILE_ASCII_PORTRAIT_HEIGHT,
   matcher: MOBILE_ASCII_PORTRAIT_MATCHER,
@@ -416,10 +427,105 @@ async function runStartupProgram(term: TerminalApi, terminalContainer: HTMLEleme
       `\x1b[32m$ ascii-portrait --matrix ${portrait.width}x${portrait.height} --charset ${portrait.charsetName} --fit ${portrait.matcher}\x1b[0m`,
       `\x1b[33msource:\x1b[0m ${portrait.source}`,
       "",
-      ...portrait.ascii.split("\n"),
-      "",
     ].join("\r\n") + "\r\n",
   );
+
+  await animateStartupPortrait(term, portrait);
+  await writeAsync(term, "\r\n\r\n");
+}
+
+async function animateStartupPortrait(term: TerminalApi, portrait: StartupPortrait) {
+  const portraitLines = portrait.ascii.split("\n");
+  const targetLines = Array.from({ length: portrait.height }, (_, index) =>
+    (portraitLines[index] ?? "").padEnd(portrait.width, " ").slice(0, portrait.width),
+  );
+
+  if (window.matchMedia(REDUCED_MOTION_MEDIA_QUERY).matches) {
+    await writeAsync(term, formatTerminalFrame(targetLines));
+    return;
+  }
+
+  const scrambleChars = Array.from(portrait.charset).filter((char) => char !== " ");
+
+  for (let frame = 0; frame < STARTUP_ANIMATION_FRAME_COUNT; frame += 1) {
+    const finalFrame = frame === STARTUP_ANIMATION_FRAME_COUNT - 1;
+    const frameLines = targetLines.map((line, rowIndex) =>
+      Array.from(line)
+        .map((targetChar, columnIndex) =>
+          getStartupAnimationChar({
+            columnIndex,
+            finalFrame,
+            frame,
+            portrait,
+            rowIndex,
+            scrambleChars,
+            targetChar,
+          }),
+        )
+        .join(""),
+    );
+
+    await writeAsync(term, formatTerminalFrame(frameLines));
+
+    if (!finalFrame) {
+      await delay(STARTUP_ANIMATION_DELAY_MS);
+      await writeAsync(term, `\x1b[${portrait.height - 1}F`);
+    }
+  }
+}
+
+function getStartupAnimationChar({
+  columnIndex,
+  finalFrame,
+  frame,
+  portrait,
+  rowIndex,
+  scrambleChars,
+  targetChar,
+}: {
+  columnIndex: number;
+  finalFrame: boolean;
+  frame: number;
+  portrait: StartupPortrait;
+  rowIndex: number;
+  scrambleChars: Array<string>;
+  targetChar: string;
+}) {
+  if (finalFrame) {
+    return targetChar;
+  }
+
+  const cellIndex = rowIndex * portrait.width + columnIndex;
+  const diagonalProgress =
+    portrait.height <= 1 && portrait.width <= 1
+      ? 0
+      : rowIndex / Math.max(portrait.height - 1, 1) + columnIndex / Math.max(portrait.width - 1, 1);
+  const staggerFrame = Math.floor((diagonalProgress / 2) * STARTUP_ANIMATION_STAGGER_FRAMES);
+  const settleFrame =
+    staggerFrame +
+    STARTUP_ANIMATION_MIN_SCRAMBLES +
+    (cellIndex % STARTUP_ANIMATION_EXTRA_SCRAMBLES);
+
+  if (frame < staggerFrame) {
+    return " ";
+  }
+
+  if (frame >= settleFrame) {
+    return targetChar;
+  }
+
+  return pickStartupScrambleChar(scrambleChars, frame, cellIndex);
+}
+
+function pickStartupScrambleChar(scrambleChars: Array<string>, frame: number, cellIndex: number) {
+  const hash = Math.imul(cellIndex + 1, 1_103_515_245) ^ Math.imul(frame + 37, 12_345);
+  const mixed = hash ^ (hash >>> 16);
+  const char = scrambleChars[Math.abs(mixed) % scrambleChars.length];
+  return char ?? "#";
+}
+
+function formatTerminalFrame(lines: Array<string>) {
+  return lines.map((line) => `\x1b[2K\r${line}`).join("\r\n");
 }
 
 function readFittedTerminalCols(term: TerminalApi, terminalContainer: HTMLElement) {
@@ -535,6 +641,12 @@ function writeAsync(term: TerminalApi, data: string) {
 function waitForAnimationFrame() {
   return new Promise<void>((resolve) => {
     requestAnimationFrame(() => resolve());
+  });
+}
+
+function delay(ms: number) {
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, ms);
   });
 }
 

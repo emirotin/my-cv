@@ -1,7 +1,18 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
 const contactText = "Email: emirotin@gmail.com\nSubject: From CV";
 const runsAgainstPreview = process.env.PLAYWRIGHT_SERVER === "preview";
+
+async function expectTerminalMenuReady(page: Page) {
+  const rows = page.locator(".xterm-rows");
+
+  await expect(rows).toContainText("Welcome to Eugene Mirotin's interactive CV terminal.");
+  await expect(rows).toContainText("> 1. See CV");
+  await expect(rows).toContainText("2. Send email");
+  await expect(rows).toContainText("3. Launch interactive LLM assistant");
+
+  return rows;
+}
 
 test("cv route returns server-rendered html", async ({ page }) => {
   const response = await page.goto("/cv");
@@ -44,13 +55,8 @@ test("terminal runs the ASCII portrait startup program and shows the assistant m
   await expect(page.getByRole("heading", { name: "Eugene Mirotin CV" })).toBeVisible();
   await expect(page.getByTestId("recruiter-terminal")).toBeVisible();
   await expect(page.locator(".xterm")).toBeVisible();
-  await expect(page.locator(".xterm-rows")).toContainText(
-    "Welcome to Eugene Mirotin's interactive CV terminal.",
-  );
-  await expect(page.locator(".xterm-rows")).not.toContainText("program exited 0");
-  await expect(page.locator(".xterm-rows")).toContainText("> 1. See CV");
-  await expect(page.locator(".xterm-rows")).toContainText("2. Send email");
-  await expect(page.locator(".xterm-rows")).toContainText("3. Launch interactive LLM assistant");
+  const rows = await expectTerminalMenuReady(page);
+  await expect(rows).not.toContainText("program exited 0");
 
   const downloadLink = page
     .locator('a[download="eugene_mirotin_cv.pdf"]')
@@ -102,6 +108,7 @@ test("mobile assistant terminal uses a portrait that fits the narrow xterm surfa
   await page.goto("/?noai=1");
 
   const rows = page.locator(".xterm-rows");
+  await expectTerminalMenuReady(page);
   await expect(rows).toContainText("$ ascii-portrait --matrix 37x16");
   await expect(rows).not.toContainText("program exited 0");
 
@@ -146,6 +153,7 @@ test("contact button copies plain contact details", async ({ page }) => {
 test("terminal menu numeric choice 1 navigates to the cv route", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator(".xterm")).toBeVisible();
+  await expectTerminalMenuReady(page);
   await page.getByTestId("recruiter-terminal").click();
   await page.keyboard.press("1");
 
@@ -156,6 +164,7 @@ test("terminal menu numeric choice 1 navigates to the cv route", async ({ page }
 test("terminal menu numeric choice 2 prints contact details", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator(".xterm")).toBeVisible();
+  await expectTerminalMenuReady(page);
   await page.getByTestId("recruiter-terminal").click();
   await page.keyboard.press("2");
 
@@ -168,6 +177,7 @@ test("terminal menu numeric choice 2 prints contact details", async ({ page }) =
 test("terminal menu arrow selection can print contact details", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator(".xterm")).toBeVisible();
+  await expectTerminalMenuReady(page);
   await page.getByTestId("recruiter-terminal").click();
   await page.keyboard.press("ArrowDown");
   await expect(page.locator(".xterm-rows")).toContainText("> 2. Send email");
@@ -183,6 +193,7 @@ test("terminal menu mouse click can print contact details", async ({ page }) => 
   await page.setViewportSize({ height: 900, width: 1280 });
   await page.goto("/");
   await expect(page.locator(".xterm")).toBeVisible();
+  await expectTerminalMenuReady(page);
   const optionBox = await page.getByText("2. Send email").boundingBox();
   expect(optionBox).not.toBeNull();
 
@@ -208,6 +219,7 @@ test.describe("assistant terminal integration", () => {
 
     await page.goto("/");
     await expect(page.locator(".xterm")).toBeVisible();
+    await expectTerminalMenuReady(page);
     await page.getByTestId("recruiter-terminal").click();
     await page.keyboard.press("3");
 
@@ -238,6 +250,7 @@ test.describe("assistant terminal integration", () => {
 
     await page.goto("/");
     await expect(page.locator(".xterm")).toBeVisible();
+    await expectTerminalMenuReady(page);
     await page.getByTestId("recruiter-terminal").click();
     await page.keyboard.press("3");
 
@@ -250,6 +263,7 @@ test.describe("assistant terminal integration", () => {
   test("send_email tool prints plain contact details", async ({ page }) => {
     await page.goto("/?noai=1");
     await expect(page.locator(".xterm")).toBeVisible();
+    await expectTerminalMenuReady(page);
     await page.getByTestId("recruiter-terminal").click();
     await page.keyboard.press("3");
     await expect(page.locator(".xterm-rows")).toContainText("recruiter>");
@@ -267,6 +281,7 @@ test.describe("assistant terminal integration", () => {
   }) => {
     await page.goto("/?noai=1");
     await expect(page.locator(".xterm")).toBeVisible();
+    await expectTerminalMenuReady(page);
     await page.getByTestId("recruiter-terminal").click();
     await page.keyboard.press("3");
     await expect(page.locator(".xterm-rows")).toContainText("recruiter>");
