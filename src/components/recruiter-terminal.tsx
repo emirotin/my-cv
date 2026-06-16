@@ -132,7 +132,4 @@ function runStartupProgram(term: TerminalApi) {
   }
 
   term.writeln("");
-  term.writeln(
-    `\x1b[32mprogram exited 0 (${ASCII_PORTRAIT_WIDTH}x${ASCII_PORTRAIT_HEIGHT})\x1b[0m`,
-  );
 }
