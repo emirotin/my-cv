@@ -1,11 +1,9 @@
-import { useEffect, useRef } from "react";
 import { CONTACT_TERMINAL_TEXT } from "@/lib/contact";
 import {
   ACTION_RESPONSE_SCHEMA,
   buildActionSystemPrompt,
   parseActionResponse,
 } from "@/lib/eval-config";
-import { cn } from "@/lib/utils";
 import {
   createWebLlmEngine,
   type InitProgress,
@@ -19,18 +17,11 @@ type ChatMessage = {
   content: string;
 };
 
-type TerminalApi = {
-  dispose: () => void;
+export type AssistantTerminalApi = {
   focus: () => void;
-  loadAddon: (addon: unknown) => void;
   onData: (callback: (data: string) => void) => { dispose: () => void };
-  open: (element: HTMLElement) => void;
-  write: (data: string) => void;
-  writeln: (data: string) => void;
-};
-
-type FitAddonApi = {
-  fit: () => void;
+  write: (data: string, callback?: () => void) => void;
+  writeln: (data: string, callback?: () => void) => void;
 };
 
 type AssistantTool = {
@@ -39,9 +30,9 @@ type AssistantTool = {
   run: () => Promise<string>;
 };
 
-type RecruiterAssistantTerminalProps = {
-  className?: string;
+type RecruiterAssistantSessionOptions = {
   cvMarkdown: string;
+  term: AssistantTerminalApi;
 };
 
 const GREETING =
@@ -56,380 +47,301 @@ const PREFERRED_MODELS = [
 ];
 const MIN_WEBLLM_STORAGE_BUFFERS_PER_SHADER_STAGE = 10;
 
-export function RecruiterAssistantTerminal({
-  className,
+export function startRecruiterAssistantSession({
   cvMarkdown,
-}: RecruiterAssistantTerminalProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  term,
+}: RecruiterAssistantSessionOptions) {
+  let disposed = false;
+  let dataSubscription: { dispose: () => void } | undefined;
+  let inputBuffer = "";
+  let busy = false;
+  let enginePromise: Promise<WebLlmEngine | null> | undefined;
+  let engineStatus: "fallback" | "idle" | "loading" | "ready" = "idle";
+  let conversationReady = false;
+  let lastProgressPercent = -1;
+  let renderedLoadingMessageCount = 0;
+  const loadingMessages: Array<string> = [];
+  const messages: Array<ChatMessage> = [
+    {
+      role: "system",
+      content: buildActionSystemPrompt(cvMarkdown),
+    },
+    {
+      role: "assistant",
+      content: JSON.stringify({
+        answer: GREETING,
+        kind: "answer",
+        tool: null,
+      }),
+    },
+  ];
+  const tools = createAssistantTools();
 
-  useEffect(() => {
-    let disposed = false;
-    let dataSubscription: { dispose: () => void } | undefined;
-    let resizeObserver: ResizeObserver | undefined;
-    let terminal: TerminalApi | undefined;
-    let inputBuffer = "";
-    let busy = false;
-    let enginePromise: Promise<WebLlmEngine | null> | undefined;
-    let engineStatus: "fallback" | "idle" | "loading" | "ready" = "idle";
-    let conversationReady = false;
-    let lastProgressPercent = -1;
-    let renderedLoadingMessageCount = 0;
-    const loadingMessages: Array<string> = [];
-    const messages: Array<ChatMessage> = [
-      {
-        role: "system",
-        content: buildActionSystemPrompt(cvMarkdown),
-      },
-      {
+  term.focus();
+  writeBanner(term);
+  const isLoadingEngine = startEngineLoad();
+  renderLoadingMessages(term);
+
+  if (!isLoadingEngine) {
+    markConversationReady(term);
+  }
+
+  dataSubscription = term.onData((data) => {
+    void handleInputData(data);
+  });
+
+  async function handleInputData(data: string) {
+    if (!conversationReady || busy) {
+      return;
+    }
+
+    for (const char of data) {
+      if (char === "\r") {
+        const userText = inputBuffer.trim();
+        inputBuffer = "";
+        term.write("\r\n");
+
+        if (userText.length === 0) {
+          prompt(term);
+          continue;
+        }
+
+        busy = true;
+        try {
+          await respondToUser(term, userText);
+        } finally {
+          busy = false;
+          prompt(term);
+        }
+        continue;
+      }
+
+      if (char === "\u0003") {
+        inputBuffer = "";
+        term.write("^C\r\n");
+        prompt(term);
+        continue;
+      }
+
+      if (char === "\u007F") {
+        if (inputBuffer.length > 0) {
+          inputBuffer = inputBuffer.slice(0, -1);
+          term.write("\b \b");
+        }
+        continue;
+      }
+
+      if (isPrintable(char)) {
+        inputBuffer += char;
+        term.write(char);
+      }
+    }
+  }
+
+  function startEngineLoad() {
+    if (!shouldLoadWebLlm()) {
+      engineStatus = "fallback";
+      queueLoadingMessage("Local model loading skipped; using CV search fallback.");
+      return false;
+    }
+
+    if (!hasWebGpu()) {
+      engineStatus = "fallback";
+      queueLoadingMessage(
+        "WebGPU is not available here, so I will answer from the CV search fallback.",
+      );
+      return false;
+    }
+
+    engineStatus = "loading";
+    queueLoadingMessage("Checking local WebGPU support...");
+    enginePromise = loadCompatibleWebLlm((progress) => {
+      const percent =
+        typeof progress.progress === "number" ? Math.round(progress.progress * 100) : -1;
+
+      if (percent >= 0 && percent !== lastProgressPercent) {
+        lastProgressPercent = percent;
+        if (percent % 10 === 0 || percent >= 98) {
+          queueLoadingMessage(`Loading local model: ${percent}%`);
+        }
+        return;
+      }
+
+      if (progress.text) {
+        queueLoadingMessage(progress.text);
+      }
+    })
+      .then((engine) => {
+        if (disposed) {
+          return engine;
+        }
+
+        engineStatus = "ready";
+        queueLoadingMessage("Local in-browser model is ready.");
+        markConversationReady(term);
+        return engine;
+      })
+      .catch((error: unknown) => {
+        if (disposed) {
+          return null;
+        }
+
+        engineStatus = "fallback";
+        queueLoadingMessage(`Local model failed to initialize: ${getErrorMessage(error)}`);
+        queueLoadingMessage("Continuing with CV search fallback.");
+        markConversationReady(term);
+        return null;
+      });
+    return true;
+  }
+
+  function queueLoadingMessage(message: string) {
+    if (disposed) {
+      return;
+    }
+
+    if (loadingMessages.at(-1) === message) {
+      return;
+    }
+
+    loadingMessages.push(message);
+    if (!conversationReady) {
+      writeSystem(term, message);
+      renderedLoadingMessageCount = loadingMessages.length;
+    }
+  }
+
+  function renderLoadingMessages(term: AssistantTerminalApi) {
+    for (const message of loadingMessages.slice(renderedLoadingMessageCount)) {
+      writeSystem(term, message);
+    }
+    renderedLoadingMessageCount = loadingMessages.length;
+  }
+
+  function markConversationReady(term: AssistantTerminalApi) {
+    if (conversationReady) {
+      return;
+    }
+
+    renderLoadingMessages(term);
+    conversationReady = true;
+    writeAssistant(term, GREETING);
+    prompt(term);
+  }
+
+  async function respondToUser(term: AssistantTerminalApi, userText: string) {
+    messages.push({
+      role: "user",
+      content: userText,
+    });
+
+    const commandResult = await maybeRunLocalCommand(userText, tools);
+    if (commandResult) {
+      writeSystem(term, commandResult);
+      messages.push({
         role: "assistant",
         content: JSON.stringify({
-          answer: GREETING,
+          answer: null,
+          kind: "tool",
+          tool: "send_email",
+        }),
+      });
+      return;
+    }
+
+    const engine = await getEngine();
+    if (!engine) {
+      const fallback = buildFallbackAnswer(userText, cvMarkdown);
+      writeAssistant(term, fallback);
+      messages.push({
+        role: "assistant",
+        content: JSON.stringify({
+          answer: fallback,
           kind: "answer",
           tool: null,
         }),
+      });
+      return;
+    }
+
+    writeSystem(term, "Thinking locally in this browser...");
+    const response = await engine.chat.completions.create({
+      max_tokens: 520,
+      messages,
+      response_format: {
+        schema: ACTION_RESPONSE_SCHEMA,
+        type: "json_object",
       },
-    ];
-    const tools = createAssistantTools();
-    startEngineLoad();
+      temperature: 0,
+    });
+    const rawReply =
+      response.choices.at(0)?.message?.content?.trim() ??
+      "I could not produce a useful answer from the local model.";
+    const action = parseActionResponse(rawReply);
 
-    async function mountTerminal() {
-      const [{ Terminal }, { FitAddon }] = await Promise.all([
-        import("@xterm/xterm"),
-        import("@xterm/addon-fit"),
-      ]);
-
-      if (disposed || !containerRef.current) {
-        return;
-      }
-
-      const term = new Terminal({
-        allowProposedApi: false,
-        convertEol: true,
-        cursorBlink: true,
-        cursorStyle: "bar",
-        fontFamily:
-          "'Geist Mono Variable', 'SFMono-Regular', 'Cascadia Code', 'Liberation Mono', Menlo, monospace",
-        fontSize: 14,
-        letterSpacing: 0,
-        lineHeight: 1.45,
-        rows: 28,
-        theme: {
-          background: "transparent",
-          black: "#101112",
-          blue: "#5b8def",
-          brightBlack: "#5f656f",
-          brightBlue: "#8fb2ff",
-          brightCyan: "#7dd7c8",
-          brightGreen: "#b4e06f",
-          brightMagenta: "#d4a5ff",
-          brightRed: "#ff8f8f",
-          brightWhite: "#ffffff",
-          brightYellow: "#f3d274",
-          cursor: "#f4f1ea",
-          cyan: "#53b7aa",
-          foreground: "#f4f1ea",
-          green: "#8dbf4f",
-          magenta: "#b786d8",
-          red: "#e56b6f",
-          selectionBackground: "#4c5a64",
-          white: "#f4f1ea",
-          yellow: "#d4a84d",
-        },
-      }) as TerminalApi;
-      const fitAddon = new FitAddon() as FitAddonApi;
-
-      terminal = term;
-      term.loadAddon(fitAddon);
-      term.open(containerRef.current);
-      fitAddon.fit();
-      term.focus();
-
-      writeBanner(term);
-      renderLoadingMessages(term);
-      if (engineStatus !== "loading") {
-        markConversationReady(term);
-      }
-
-      dataSubscription = term.onData((data) => {
-        void handleInputData(data);
-      });
-      resizeObserver = new ResizeObserver(() => {
-        fitAddon.fit();
-      });
-      resizeObserver.observe(containerRef.current);
-    }
-
-    async function handleInputData(data: string) {
-      if (!terminal || !conversationReady || busy) {
-        return;
-      }
-
-      for (const char of data) {
-        if (char === "\r") {
-          const userText = inputBuffer.trim();
-          inputBuffer = "";
-          terminal.write("\r\n");
-
-          if (userText.length === 0) {
-            prompt(terminal);
-            continue;
-          }
-
-          busy = true;
-          try {
-            await respondToUser(terminal, userText);
-          } finally {
-            busy = false;
-            prompt(terminal);
-          }
-          continue;
-        }
-
-        if (char === "\u0003") {
-          inputBuffer = "";
-          terminal.write("^C\r\n");
-          prompt(terminal);
-          continue;
-        }
-
-        if (char === "\u007F") {
-          if (inputBuffer.length > 0) {
-            inputBuffer = inputBuffer.slice(0, -1);
-            terminal.write("\b \b");
-          }
-          continue;
-        }
-
-        if (isPrintable(char)) {
-          inputBuffer += char;
-          terminal.write(char);
-        }
-      }
-    }
-
-    function startEngineLoad() {
-      if (!shouldLoadWebLlm()) {
-        engineStatus = "fallback";
-        queueLoadingMessage("Local model loading skipped; using CV search fallback.");
-        return;
-      }
-
-      if (!hasWebGpu()) {
-        engineStatus = "fallback";
-        queueLoadingMessage(
-          "WebGPU is not available here, so I will answer from the CV search fallback.",
-        );
-        return;
-      }
-
-      engineStatus = "loading";
-      queueLoadingMessage("Checking local WebGPU support...");
-      enginePromise = loadCompatibleWebLlm((progress) => {
-        const percent =
-          typeof progress.progress === "number" ? Math.round(progress.progress * 100) : -1;
-
-        if (percent >= 0 && percent !== lastProgressPercent) {
-          lastProgressPercent = percent;
-          if (percent % 10 === 0 || percent >= 98) {
-            queueLoadingMessage(`Loading local model: ${percent}%`);
-          }
-          return;
-        }
-
-        if (progress.text) {
-          queueLoadingMessage(progress.text);
-        }
-      })
-        .then((engine) => {
-          if (disposed) {
-            return engine;
-          }
-
-          engineStatus = "ready";
-          queueLoadingMessage("Local in-browser model is ready.");
-          if (terminal) {
-            markConversationReady(terminal);
-          }
-          return engine;
-        })
-        .catch((error: unknown) => {
-          if (disposed) {
-            return null;
-          }
-
-          engineStatus = "fallback";
-          queueLoadingMessage(`Local model failed to initialize: ${getErrorMessage(error)}`);
-          queueLoadingMessage("Continuing with CV search fallback.");
-          if (terminal) {
-            markConversationReady(terminal);
-          }
-          return null;
-        });
-    }
-
-    function queueLoadingMessage(message: string) {
-      if (disposed) {
-        return;
-      }
-
-      if (loadingMessages.at(-1) === message) {
-        return;
-      }
-
-      loadingMessages.push(message);
-      if (terminal && !conversationReady) {
-        writeSystem(terminal, message);
-        renderedLoadingMessageCount = loadingMessages.length;
-      }
-    }
-
-    function renderLoadingMessages(term: TerminalApi) {
-      for (const message of loadingMessages.slice(renderedLoadingMessageCount)) {
-        writeSystem(term, message);
-      }
-      renderedLoadingMessageCount = loadingMessages.length;
-    }
-
-    function markConversationReady(term: TerminalApi) {
-      if (conversationReady) {
-        return;
-      }
-
-      renderLoadingMessages(term);
-      conversationReady = true;
-      writeAssistant(term, GREETING);
-      prompt(term);
-    }
-
-    async function respondToUser(term: TerminalApi, userText: string) {
-      messages.push({
-        role: "user",
-        content: userText,
-      });
-
-      const commandResult = await maybeRunLocalCommand(userText, tools);
-      if (commandResult) {
-        writeSystem(term, commandResult);
-        messages.push({
-          role: "assistant",
-          content: JSON.stringify({
-            answer: null,
-            kind: "tool",
-            tool: "send_email",
-          }),
-        });
-        return;
-      }
-
-      const engine = await getEngine();
-      if (!engine) {
-        const fallback = buildFallbackAnswer(userText, cvMarkdown);
-        writeAssistant(term, fallback);
-        messages.push({
-          role: "assistant",
-          content: JSON.stringify({
-            answer: fallback,
-            kind: "answer",
-            tool: null,
-          }),
-        });
-        return;
-      }
-
-      writeSystem(term, "Thinking locally in this browser...");
-      const response = await engine.chat.completions.create({
-        max_tokens: 520,
-        messages,
-        response_format: {
-          schema: ACTION_RESPONSE_SCHEMA,
-          type: "json_object",
-        },
-        temperature: 0,
-      });
-      const rawReply =
-        response.choices.at(0)?.message?.content?.trim() ??
-        "I could not produce a useful answer from the local model.";
-      const action = parseActionResponse(rawReply);
-
-      if (!action) {
-        const fallback =
-          "I could not parse the local model response, so I am falling back to CV search for this answer.";
-        writeSystem(term, fallback);
-        const answer = buildFallbackAnswer(userText, cvMarkdown);
-        writeAssistant(term, answer);
-        messages.push({
-          role: "assistant",
-          content: JSON.stringify({
-            answer,
-            kind: "answer",
-            tool: null,
-          }),
-        });
-        return;
-      }
-
+    if (!action) {
+      const fallback =
+        "I could not parse the local model response, so I am falling back to CV search for this answer.";
+      writeSystem(term, fallback);
+      const answer = buildFallbackAnswer(userText, cvMarkdown);
+      writeAssistant(term, answer);
       messages.push({
         role: "assistant",
-        content: JSON.stringify(action),
+        content: JSON.stringify({
+          answer,
+          kind: "answer",
+          tool: null,
+        }),
       });
+      return;
+    }
 
-      if (action.kind === "tool") {
-        const toolName = action.tool;
-        const tool = toolName ? tools.get(toolName) : undefined;
-        if (!tool) {
-          writeSystem(term, `Tool is not available: ${toolName ?? "unknown"}`);
-          return;
-        }
+    messages.push({
+      role: "assistant",
+      content: JSON.stringify(action),
+    });
 
-        writeSystem(term, await tool.run());
+    if (action.kind === "tool") {
+      const toolName = action.tool;
+      const tool = toolName ? tools.get(toolName) : undefined;
+      if (!tool) {
+        writeSystem(term, `Tool is not available: ${toolName ?? "unknown"}`);
         return;
       }
 
-      writeAssistant(
-        term,
-        action.answer ?? "I do not see a directly supported answer in Eugene's CV.",
-      );
+      writeSystem(term, await tool.run());
+      return;
     }
 
-    async function getEngine() {
-      if (engineStatus === "fallback") {
-        return null;
-      }
+    writeAssistant(
+      term,
+      action.answer ?? "I do not see a directly supported answer in Eugene's CV.",
+    );
+  }
 
-      if (enginePromise) {
-        return enginePromise;
-      }
-
-      startEngineLoad();
-      return enginePromise ?? null;
+  async function getEngine() {
+    if (engineStatus === "fallback") {
+      return null;
     }
 
-    void mountTerminal();
+    if (enginePromise) {
+      return enginePromise;
+    }
 
-    return () => {
+    startEngineLoad();
+    return enginePromise ?? null;
+  }
+
+  return {
+    dispose() {
       disposed = true;
       void enginePromise?.then(async (engine) => {
         await engine?.unload().catch(() => undefined);
         engine?.terminate();
       });
       dataSubscription?.dispose();
-      resizeObserver?.disconnect();
-      terminal?.dispose();
-    };
-  }, [cvMarkdown]);
-
-  return (
-    <div
-      aria-label="Recruiter assistant terminal"
-      className={cn(
-        "h-full min-h-115 overflow-hidden rounded-lg border border-stone-800 bg-[#101112] shadow-2xl",
-        className,
-      )}
-      data-testid="recruiter-terminal"
-      ref={containerRef}
-      role="application"
-    />
-  );
+    },
+  };
 }
 
 function createAssistantTools() {
@@ -438,10 +350,14 @@ function createAssistantTools() {
   tools.set("send_email", {
     name: "send_email",
     description: "Print Eugene's email address and the suggested subject line.",
-    run: async () => CONTACT_TERMINAL_TEXT,
+    run: runSendEmailTool,
   });
 
   return tools;
+}
+
+export async function runSendEmailTool() {
+  return CONTACT_TERMINAL_TEXT;
 }
 
 async function loadCompatibleWebLlm(onProgress: (progress: InitProgress) => void) {
@@ -566,21 +482,25 @@ function tokenize(value: string) {
   );
 }
 
-function writeBanner(term: TerminalApi) {
+function writeBanner(term: AssistantTerminalApi) {
   term.writeln("\x1b[32mEugene Mirotin CV Assistant\x1b[0m");
   term.writeln("browser-local assistant session");
   term.writeln("");
 }
 
-function writeAssistant(term: TerminalApi, text: string) {
+function writeAssistant(term: AssistantTerminalApi, text: string) {
   term.writeln(`\x1b[36massistant>\x1b[0m ${formatForTerminal(text)}`);
 }
 
-function writeSystem(term: TerminalApi, text: string) {
-  term.writeln(`\x1b[33msystem>\x1b[0m ${formatForTerminal(text)}`);
+function writeSystem(term: AssistantTerminalApi, text: string) {
+  term.writeln(formatTerminalSystemMessage(text));
 }
 
-function prompt(term: TerminalApi) {
+export function formatTerminalSystemMessage(text: string) {
+  return `\x1b[33msystem>\x1b[0m ${formatForTerminal(text)}`;
+}
+
+function prompt(term: AssistantTerminalApi) {
   term.write("\r\n\x1b[32mrecruiter>\x1b[0m ");
 }
 

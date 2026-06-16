@@ -37,14 +37,20 @@ test("unknown route renders the app not found page", async ({ page }) => {
   await expect(page.locator("p").filter({ hasText: "Not Found" })).toHaveCount(0);
 });
 
-test("terminal runs the ASCII portrait startup program", async ({ page }) => {
+test("terminal runs the ASCII portrait startup program and shows the assistant menu", async ({
+  page,
+}) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Eugene Mirotin CV" })).toBeVisible();
   await expect(page.getByTestId("recruiter-terminal")).toBeVisible();
   await expect(page.locator(".xterm")).toBeVisible();
-  await expect(page.locator(".xterm-rows")).toContainText("ascii-portrait");
-  await expect(page.locator(".xterm-rows")).toContainText("--charset latin1 --fit glyph");
+  await expect(page.locator(".xterm-rows")).toContainText(
+    "Welcome to Eugene Mirotin's interactive CV terminal.",
+  );
   await expect(page.locator(".xterm-rows")).toContainText("program exited 0 (64x28)");
+  await expect(page.locator(".xterm-rows")).toContainText("> 1. See CV");
+  await expect(page.locator(".xterm-rows")).toContainText("2. Send email");
+  await expect(page.locator(".xterm-rows")).toContainText("3. Launch interactive LLM assistant");
 
   const downloadLink = page
     .locator('a[download="eugene_mirotin_cv.pdf"]')
@@ -101,9 +107,61 @@ test("contact button copies plain contact details", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Copied email contact details" })).toBeVisible();
 });
 
-test.describe("assistant terminal integration", () => {
-  test.skip(true, "Assistant terminal is temporarily replaced by the Hello! stub.");
+test("terminal menu numeric choice 1 navigates to the cv route", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator(".xterm")).toBeVisible();
+  await page.getByTestId("recruiter-terminal").click();
+  await page.keyboard.press("1");
 
+  await expect(page).toHaveURL(/\/cv$/);
+  await expect(page.getByRole("heading", { exact: true, name: "Eugene Mirotin" })).toBeVisible();
+});
+
+test("terminal menu numeric choice 2 prints contact details", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator(".xterm")).toBeVisible();
+  await page.getByTestId("recruiter-terminal").click();
+  await page.keyboard.press("2");
+
+  const rows = page.locator(".xterm-rows");
+  await expect(rows).toContainText("Email Eugene:");
+  await expect(rows).toContainText("Email: emirotin@gmail.com");
+  await expect(rows).toContainText("Subject: From CV");
+});
+
+test("terminal menu arrow selection can print contact details", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator(".xterm")).toBeVisible();
+  await page.getByTestId("recruiter-terminal").click();
+  await page.keyboard.press("ArrowDown");
+  await expect(page.locator(".xterm-rows")).toContainText("> 2. Send email");
+  await page.keyboard.press("Enter");
+
+  const rows = page.locator(".xterm-rows");
+  await expect(rows).toContainText("Email Eugene:");
+  await expect(rows).toContainText("Email: emirotin@gmail.com");
+  await expect(rows).toContainText("Subject: From CV");
+});
+
+test("terminal menu mouse click can print contact details", async ({ page }) => {
+  await page.setViewportSize({ height: 900, width: 1280 });
+  await page.goto("/");
+  await expect(page.locator(".xterm")).toBeVisible();
+  const optionBox = await page.getByText("2. Send email").boundingBox();
+  expect(optionBox).not.toBeNull();
+
+  const clickX = optionBox!.x + optionBox!.width / 2;
+  const clickY = optionBox!.y + optionBox!.height / 2;
+  await page.mouse.move(clickX, clickY);
+  await page.mouse.click(clickX, clickY);
+
+  const rows = page.locator(".xterm-rows");
+  await expect(rows).toContainText("Email Eugene:");
+  await expect(rows).toContainText("Email: emirotin@gmail.com");
+  await expect(rows).toContainText("Subject: From CV");
+});
+
+test.describe("assistant terminal integration", () => {
   test("assistant does not show the prompt before model status resolves", async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(window.navigator, "gpu", {
@@ -113,6 +171,10 @@ test.describe("assistant terminal integration", () => {
     });
 
     await page.goto("/");
+    await expect(page.locator(".xterm")).toBeVisible();
+    await page.getByTestId("recruiter-terminal").click();
+    await page.keyboard.press("3");
+
     const rows = page.locator(".xterm-rows");
     await expect(rows).toContainText("WebGPU is not available");
     await expect(rows).toContainText("recruiter>");
@@ -139,6 +201,10 @@ test.describe("assistant terminal integration", () => {
     });
 
     await page.goto("/");
+    await expect(page.locator(".xterm")).toBeVisible();
+    await page.getByTestId("recruiter-terminal").click();
+    await page.keyboard.press("3");
+
     const rows = page.locator(".xterm-rows");
     await expect(rows).toContainText("storage buffers per shader stage");
     await expect(rows).toContainText("Continuing with CV search fallback");
@@ -149,6 +215,8 @@ test.describe("assistant terminal integration", () => {
     await page.goto("/?noai=1");
     await expect(page.locator(".xterm")).toBeVisible();
     await page.getByTestId("recruiter-terminal").click();
+    await page.keyboard.press("3");
+    await expect(page.locator(".xterm-rows")).toContainText("recruiter>");
     await page.keyboard.type("email");
     await page.keyboard.press("Enter");
 
@@ -164,6 +232,8 @@ test.describe("assistant terminal integration", () => {
     await page.goto("/?noai=1");
     await expect(page.locator(".xterm")).toBeVisible();
     await page.getByTestId("recruiter-terminal").click();
+    await page.keyboard.press("3");
+    await expect(page.locator(".xterm-rows")).toContainText("recruiter>");
     await page.keyboard.type("how can I contact him?");
     await page.keyboard.press("Enter");
 
