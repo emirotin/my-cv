@@ -128,11 +128,12 @@ const MENU_OPTIONS: Array<MenuOption> = [
 const MENU_HELP_TEXT = "Use Up/Down + Enter, press 1/2/3, or click an option.";
 const MOBILE_TERMINAL_MEDIA_QUERY = "(max-width: 640px)";
 const REDUCED_MOTION_MEDIA_QUERY = "(prefers-reduced-motion: reduce)";
-const STARTUP_ANIMATION_FRAME_COUNT = 28;
-const STARTUP_ANIMATION_DELAY_MS = 18;
-const STARTUP_ANIMATION_STAGGER_FRAMES = 18;
-const STARTUP_ANIMATION_MIN_SCRAMBLES = 5;
-const STARTUP_ANIMATION_EXTRA_SCRAMBLES = 4;
+const STARTUP_ANIMATION_FRAME_COUNT = 36;
+const STARTUP_ANIMATION_DELAY_MS = 22;
+const STARTUP_ANIMATION_REVEAL_SPREAD_FRAMES = 18;
+const STARTUP_ANIMATION_ROW_BIAS_FRAMES = 5;
+const STARTUP_ANIMATION_MIN_SCRAMBLES = 6;
+const STARTUP_ANIMATION_EXTRA_SCRAMBLES = 5;
 
 const DESKTOP_STARTUP_PORTRAIT: StartupPortrait = {
   ascii: ASCII_PORTRAIT,
@@ -500,15 +501,11 @@ function getStartupAnimationChar({
   }
 
   const cellIndex = rowIndex * portrait.width + columnIndex;
-  const diagonalProgress =
-    portrait.height <= 1 && portrait.width <= 1
-      ? 0
-      : rowIndex / Math.max(portrait.height - 1, 1) + columnIndex / Math.max(portrait.width - 1, 1);
-  const staggerFrame = Math.floor((diagonalProgress / 2) * STARTUP_ANIMATION_STAGGER_FRAMES);
+  const staggerFrame = getStartupRevealFrame(portrait, rowIndex, cellIndex);
   const settleFrame =
     staggerFrame +
     STARTUP_ANIMATION_MIN_SCRAMBLES +
-    (cellIndex % STARTUP_ANIMATION_EXTRA_SCRAMBLES);
+    Math.floor(startupCellUnit(cellIndex, 1) * STARTUP_ANIMATION_EXTRA_SCRAMBLES);
 
   if (frame < staggerFrame) {
     return " ";
@@ -521,11 +518,28 @@ function getStartupAnimationChar({
   return pickStartupScrambleChar(scrambleChars, frame, cellIndex);
 }
 
+function getStartupRevealFrame(portrait: StartupPortrait, rowIndex: number, cellIndex: number) {
+  const randomFrame = startupCellUnit(cellIndex, 0) * STARTUP_ANIMATION_REVEAL_SPREAD_FRAMES;
+  const rowBias = (rowIndex / Math.max(portrait.height - 1, 1)) * STARTUP_ANIMATION_ROW_BIAS_FRAMES;
+
+  return Math.floor(randomFrame + rowBias);
+}
+
 function pickStartupScrambleChar(scrambleChars: Array<string>, frame: number, cellIndex: number) {
-  const hash = Math.imul(cellIndex + 1, 1_103_515_245) ^ Math.imul(frame + 37, 12_345);
-  const mixed = hash ^ (hash >>> 16);
-  const char = scrambleChars[Math.abs(mixed) % scrambleChars.length];
+  const char = scrambleChars[mixStartupCell(cellIndex, frame + 37) % scrambleChars.length];
   return char ?? "#";
+}
+
+function startupCellUnit(cellIndex: number, salt: number) {
+  return mixStartupCell(cellIndex, salt) / 0xffffffff;
+}
+
+function mixStartupCell(cellIndex: number, salt: number) {
+  let hash = Math.imul(cellIndex + 1, 0x45d9f3b) ^ Math.imul(salt + 1, 0x27d4eb2d);
+  hash ^= hash >>> 15;
+  hash = Math.imul(hash, 0x85ebca6b);
+  hash ^= hash >>> 13;
+  return hash >>> 0;
 }
 
 function formatTerminalFrame(lines: Array<string>) {
