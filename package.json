@@ -57,6 +57,8 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
+    "node-addon-api": "^8.8.0",
+    "node-gyp": "^12.4.0",
     "oxfmt": "^0.54.0",
     "oxlint": "^1.69.0",
     "sharp": "^0.34.5",
